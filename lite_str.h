@@ -223,8 +223,10 @@ inline void string_free(lite_string *const restrict s) {
  *
  * @param x The input integer.
  * @return The smallest power of 2 greater than or equal to the input integer.
+ *
+ * @note This function is for internal use only, and should not be called directly by the user.
  */
-__attribute_pure__ static size_t clp2(size_t x) {
+__attribute_pure__ inline size_t lite_clp2__(size_t x) {
     --x;
     x |= x >> 1;
     x |= x >> 2;
@@ -253,7 +255,7 @@ inline bool string_reserve(lite_string *const restrict s, size_t size) {
         if (size <= 16) return true;
 
         // Round up the new size to the next power of 2, and reallocate the memory if necessary
-        size = clp2(size);
+        size = lite_clp2__(size);
         if (size >= s->capacity) {
             void *temp = realloc(s->data, size * sizeof(char));
             if (temp == nullptr) return false;
