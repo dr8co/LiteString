@@ -1,11 +1,8 @@
 # Test executable
-add_executable(testLiteString
-        testLiteString.cpp
-        ../lite_str.h
-        ../lite_str.c)
+add_executable(testLiteString testLiteString.cpp)
 
 # Link with gtest
-target_link_libraries(testLiteString gtest gtest_main)
+target_link_libraries(testLiteString LiteStr gtest gtest_main)
 
 include(GoogleTest)
 
