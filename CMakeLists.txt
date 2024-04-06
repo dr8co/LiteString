@@ -13,7 +13,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -Wpedantic -g")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wpedantic -g")
 
-add_library(LiteStr STATIC lite_str.h lite_str.c)
+# Sanitizers for debugging and testing
+# GCC does not support all sanitizers, so Clang is recommended for this purpose. Requires llvm-symbolizer.
+# The build type should be RelWithDebInfo (or Debug, adjust the variables appropriately) for sanitizers to work properly.
+if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
+    # Address, leak, undefined, integer, nullability sanitizers
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS} -fsanitize=address,leak,undefined,integer,nullability -fno-omit-frame-pointer -g")
+
+    # Thread sanitizer, cannot be used with address sanitizer
+    #  set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS} -fsanitize=thread -fPIE -fno-omit-frame-pointer -g -O1")
+
+    # Memory sanitizer, cannot be used with address sanitizer.
+    # set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS} -fsanitize=memory -fPIE -fno-optimize-sibling-calls -fno-omit-frame-pointer -g -O1")
+endif ()
+
+add_library(LiteStr INTERFACE lite_str.h)
 
 # Google Test
 include(FetchContent)
