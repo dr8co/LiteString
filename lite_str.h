@@ -1,5 +1,6 @@
 #pragma once
 #if __cplusplus
+#define restrict
 extern "C" {
 #endif
 
