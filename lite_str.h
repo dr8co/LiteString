@@ -67,111 +67,111 @@ typedef struct lite_str lite_string;
  * /////////////////////////////////////////////////////////////////////////////
  */
 
-lite_string *string_new();
+inline lite_string *string_new();
 
-void string_free(lite_string *restrict s);
+inline void string_free(lite_string *restrict s);
 
-bool string_reserve(lite_string *restrict s, size_t size);
+inline bool string_reserve(lite_string *restrict s, size_t size);
 
-bool string_push_back(lite_string *restrict s, char c);
+inline bool string_push_back(lite_string *restrict s, char c);
 
-char string_at(const lite_string *restrict s, size_t index);
+inline char string_at(const lite_string *restrict s, size_t index);
 
-void string_pop_back(lite_string *restrict s);
+inline void string_pop_back(lite_string *restrict s);
 
-bool string_empty(const lite_string *restrict s);
+inline bool string_empty(const lite_string *restrict s);
 
-bool string_erase(lite_string *restrict s, size_t index);
+inline bool string_erase(lite_string *restrict s, size_t index);
 
-char string_back(const lite_string *restrict s);
+inline char string_back(const lite_string *restrict s);
 
-char string_front(const lite_string *restrict s);
+inline char string_front(const lite_string *restrict s);
 
-bool string_compare(const lite_string *restrict s1, const lite_string *restrict s2);
+inline bool string_compare(const lite_string *restrict s1, const lite_string *restrict s2);
 
-size_t string_length(const lite_string *restrict s);
+inline size_t string_length(const lite_string *restrict s);
 
-size_t string_capacity(const lite_string *restrict s);
+inline size_t string_capacity(const lite_string *restrict s);
 
-void string_clear(lite_string *restrict s);
+inline void string_clear(lite_string *restrict s);
 
-bool string_insert(lite_string *restrict s, size_t index, char c);
+inline bool string_insert(lite_string *restrict s, size_t index, char c);
 
-void string_set(const lite_string *restrict s, size_t index, char c);
+inline void string_set(const lite_string *restrict s, size_t index, char c);
 
-lite_string *string_substr(const lite_string *restrict s, size_t start, size_t len);
+inline lite_string *string_substr(const lite_string *restrict s, size_t start, size_t len);
 
-lite_string *string_concat(const lite_string *restrict s1, const lite_string *restrict s2);
+inline lite_string *string_concat(const lite_string *restrict s1, const lite_string *restrict s2);
 
-bool string_append_range(lite_string *restrict s1, const lite_string *restrict s2, size_t count);
+inline bool string_append_range(lite_string *restrict s1, const lite_string *restrict s2, size_t count);
 
-bool string_append(lite_string *restrict s1, const lite_string *restrict s2);
+inline bool string_append(lite_string *restrict s1, const lite_string *restrict s2);
 
-bool string_append_cstr(lite_string *restrict s, const char *restrict cstr);
+inline bool string_append_cstr(lite_string *restrict s, const char *restrict cstr);
 
-char *string_cstr(const lite_string *restrict s);
+inline char *string_cstr(const lite_string *restrict s);
 
-bool string_compare_cstr(const lite_string *restrict s, const char *restrict cstr);
+inline bool string_compare_cstr(const lite_string *restrict s, const char *restrict cstr);
 
-bool string_insert_cstr(lite_string *restrict s, const char *restrict cstr, size_t index);
+inline bool string_insert_cstr(lite_string *restrict s, const char *restrict cstr, size_t index);
 
-bool string_append_cstr_range(lite_string *restrict s, const char *restrict cstr, size_t count);
+inline bool string_append_cstr_range(lite_string *restrict s, const char *restrict cstr, size_t count);
 
-bool string_copy_buffer(const lite_string *restrict s, char *buf);
+inline bool string_copy_buffer(const lite_string *restrict s, char *buf);
 
-bool string_copy(const lite_string *restrict src, lite_string *restrict dest);
+inline bool string_copy(const lite_string *restrict src, lite_string *restrict dest);
 
-bool string_case_compare(const lite_string *restrict s1, const lite_string *restrict s2);
+inline bool string_case_compare(const lite_string *restrict s1, const lite_string *restrict s2);
 
-bool string_case_compare_cstr(const lite_string *restrict s, const char *restrict cstr);
+inline bool string_case_compare_cstr(const lite_string *restrict s, const char *restrict cstr);
 
-bool string_swap(lite_string *restrict s1, lite_string *restrict s2);
+inline bool string_swap(lite_string *restrict s1, lite_string *restrict s2);
 
-bool string_insert_cstr_range(lite_string *restrict s, const char *restrict cstr, size_t index, size_t count);
+inline bool string_insert_cstr_range(lite_string *restrict s, const char *restrict cstr, size_t index, size_t count);
 
-bool string_insert_range(lite_string *restrict s, const lite_string *restrict sub, size_t index, size_t count);
+inline bool string_insert_range(lite_string *restrict s, const lite_string *restrict sub, size_t index, size_t count);
 
-bool string_insert_string(lite_string *restrict s, const lite_string *restrict sub, size_t index);
+inline bool string_insert_string(lite_string *restrict s, const lite_string *restrict sub, size_t index);
 
-size_t string_find_last_of(const lite_string *restrict s, char c);
+inline size_t string_find_last_of(const lite_string *restrict s, char c);
 
-size_t string_find_last_not_of(const lite_string *restrict s, char c);
+inline size_t string_find_last_not_of(const lite_string *restrict s, char c);
 
-size_t string_find_first_from(const lite_string *restrict s, char c, size_t start);
+inline size_t string_find_first_from(const lite_string *restrict s, char c, size_t start);
 
-size_t string_find_first_of(const lite_string *restrict s, char c);
+inline size_t string_find_first_of(const lite_string *restrict s, char c);
 
-size_t string_find_first_not_of(const lite_string *restrict s, char c);
+inline size_t string_find_first_not_of(const lite_string *restrict s, char c);
 
-size_t string_find_substr_from(const lite_string *restrict s, const lite_string *restrict sub, size_t start);
+inline size_t string_find_substr_from(const lite_string *restrict s, const lite_string *restrict sub, size_t start);
 
-size_t string_find_substr(const lite_string *restrict s, const lite_string *restrict sub);
+inline size_t string_find_substr(const lite_string *restrict s, const lite_string *restrict sub);
 
-size_t string_rfind_substr(const lite_string *restrict s, const lite_string *restrict sub);
+inline size_t string_rfind_substr(const lite_string *restrict s, const lite_string *restrict sub);
 
-size_t string_find_substr_cstr_from(const lite_string *restrict s, const char *restrict cstr, size_t start);
+inline size_t string_find_substr_cstr_from(const lite_string *restrict s, const char *restrict cstr, size_t start);
 
-size_t string_rfind_substr_cstr(const lite_string *restrict s, const char *restrict cstr);
+inline size_t string_rfind_substr_cstr(const lite_string *restrict s, const char *restrict cstr);
 
-size_t string_find_substr_cstr(const lite_string *restrict s, const char *restrict cstr);
+inline size_t string_find_substr_cstr(const lite_string *restrict s, const char *restrict cstr);
 
-bool string_contains_char(const lite_string *restrict s, char c);
+inline bool string_contains_char(const lite_string *restrict s, char c);
 
-bool string_contains(const lite_string *restrict s, const lite_string *restrict sub);
+inline bool string_contains(const lite_string *restrict s, const lite_string *restrict sub);
 
-bool string_contains_cstr(const lite_string *restrict s, const char *restrict cstr);
+inline bool string_contains_cstr(const lite_string *restrict s, const char *restrict cstr);
 
-bool string_starts_with(const lite_string *restrict s, const lite_string *restrict sub);
+inline bool string_starts_with(const lite_string *restrict s, const lite_string *restrict sub);
 
-bool string_starts_with_cstr(const lite_string *restrict s, const char *restrict cstr);
+inline bool string_starts_with_cstr(const lite_string *restrict s, const char *restrict cstr);
 
-bool string_ends_with(const lite_string *restrict s, const lite_string *restrict sub);
+inline bool string_ends_with(const lite_string *restrict s, const lite_string *restrict sub);
 
-bool string_ends_with_cstr(const lite_string *restrict s, const char *restrict cstr);
+inline bool string_ends_with_cstr(const lite_string *restrict s, const char *restrict cstr);
 
-bool string_shrink(lite_string *restrict s, size_t size);
+inline bool string_shrink(lite_string *restrict s, size_t size);
 
-bool string_shrink_to_fit(lite_string *restrict s);
+inline bool string_shrink_to_fit(lite_string *restrict s);
 
 /* /////////////////////////////////////////////////////////////////////////////
  *                             FUNCTION DEFINITIONS
@@ -184,7 +184,7 @@ bool string_shrink_to_fit(lite_string *restrict s);
  * @return A pointer to the newly created string, or NULL if memory allocation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
-lite_string *string_new() {
+inline lite_string *string_new() {
     lite_string *s = (lite_string *) malloc(sizeof(lite_string));
     if (s) {
         if ((s->data = (char *) calloc(16, sizeof(char)))) {
@@ -205,7 +205,7 @@ lite_string *string_new() {
  *
  * @param s A pointer to the string to be freed.
  */
-void string_free(lite_string *const restrict s) {
+inline void string_free(lite_string *const restrict s) {
     if (s) {
         if (s->data) {
             free(s->data);
@@ -248,7 +248,7 @@ __attribute_pure__ static size_t clp2(size_t x) {
  * The new size is rounded up to the next power of 2 to improve performance.
  * @warning This function is for internal use only, and should not be called directly by the user.
  */
-bool string_reserve(lite_string *const restrict s, size_t size) {
+inline bool string_reserve(lite_string *const restrict s, size_t size) {
     if (s) {
         if (size <= 16) return true;
 
@@ -282,7 +282,7 @@ bool string_reserve(lite_string *const restrict s, size_t size) {
  * @note If the index is equal to the size of the string and the string is empty,
  * the function will append the characters from the C-string to the string.
  */
-bool string_insert_cstr_range(lite_string *const restrict s, const char *const restrict cstr, const size_t index,
+inline bool string_insert_cstr_range(lite_string *const restrict s, const char *const restrict cstr, const size_t index,
                               const size_t count) {
     if (s && cstr) {
         if (!count) return true;
@@ -317,7 +317,7 @@ bool string_insert_cstr_range(lite_string *const restrict s, const char *const r
  * @param cstr The C-string to be inserted.
  * @return true if the C-string was successfully inserted, false otherwise.
  */
-bool string_insert_cstr(lite_string *const restrict s, const char *restrict cstr, const size_t index) {
+inline bool string_insert_cstr(lite_string *const restrict s, const char *restrict cstr, const size_t index) {
     return cstr && string_insert_cstr_range(s, cstr, index, strlen(cstr));
 }
 
@@ -332,7 +332,7 @@ bool string_insert_cstr(lite_string *const restrict s, const char *restrict cstr
  * @note If the string is full, it is resized to twice its current capacity.\n
  * The character is not appended if it is the null character.
  */
-bool string_push_back(lite_string *const restrict s, const char c) {
+inline bool string_push_back(lite_string *const restrict s, const char c) {
     if (s && c != '\0') {
         if (s->size == s->capacity) {
             if (!string_reserve(s, s->capacity * 2)) return false;
@@ -364,7 +364,7 @@ char string_at(const lite_string *const restrict s, const size_t index) {
  *
  * @param s A pointer to the string.
  */
-void string_pop_back(lite_string *const restrict s) {
+inline void string_pop_back(lite_string *const restrict s) {
     if (s && s->size)
         s->data[--s->size] = '\0';
 }
@@ -375,7 +375,7 @@ void string_pop_back(lite_string *const restrict s) {
  * @param s A pointer to the string.
  * @return true if the string is empty or invalid, false otherwise.
  */
-bool string_empty(const lite_string *const restrict s) {
+inline bool string_empty(const lite_string *const restrict s) {
     return s == nullptr || s->size == 0;
 }
 
@@ -385,7 +385,7 @@ bool string_empty(const lite_string *const restrict s) {
  * @param s A pointer to the string.
  * @return The last character of the string if the string is valid and not empty, or the null character otherwise.
  */
-char string_back(const lite_string *const restrict s) {
+inline char string_back(const lite_string *const restrict s) {
     return s && s->size ? s->data[s->size - 1] : '\0';
 }
 
@@ -395,7 +395,7 @@ char string_back(const lite_string *const restrict s) {
  * @param s A pointer to the string.
  * @return The first character of the string if the string is valid and not empty, or the null character otherwise.
  */
-char string_front(const lite_string *const restrict s) {
+inline char string_front(const lite_string *const restrict s) {
     return s && s->size ? s->data[0] : '\0';
 }
 
@@ -406,7 +406,7 @@ char string_front(const lite_string *const restrict s) {
  * @param index The index of the character to be removed.
  * @return true if the character was successfully removed, false otherwise.
  */
-bool string_erase(lite_string *const restrict s, const size_t index) {
+inline bool string_erase(lite_string *const restrict s, const size_t index) {
     if (s && index < s->size) {
         // Move the characters after the index to overwrite the character to be removed
         memmove(s->data + index * sizeof(char), s->data + (index + 1) * sizeof(char), (s->size - index) * sizeof(char));
@@ -424,7 +424,7 @@ bool string_erase(lite_string *const restrict s, const size_t index) {
  * @param s2 A pointer to the second string.
  * @return true if the strings are equal, false otherwise.
  */
-bool string_compare(const lite_string *const restrict s1, const lite_string *const restrict s2) {
+inline bool string_compare(const lite_string *const restrict s1, const lite_string *const restrict s2) {
     if (s1 == nullptr || s2 == nullptr || s1->size != s2->size)
         return false;
 
@@ -438,7 +438,7 @@ bool string_compare(const lite_string *const restrict s1, const lite_string *con
  * @param s2 A pointer to the second string.
  * @return true if the strings are equal (ignoring case), false otherwise.
  */
-bool string_case_compare(const lite_string *const restrict s1, const lite_string *const restrict s2) {
+inline bool string_case_compare(const lite_string *const restrict s1, const lite_string *const restrict s2) {
     if (s1 == nullptr || s2 == nullptr || s1->size != s2->size)
         return false;
 
@@ -451,7 +451,7 @@ bool string_case_compare(const lite_string *const restrict s1, const lite_string
  * @param s A pointer to the string.
  * @return The length of the string, or 0 if the string is invalid.
  */
-size_t string_length(const lite_string *const restrict s) {
+inline size_t string_length(const lite_string *const restrict s) {
     return s ? s->size : 0;
 }
 
@@ -461,7 +461,7 @@ size_t string_length(const lite_string *const restrict s) {
  * @param s A pointer to the string.
  * @return The capacity of the string, or 0 if the string is invalid.
  */
-size_t string_capacity(const lite_string *const restrict s) {
+inline size_t string_capacity(const lite_string *const restrict s) {
     return s ? s->capacity : 0;
 }
 
@@ -470,7 +470,7 @@ size_t string_capacity(const lite_string *const restrict s) {
  *
  * @param s A pointer to the string.
  */
-void string_clear(lite_string *const restrict s) {
+inline void string_clear(lite_string *const restrict s) {
     if (s && s->size) {
         memset(s->data, '\0', s->size);
         s->size = 0;
@@ -485,7 +485,7 @@ void string_clear(lite_string *const restrict s) {
  * @param c The character to be inserted.
  * @return true if the character was successfully inserted, false otherwise.
  */
-bool string_insert(lite_string *const restrict s, const size_t index, const char c) {
+inline bool string_insert(lite_string *const restrict s, const size_t index, const char c) {
     if (s && c != '\0') {
         if (index < s->size) {
             // Resize the string if necessary
@@ -519,7 +519,7 @@ bool string_insert(lite_string *const restrict s, const size_t index, const char
  * @note If the index is equal to the size of the string and the string is empty,
  * the function will append the characters from the substring to the string.
  */
-bool string_insert_range(lite_string *const restrict s, const lite_string *const restrict sub, const size_t index,
+inline bool string_insert_range(lite_string *const restrict s, const lite_string *const restrict sub, const size_t index,
                          const size_t count) {
     if (s && sub) {
         if (!count) return true;
@@ -549,12 +549,12 @@ bool string_insert_range(lite_string *const restrict s, const lite_string *const
  * @param index The index of the character to be modified.
  * @param c The new character.
  */
-void string_set(const lite_string *const restrict s, const size_t index, const char c) {
+inline void string_set(const lite_string *const restrict s, const size_t index, const char c) {
     if (s && c != '\0' && index < s->size)
         s->data[index] = c;
 }
 
-bool string_insert_string(lite_string *const restrict s, const lite_string *const restrict sub, const size_t index) {
+inline bool string_insert_string(lite_string *const restrict s, const lite_string *const restrict sub, const size_t index) {
     return sub && string_insert_range(s, sub, index, sub->size);
 }
 
@@ -568,7 +568,7 @@ bool string_insert_string(lite_string *const restrict s, const lite_string *cons
  *
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
-lite_string *string_substr(const lite_string *const restrict s, const size_t start, const size_t len) {
+inline lite_string *string_substr(const lite_string *const restrict s, const size_t start, const size_t len) {
     if (s) {
         // The requested substring must be within the bounds of the string
         if (len == 0 || start + len - 1 > s->size) return nullptr;
@@ -599,7 +599,7 @@ lite_string *string_substr(const lite_string *const restrict s, const size_t sta
  * or NULL if the strings could not be concatenated.
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
-lite_string *string_concat(const lite_string *const restrict s1, const lite_string *const restrict s2) {
+inline lite_string *string_concat(const lite_string *const restrict s1, const lite_string *const restrict s2) {
     if (s1 && s2) {
         lite_string *s = string_new();
         if (s) {
@@ -628,7 +628,7 @@ lite_string *string_concat(const lite_string *const restrict s1, const lite_stri
  * @param count The number of characters to be copied from the second string to the first string.
  * @return true if the characters were successfully appended, false otherwise.
  */
-bool string_append_range(lite_string *const restrict s1, const lite_string *const restrict s2, const size_t count) {
+inline bool string_append_range(lite_string *const restrict s1, const lite_string *const restrict s2, const size_t count) {
     if (s1) {
         if (count == 0) return true;
 
@@ -654,7 +654,7 @@ bool string_append_range(lite_string *const restrict s1, const lite_string *cons
  * @param s2 A pointer to the string that will be appended to the first string.
  * @return true if the second string was successfully appended, false otherwise.
  */
-bool string_append(lite_string *const restrict s1, const lite_string *const restrict s2) {
+inline bool string_append(lite_string *const restrict s1, const lite_string *const restrict s2) {
     return s2 && string_append_range(s1, s2, s2->size);
 }
 
@@ -666,7 +666,7 @@ bool string_append(lite_string *const restrict s1, const lite_string *const rest
  * @param count The number of characters to be copied from the C-string to the string.
  * @return true if the characters were successfully appended, false otherwise.
  */
-bool string_append_cstr_range(lite_string *const restrict s, const char *const restrict cstr, const size_t count) {
+inline bool string_append_cstr_range(lite_string *const restrict s, const char *const restrict cstr, const size_t count) {
     if (s) {
         if (count == 0) return true;
         if (cstr) {
@@ -691,7 +691,7 @@ bool string_append_cstr_range(lite_string *const restrict s, const char *const r
  * @param cstr The C-string to be appended to the string.
  * @return true if the C-string was successfully appended, false otherwise.
  */
-bool string_append_cstr(lite_string *const restrict s, const char *const restrict cstr) {
+inline bool string_append_cstr(lite_string *const restrict s, const char *const restrict cstr) {
     return string_append_cstr_range(s, cstr, strlen(cstr));
 }
 
@@ -703,7 +703,7 @@ bool string_append_cstr(lite_string *const restrict s, const char *const restric
  * @note The returned C-string must be freed by the caller.\n
  * It is better to use \p string_copy_buffer if the C-string is only needed temporarily.
  */
-char *string_cstr(const lite_string *const restrict s) {
+inline char *string_cstr(const lite_string *const restrict s) {
     if (s) {
         // Allocate memory for the C-string
         char *cstr = (char *) malloc((s->size + 1) * sizeof(char));
@@ -726,7 +726,7 @@ char *string_cstr(const lite_string *const restrict s) {
  * @param cstr The C-string to be compared with the string.
  * @return true if the string and the C-string are equal, false otherwise.
  */
-bool string_compare_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+inline bool string_compare_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     if (s && cstr) {
         if (s->size == strlen(cstr))
             return memcmp(s->data, cstr, s->size) == 0;
@@ -741,7 +741,7 @@ bool string_compare_cstr(const lite_string *const restrict s, const char *const 
  * @param cstr The C-string to be compared with the string.
  * @return true if the string and the C-string are equal (ignoring case), false otherwise.
  */
-bool string_case_compare_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+inline bool string_case_compare_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     if (s && cstr) {
         if (s->size == strlen(cstr))
             return strncasecmp(s->data, cstr, s->size) == 0;
@@ -756,7 +756,7 @@ bool string_case_compare_cstr(const lite_string *const restrict s, const char *c
  * @param buf The buffer where the characters will be copied.
  * @return true if the characters were successfully copied, false otherwise.
  */
-bool string_copy_buffer(const lite_string *const restrict s, char *buf) {
+inline bool string_copy_buffer(const lite_string *const restrict s, char *buf) {
     if (s && !string_empty(s)) {
         // Copy the characters from the string to the buffer
         memcpy(buf, s->data, s->size * sizeof(char));
@@ -774,7 +774,7 @@ bool string_copy_buffer(const lite_string *const restrict s, char *buf) {
  * @param dest A pointer to the destination string.
  * @return true if the contents of the source string were successfully copied to the destination string, false otherwise.
  */
-bool string_copy(const lite_string *const restrict src, lite_string *const restrict dest) {
+inline bool string_copy(const lite_string *const restrict src, lite_string *const restrict dest) {
     if (src && dest && src->data && dest->data) {
         // Resize the destination string if necessary
         if (src->size > dest->size)
@@ -795,7 +795,7 @@ bool string_copy(const lite_string *const restrict src, lite_string *const restr
  * @param s2 A pointer to the second string.
  * @return true if the contents of the strings were successfully swapped, false otherwise.
  */
-bool string_swap(lite_string *const restrict s1, lite_string *const restrict s2) {
+inline bool string_swap(lite_string *const restrict s1, lite_string *const restrict s2) {
     if (s1 && s2) {
         const lite_string temp = *s1;
         *s1 = *s2;
@@ -813,7 +813,7 @@ bool string_swap(lite_string *const restrict s1, lite_string *const restrict s2)
  * @param c The character to be found.
  * @return The index of the last occurrence of the character in the string, or \p SIZE_MAX if the character was not found.
  */
-size_t string_find_last_of(const lite_string *const restrict s, const char c) {
+inline size_t string_find_last_of(const lite_string *const restrict s, const char c) {
     if (s && c != '\0') {
         for (size_t i = s->size; i > 0; --i) {
             if (s->data[i - 1] == c)
@@ -831,7 +831,7 @@ size_t string_find_last_of(const lite_string *const restrict s, const char c) {
  * @return The index of the last occurrence of a character that does not match the specified character in the string,
  * or \p SIZE_MAX if all characters match or the string is invalid.
  */
-size_t string_find_last_not_of(const lite_string *const restrict s, const char c) {
+inline size_t string_find_last_not_of(const lite_string *const restrict s, const char c) {
     if (s && c != '\0') {
         for (size_t i = s->size; i > 0; --i) {
             if (s->data[i - 1] != c)
@@ -849,7 +849,7 @@ size_t string_find_last_not_of(const lite_string *const restrict s, const char c
  * @param start The index from which the search will start.
  * @return The index of the first occurrence of the character in the string, or \p SIZE_MAX if the character was not found.
  */
-size_t string_find_first_from(const lite_string *const restrict s, const char c, const size_t start) {
+inline size_t string_find_first_from(const lite_string *const restrict s, const char c, const size_t start) {
     if (s && c != '\0' && start < s->size) {
         for (size_t i = start; i < s->size; ++i) {
             if (s->data[i] == c)
@@ -866,7 +866,7 @@ size_t string_find_first_from(const lite_string *const restrict s, const char c,
  * @param c The character to be found.
  * @return The index of the first occurrence of the character in the string, or \p SIZE_MAX if the character was not found.
  */
-size_t string_find_first_of(const lite_string *const restrict s, const char c) {
+inline size_t string_find_first_of(const lite_string *const restrict s, const char c) {
     return string_find_first_from(s, c, 0);
 }
 
@@ -878,7 +878,7 @@ size_t string_find_first_of(const lite_string *const restrict s, const char c) {
  * @return The index of the first occurrence of a character that does not match the specified character in the string,
  * or \p SIZE_MAX if all characters match or the string is invalid.
  */
-size_t string_find_first_not_of(const lite_string *const restrict s, const char c) {
+inline size_t string_find_first_not_of(const lite_string *const restrict s, const char c) {
     if (s && c != '\0') {
         for (size_t i = 0; i < s->size; ++i) {
             if (s->data[i] != c)
@@ -894,7 +894,7 @@ size_t string_find_first_not_of(const lite_string *const restrict s, const char 
  * @param c The character to be found.
  * @return True if the string contains the character, false otherwise.
  */
-bool string_contains_char(const lite_string *const restrict s, const char c) {
+inline bool string_contains_char(const lite_string *const restrict s, const char c) {
     return string_find_first_of(s, c) != SIZE_MAX;
 }
 
@@ -906,7 +906,7 @@ bool string_contains_char(const lite_string *const restrict s, const char c) {
  * @param start The index from which the search will start.
  * @return The index of the first occurrence of the substring in the string, or \p SIZE_MAX if the substring was not found.
  */
-size_t string_find_substr_from(const lite_string *const restrict s, const lite_string *const restrict sub,
+inline size_t string_find_substr_from(const lite_string *const restrict s, const lite_string *const restrict sub,
                                const size_t start) {
     if (s && sub && start < s->size) {
         if (sub->size == 0) return start;
@@ -935,7 +935,7 @@ size_t string_find_substr_from(const lite_string *const restrict s, const lite_s
  * @param sub A pointer to the substring to be found.
  * @return The index of the first occurrence of the substring in the string, or \p SIZE_MAX if the substring was not found.
  */
-size_t string_find_substr(const lite_string *const restrict s, const lite_string *const restrict sub) {
+inline size_t string_find_substr(const lite_string *const restrict s, const lite_string *const restrict sub) {
     return string_find_substr_from(s, sub, 0);
 }
 
@@ -946,7 +946,7 @@ size_t string_find_substr(const lite_string *const restrict s, const lite_string
  * @param sub A pointer to the substring to be found.
  * @return The index of the last occurrence of the substring in the string, or \p SIZE_MAX if the substring was not found.
  */
-size_t string_rfind_substr(const lite_string *const restrict s, const lite_string *const restrict sub) {
+inline size_t string_rfind_substr(const lite_string *const restrict s, const lite_string *const restrict sub) {
     if (s && sub) {
         if (sub->size == 0) return s->size;
         if (sub->size > s->size) return SIZE_MAX;
@@ -975,7 +975,7 @@ size_t string_rfind_substr(const lite_string *const restrict s, const lite_strin
  * @param start The index from which the search will start.
  * @return The index of the first occurrence of the C-string in the string, or \p SIZE_MAX if the C-string was not found.
  */
-size_t string_find_substr_cstr_from(const lite_string *const restrict s, const char *const restrict cstr,
+inline size_t string_find_substr_cstr_from(const lite_string *const restrict s, const char *const restrict cstr,
                                     const size_t start) {
     if (s && cstr && start < s->size) {
         const size_t len = strlen(cstr);
@@ -1005,7 +1005,7 @@ size_t string_find_substr_cstr_from(const lite_string *const restrict s, const c
  * @param cstr The C-string to be found.
  * @return The index of the last occurrence of the C-string in the string, or \p SIZE_MAX if the C-string was not found.
  */
-size_t string_rfind_substr_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+inline size_t string_rfind_substr_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     if (s && cstr) {
         const size_t len = strlen(cstr);
         if (len == 0) return s->size;
@@ -1034,7 +1034,7 @@ size_t string_rfind_substr_cstr(const lite_string *const restrict s, const char 
  * @param cstr The C-string to be found.
  * @return The index of the first occurrence of the C-string in the string, or \p SIZE_MAX if the C-string was not found.
  */
-size_t string_find_substr_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+inline size_t string_find_substr_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     return string_find_substr_cstr_from(s, cstr, 0);
 }
 
@@ -1045,7 +1045,7 @@ size_t string_find_substr_cstr(const lite_string *const restrict s, const char *
  * @param sub A pointer to the substring to be found.
  * @return True if the string contains the substring, false otherwise.
  */
-bool string_contains(const lite_string *const restrict s, const lite_string *const restrict sub) {
+inline bool string_contains(const lite_string *const restrict s, const lite_string *const restrict sub) {
     return string_find_substr(s, sub) != SIZE_MAX;
 }
 
@@ -1056,7 +1056,7 @@ bool string_contains(const lite_string *const restrict s, const lite_string *con
  * @param cstr The C-string to be found.
  * @return True if the string contains the C-string, false otherwise.
  */
-bool string_contains_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+inline bool string_contains_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     return string_find_substr_cstr(s, cstr) != SIZE_MAX;
 }
 
@@ -1067,7 +1067,7 @@ bool string_contains_cstr(const lite_string *const restrict s, const char *const
  * @param sub A pointer to the substring to be checked.
  * @return True if the string starts with the substring, false otherwise.
  */
-bool string_starts_with(const lite_string *const restrict s, const lite_string *const restrict sub) {
+inline bool string_starts_with(const lite_string *const restrict s, const lite_string *const restrict sub) {
     return string_find_substr(s, sub) == 0;
 }
 
@@ -1078,7 +1078,7 @@ bool string_starts_with(const lite_string *const restrict s, const lite_string *
  * @param cstr The C-string to be checked.
  * @return True if the string starts with the C-string, false otherwise.
  */
-bool string_starts_with_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+inline bool string_starts_with_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     return string_find_substr_cstr(s, cstr) == 0;
 }
 
@@ -1089,7 +1089,7 @@ bool string_starts_with_cstr(const lite_string *const restrict s, const char *co
  * @param sub A pointer to the substring to be checked.
  * @return True if the string ends with the substring, false otherwise.
  */
-bool string_ends_with(const lite_string *const restrict s, const lite_string *const restrict sub) {
+inline bool string_ends_with(const lite_string *const restrict s, const lite_string *const restrict sub) {
     return s && sub && string_rfind_substr(s, sub) == s->size - sub->size;
 }
 
@@ -1100,7 +1100,7 @@ bool string_ends_with(const lite_string *const restrict s, const lite_string *co
  * @param cstr The C-string to be checked.
  * @return True if the string ends with the C-string, false otherwise.
  */
-bool string_ends_with_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+inline bool string_ends_with_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     return s && cstr && string_rfind_substr_cstr(s, cstr) == s->size - strlen(cstr);
 }
 
@@ -1114,7 +1114,7 @@ bool string_ends_with_cstr(const lite_string *const restrict s, const char *cons
  *
  * @note Extra characters are removed from the end of the string.
  */
-bool string_shrink(lite_string *const restrict s, const size_t size) {
+inline bool string_shrink(lite_string *const restrict s, const size_t size) {
     if (s && size < s->size) {
         s->size = size;
         s->data[size] = '\0';
@@ -1129,7 +1129,7 @@ bool string_shrink(lite_string *const restrict s, const size_t size) {
  * @param s A pointer to the string to be shrunk.
  * @return true if the string was successfully shrunk or if shrinking was unnecessary, false otherwise.
  */
-bool string_shrink_to_fit(lite_string *const restrict s) {
+inline bool string_shrink_to_fit(lite_string *const restrict s) {
     if (s) {
         // If the string is empty, or if the size is equal to the capacity, no resizing is necessary
         if (!s->size || s->size == s->capacity) return true;
