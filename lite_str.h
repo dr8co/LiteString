@@ -185,7 +185,7 @@ bool string_shrink_to_fit(lite_string *restrict s);
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
 lite_string *string_new() {
-    lite_string *s = malloc(sizeof(lite_string));
+    lite_string *s = (lite_string *) malloc(sizeof(lite_string));
     if (s) {
         if ((s->data = (char *) calloc(16, sizeof(char)))) {
             s->size = 0;
@@ -706,7 +706,7 @@ bool string_append_cstr(lite_string *const restrict s, const char *const restric
 char *string_cstr(const lite_string *const restrict s) {
     if (s) {
         // Allocate memory for the C-string
-        char *cstr = malloc((s->size + 1) * sizeof(char));
+        char *cstr = (char *) malloc((s->size + 1) * sizeof(char));
         if (cstr) {
             // Copy the characters from the string to the C-string
             memcpy(cstr, s->data, s->size);
@@ -1134,7 +1134,7 @@ bool string_shrink_to_fit(lite_string *const restrict s) {
         // If the string is empty, or if the size is equal to the capacity, no resizing is necessary
         if (!s->size || s->size == s->capacity) return true;
 
-        char *temp = realloc(s->data, s->size * sizeof(char));
+        char *temp = (char *) realloc(s->data, s->size * sizeof(char));
         if (temp) {
             s->data = temp;
             s->capacity = s->size;
