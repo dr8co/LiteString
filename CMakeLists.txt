@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.28)
 
-project(LiteStr C CXX)
+project(LiteString C CXX)
 
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -27,7 +27,7 @@ if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
     # set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS} -fsanitize=memory -fPIE -fno-optimize-sibling-calls -fno-omit-frame-pointer -g -O1")
 endif ()
 
-add_library(LiteStr INTERFACE lite_str.h)
+add_library(LiteString INTERFACE lite_string.h)
 
 # Google Test
 include(FetchContent)

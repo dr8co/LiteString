@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <cstdlib>
-#include "../lite_str.h"
+#include "../lite_string.h"
 
 TEST(LiteStringTest, NewCreatesEmptyString) {
     lite_string *s = string_new();
