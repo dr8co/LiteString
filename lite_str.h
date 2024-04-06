@@ -282,8 +282,8 @@ inline bool string_reserve(lite_string *const restrict s, size_t size) {
  * @note If the index is equal to the size of the string and the string is empty,
  * the function will append the characters from the C-string to the string.
  */
-inline bool string_insert_cstr_range(lite_string *const restrict s, const char *const restrict cstr, const size_t index,
-                              const size_t count) {
+inline bool string_insert_cstr_range(lite_string *const restrict s, const char *const restrict cstr,
+                                     const size_t index, const size_t count) {
     if (s && cstr) {
         if (!count) return true;
         if (count <= strlen(cstr)) {
@@ -519,8 +519,9 @@ inline bool string_insert(lite_string *const restrict s, const size_t index, con
  * @note If the index is equal to the size of the string and the string is empty,
  * the function will append the characters from the substring to the string.
  */
-inline bool string_insert_range(lite_string *const restrict s, const lite_string *const restrict sub, const size_t index,
-                         const size_t count) {
+inline bool
+string_insert_range(lite_string *const restrict s, const lite_string *const restrict sub, const size_t index,
+                    const size_t count) {
     if (s && sub) {
         if (!count) return true;
         if (count <= sub->size) {
@@ -554,7 +555,8 @@ inline void string_set(const lite_string *const restrict s, const size_t index, 
         s->data[index] = c;
 }
 
-inline bool string_insert_string(lite_string *const restrict s, const lite_string *const restrict sub, const size_t index) {
+inline bool
+string_insert_string(lite_string *const restrict s, const lite_string *const restrict sub, const size_t index) {
     return sub && string_insert_range(s, sub, index, sub->size);
 }
 
@@ -628,7 +630,8 @@ inline lite_string *string_concat(const lite_string *const restrict s1, const li
  * @param count The number of characters to be copied from the second string to the first string.
  * @return true if the characters were successfully appended, false otherwise.
  */
-inline bool string_append_range(lite_string *const restrict s1, const lite_string *const restrict s2, const size_t count) {
+inline bool
+string_append_range(lite_string *const restrict s1, const lite_string *const restrict s2, const size_t count) {
     if (s1) {
         if (count == 0) return true;
 
@@ -666,7 +669,8 @@ inline bool string_append(lite_string *const restrict s1, const lite_string *con
  * @param count The number of characters to be copied from the C-string to the string.
  * @return true if the characters were successfully appended, false otherwise.
  */
-inline bool string_append_cstr_range(lite_string *const restrict s, const char *const restrict cstr, const size_t count) {
+inline bool
+string_append_cstr_range(lite_string *const restrict s, const char *const restrict cstr, const size_t count) {
     if (s) {
         if (count == 0) return true;
         if (cstr) {
@@ -757,7 +761,7 @@ inline bool string_case_compare_cstr(const lite_string *const restrict s, const 
  * @return true if the characters were successfully copied, false otherwise.
  */
 inline bool string_copy_buffer(const lite_string *const restrict s, char *buf) {
-    if (s && !string_empty(s)) {
+    if (s && buf && !string_empty(s)) {
         // Copy the characters from the string to the buffer
         memcpy(buf, s->data, s->size * sizeof(char));
         // Append the null character to the end of the buffer
@@ -907,7 +911,7 @@ inline bool string_contains_char(const lite_string *const restrict s, const char
  * @return The index of the first occurrence of the substring in the string, or \p SIZE_MAX if the substring was not found.
  */
 inline size_t string_find_substr_from(const lite_string *const restrict s, const lite_string *const restrict sub,
-                               const size_t start) {
+                                      const size_t start) {
     if (s && sub && start < s->size) {
         if (sub->size == 0) return start;
         if (sub->size > s->size) return SIZE_MAX;
@@ -976,25 +980,33 @@ inline size_t string_rfind_substr(const lite_string *const restrict s, const lit
  * @return The index of the first occurrence of the C-string in the string, or \p SIZE_MAX if the C-string was not found.
  */
 inline size_t string_find_substr_cstr_from(const lite_string *const restrict s, const char *const restrict cstr,
-                                    const size_t start) {
-    if (s && cstr && start < s->size) {
+                                           const size_t start) {
+    // The string and the C-string must be valid
+    if (s && cstr) {
         const size_t len = strlen(cstr);
+        // Empty C-strings are always found
         if (len == 0) return start;
+        // The C-string must be within the bounds of the string
         if (len > s->size) return SIZE_MAX;
 
-        for (size_t i = start; i < s->size - len + 1; ++i) {
-            if (s->data[i] == cstr[0]) {
-                bool found = true;
-                for (size_t j = 1; j < len; ++j) {
-                    if (s->data[i + j] != cstr[j]) {
-                        found = false;
-                        break;
+        // The search must start from a valid index
+        if (start < s->size) {
+            // Search for the C-string in the string
+            for (size_t i = start; i < s->size - len + 1; ++i) {
+                if (s->data[i] == cstr[0]) {
+                    bool found = true;
+                    for (size_t j = 1; j < len; ++j) {
+                        if (s->data[i + j] != cstr[j]) {
+                            found = false;
+                            break;
+                        }
                     }
+                    if (found) return i;
                 }
-                if (found) return i;
             }
         }
     }
+    // The C-string was not found
     return SIZE_MAX;
 }
 
