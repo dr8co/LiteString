@@ -67,7 +67,7 @@ typedef struct lite_str lite_string;
  * /////////////////////////////////////////////////////////////////////////////
  */
 
-inline lite_string *string_new();
+[[nodiscard]] inline lite_string *string_new();
 
 inline void string_free(lite_string *restrict s);
 
@@ -99,9 +99,9 @@ inline bool string_insert(lite_string *restrict s, size_t index, char c);
 
 inline void string_set(const lite_string *restrict s, size_t index, char c);
 
-inline lite_string *string_substr(const lite_string *restrict s, size_t start, size_t len);
+[[nodiscard]] inline lite_string *string_substr(const lite_string *restrict s, size_t start, size_t len);
 
-inline lite_string *string_concat(const lite_string *restrict s1, const lite_string *restrict s2);
+[[nodiscard]] inline lite_string *string_concat(const lite_string *restrict s1, const lite_string *restrict s2);
 
 inline bool string_append_range(lite_string *restrict s1, const lite_string *restrict s2, size_t count);
 
@@ -109,7 +109,7 @@ inline bool string_append(lite_string *restrict s1, const lite_string *restrict 
 
 inline bool string_append_cstr(lite_string *restrict s, const char *restrict cstr);
 
-inline char *string_cstr(const lite_string *restrict s);
+[[nodiscard]] inline char *string_cstr(const lite_string *restrict s);
 
 inline bool string_compare_cstr(const lite_string *restrict s, const char *restrict cstr);
 
@@ -184,7 +184,7 @@ inline bool string_shrink_to_fit(lite_string *restrict s);
  * @return A pointer to the newly created string, or NULL if memory allocation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
-inline lite_string *string_new() {
+[[nodiscard]] inline lite_string *string_new() {
     lite_string *s = (lite_string *) malloc(sizeof(lite_string));
     if (s) {
         if ((s->data = (char *) calloc(16, sizeof(char)))) {
@@ -226,7 +226,7 @@ inline void string_free(lite_string *const restrict s) {
  *
  * @note This function is for internal use only, and should not be called directly by the user.
  */
-__attribute_pure__ inline size_t lite_clp2__(size_t x) {
+__attribute_pure__ inline size_t lite_clp2_(size_t x) {
     --x;
     x |= x >> 1;
     x |= x >> 2;
@@ -255,7 +255,7 @@ inline bool string_reserve(lite_string *const restrict s, size_t size) {
         if (size <= 16) return true;
 
         // Round up the new size to the next power of 2, and reallocate the memory if necessary
-        size = lite_clp2__(size);
+        size = lite_clp2_(size);
         if (size >= s->capacity) {
             void *temp = realloc(s->data, size * sizeof(char));
             if (temp == nullptr) return false;
@@ -572,7 +572,7 @@ string_insert_string(lite_string *const restrict s, const lite_string *const res
  *
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
-inline lite_string *string_substr(const lite_string *const restrict s, const size_t start, const size_t len) {
+[[nodiscard]] inline lite_string *string_substr(const lite_string *const restrict s, const size_t start, const size_t len) {
     if (s) {
         // The requested substring must be within the bounds of the string
         if (len == 0 || start + len - 1 > s->size) return nullptr;
@@ -603,7 +603,8 @@ inline lite_string *string_substr(const lite_string *const restrict s, const siz
  * or NULL if the strings could not be concatenated.
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
-inline lite_string *string_concat(const lite_string *const restrict s1, const lite_string *const restrict s2) {
+[[nodiscard]] inline lite_string *string_concat(const lite_string *const restrict s1,
+                                                const lite_string *const restrict s2) {
     if (s1 && s2) {
         lite_string *s = string_new();
         if (s) {
@@ -709,7 +710,7 @@ inline bool string_append_cstr(lite_string *const restrict s, const char *const 
  * @note The returned C-string must be freed by the caller.\n
  * It is better to use \p string_copy_buffer if the C-string is only needed temporarily.
  */
-inline char *string_cstr(const lite_string *const restrict s) {
+[[nodiscard]] inline char *string_cstr(const lite_string *const restrict s) {
     if (s) {
         // Allocate memory for the C-string
         char *cstr = (char *) malloc((s->size + 1) * sizeof(char));
