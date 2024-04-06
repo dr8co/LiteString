@@ -1,8 +1,45 @@
 #pragma once
-#if __cplusplus
+
+#if LITE_NO_RESTRICT_
+
+// Ignore the warning for redefining the 'restrict' keyword
+#if __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif // __clang__
+
 #define restrict
-extern "C" {
+
+// Restore Clang warnings
+#if __clang__
+#pragma clang diagnostic pop
+#endif // __clang__
+#endif // LITE_NO_RESTRICT_
+
+#if __cplusplus
+#if !LITE_NO_RESTRICT_ // The keyword has not been redefined
+#if __GNUC__ || __clang__ || _MSC_VER // Support for '__restrict'
+
+// Ignore the warning for redefining the 'restrict' keyword
+#if __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wkeyword-macro"
+#endif // __clang__
+
+#define restrict __restrict
+#else // No support for '__restrict'
+#define restrict
+#endif // __GNUC__ || __clang__ || _MSC_VER
+
+// Restore Clang warnings
+#if __clang__
+#pragma clang diagnostic pop
 #endif
+
+#endif // LITE_NO_RESTRICT_
+
+extern "C" {
+#endif // __cplusplus
 
 #include <stddef.h>
 
