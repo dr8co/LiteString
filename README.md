@@ -17,6 +17,34 @@ LiteString is written in C and can be used in both C and C++ projects.
 - Compatible with C and C++
 - No dependencies, just the standard library
 
+## Building
+
+A C23 compiler (such as [GCC 13](https://gcc.gnu.org/) or [Clang 18](https://clang.llvm.org/))
+is required to build the library.
+
+To build the library, run the following commands:
+
+[//]: # (TODO: Complete the build instructions.)
+
+
+## Usage
+
+To use the library, include the header file in your source code:
+
+```c
+#include "lite_string.h"
+```
+
+Compile the source code and link it with the library:
+
+```bash
+gcc example.c -o example -llite_string
+```
+
+Projects using CMake can link the library with the following commands:
+
+[//]: # (TODO: Add CMake instructions.)
+
 ## API
 
 The API is designed to be as similar as possible to the C++ std::string class.
@@ -231,4 +259,37 @@ bool string_ends_with_cstr(const lite_string *const restrict s, const char *cons
 
 lite_string * string_substr(const lite_string *const restrict s, const size_t start, const size_t len)
 // Retrieves a substring from the string.
+```
+
+### Error Handling
+
+The library does not use exceptions.
+Instead, functions return `bool` values to indicate success or failure.
+
+Functions that return numeric values return `SIZE_MAX` on failure,
+while those that return pointers return `nullptr`.
+
+## Examples
+
+Basic usage of the library:
+
+```c
+#include "lite_string.h"
+#include <stdio.h>
+
+int main() {
+    lite_string *s = string_new();
+    string_append_cstr(s, "Hello, ");
+    string_append_cstr(s, "world!");
+    printf("%s\n", string_cstr(s));
+    string_free(s);
+    return 0;
+}
+```
+
+More examples can be found in the `examples` directory.
+
+## License
+
+LiteString is released under the MIT License. See `LICENSE` for more information.
 ```
