@@ -102,7 +102,7 @@ bool string_append(lite_string *restrict s1, const lite_string *restrict s2);
 
 bool string_append_cstr(lite_string *restrict s, const char *restrict cstr);
 
-[[nodiscard]] char *string_cstr(const lite_string *restrict s);
+char *string_cstr(lite_string *restrict s);
 
 bool string_compare_cstr(const lite_string *restrict s, const char *restrict cstr);
 
@@ -136,17 +136,17 @@ size_t string_find_first_of(const lite_string *restrict s, char c);
 
 size_t string_find_first_not_of(const lite_string *restrict s, char c);
 
-size_t string_find_substr_from(const lite_string *restrict s, const lite_string *restrict sub, size_t start);
+size_t string_find_from(const lite_string *restrict s, const lite_string *restrict sub, size_t start);
 
-size_t string_find_substr(const lite_string *restrict s, const lite_string *restrict sub);
+size_t string_find(const lite_string *restrict s, const lite_string *restrict sub);
 
-size_t string_rfind_substr(const lite_string *restrict s, const lite_string *restrict sub);
+size_t string_rfind(const lite_string *restrict s, const lite_string *restrict sub);
 
-size_t string_find_substr_cstr_from(const lite_string *restrict s, const char *restrict cstr, size_t start);
+size_t string_find_cstr_from(const lite_string *restrict s, const char *restrict cstr, size_t start);
 
-size_t string_rfind_substr_cstr(const lite_string *restrict s, const char *restrict cstr);
+size_t string_rfind_cstr(const lite_string *restrict s, const char *restrict cstr);
 
-size_t string_find_substr_cstr(const lite_string *restrict s, const char *restrict cstr);
+size_t string_find_cstr(const lite_string *restrict s, const char *restrict cstr);
 
 bool string_contains_char(const lite_string *restrict s, char c);
 
@@ -165,6 +165,10 @@ bool string_ends_with_cstr(const lite_string *restrict s, const char *restrict c
 bool string_shrink(lite_string *restrict s, size_t size);
 
 bool string_shrink_to_fit(lite_string *restrict s);
+
+void string_to_lower(const lite_string *restrict s);
+
+[[nodiscard]] lite_string *string_new_cstr(const char *restrict cstr);
 
 #if __cplusplus
 }

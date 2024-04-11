@@ -758,7 +758,7 @@ bool string_contains_char(const lite_string *const restrict s, const char c) {
  * @param start The index from which the search will start.
  * @return The index of the first occurrence of the substring in the string, or \p SIZE_MAX if the substring was not found.
  */
-size_t string_find_substr_from(const lite_string *const restrict s, const lite_string *const restrict sub,
+size_t string_find_from(const lite_string *const restrict s, const lite_string *const restrict sub,
                                const size_t start) {
     if (s && sub && start < s->size) {
         if (sub->size == 0) return start;
@@ -787,8 +787,8 @@ size_t string_find_substr_from(const lite_string *const restrict s, const lite_s
  * @param sub A pointer to the substring to be found.
  * @return The index of the first occurrence of the substring in the string, or \p SIZE_MAX if the substring was not found.
  */
-size_t string_find_substr(const lite_string *const restrict s, const lite_string *const restrict sub) {
-    return string_find_substr_from(s, sub, 0);
+size_t string_find(const lite_string *const restrict s, const lite_string *const restrict sub) {
+    return string_find_from(s, sub, 0);
 }
 
 /**
@@ -798,7 +798,7 @@ size_t string_find_substr(const lite_string *const restrict s, const lite_string
  * @param sub A pointer to the substring to be found.
  * @return The index of the last occurrence of the substring in the string, or \p SIZE_MAX if the substring was not found.
  */
-size_t string_rfind_substr(const lite_string *const restrict s, const lite_string *const restrict sub) {
+size_t string_rfind(const lite_string *const restrict s, const lite_string *const restrict sub) {
     if (s && sub) {
         if (sub->size == 0) return s->size;
         if (sub->size > s->size) return SIZE_MAX;
@@ -827,7 +827,7 @@ size_t string_rfind_substr(const lite_string *const restrict s, const lite_strin
  * @param start The index from which the search will start.
  * @return The index of the first occurrence of the C-string in the string, or \p SIZE_MAX if the C-string was not found.
  */
-size_t string_find_substr_cstr_from(const lite_string *const restrict s, const char *const restrict cstr,
+size_t string_find_cstr_from(const lite_string *const restrict s, const char *const restrict cstr,
                                     const size_t start) {
     // The string and the C-string must be valid
     if (s && cstr) {
@@ -865,7 +865,7 @@ size_t string_find_substr_cstr_from(const lite_string *const restrict s, const c
  * @param cstr The C-string to be found.
  * @return The index of the last occurrence of the C-string in the string, or \p SIZE_MAX if the C-string was not found.
  */
-size_t string_rfind_substr_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+size_t string_rfind_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     if (s && cstr) {
         const size_t len = strlen(cstr);
         if (len == 0) return s->size;
@@ -894,8 +894,8 @@ size_t string_rfind_substr_cstr(const lite_string *const restrict s, const char 
  * @param cstr The C-string to be found.
  * @return The index of the first occurrence of the C-string in the string, or \p SIZE_MAX if the C-string was not found.
  */
-size_t string_find_substr_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
-    return string_find_substr_cstr_from(s, cstr, 0);
+size_t string_find_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+    return string_find_cstr_from(s, cstr, 0);
 }
 
 /**
@@ -906,7 +906,7 @@ size_t string_find_substr_cstr(const lite_string *const restrict s, const char *
  * @return True if the string contains the substring, false otherwise.
  */
 bool string_contains(const lite_string *const restrict s, const lite_string *const restrict sub) {
-    return string_find_substr(s, sub) != SIZE_MAX;
+    return string_find(s, sub) != SIZE_MAX;
 }
 
 /**
@@ -917,7 +917,7 @@ bool string_contains(const lite_string *const restrict s, const lite_string *con
  * @return True if the string contains the C-string, false otherwise.
  */
 bool string_contains_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
-    return string_find_substr_cstr(s, cstr) != SIZE_MAX;
+    return string_find_cstr(s, cstr) != SIZE_MAX;
 }
 
 /**
@@ -928,7 +928,7 @@ bool string_contains_cstr(const lite_string *const restrict s, const char *const
  * @return True if the string starts with the substring, false otherwise.
  */
 bool string_starts_with(const lite_string *const restrict s, const lite_string *const restrict sub) {
-    return string_find_substr(s, sub) == 0;
+    return string_find(s, sub) == 0;
 }
 
 /**
@@ -939,7 +939,7 @@ bool string_starts_with(const lite_string *const restrict s, const lite_string *
  * @return True if the string starts with the C-string, false otherwise.
  */
 bool string_starts_with_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
-    return string_find_substr_cstr(s, cstr) == 0;
+    return string_find_cstr(s, cstr) == 0;
 }
 
 /**
@@ -950,7 +950,7 @@ bool string_starts_with_cstr(const lite_string *const restrict s, const char *co
  * @return True if the string ends with the substring, false otherwise.
  */
 bool string_ends_with(const lite_string *const restrict s, const lite_string *const restrict sub) {
-    return s && sub && string_rfind_substr(s, sub) == s->size - sub->size;
+    return s && sub && string_rfind(s, sub) == s->size - sub->size;
 }
 
 /**
@@ -961,7 +961,7 @@ bool string_ends_with(const lite_string *const restrict s, const lite_string *co
  * @return True if the string ends with the C-string, false otherwise.
  */
 bool string_ends_with_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
-    return s && cstr && string_rfind_substr_cstr(s, cstr) == s->size - strlen(cstr);
+    return s && cstr && string_rfind_cstr(s, cstr) == s->size - strlen(cstr);
 }
 
 

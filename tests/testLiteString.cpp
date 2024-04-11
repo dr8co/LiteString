@@ -348,13 +348,13 @@ TEST(LiteStringTest, FunctionsDoNotCrashForNullptr) {
     EXPECT_EQ(string_find_first_of(nullptr, 'a'), SIZE_MAX);
     EXPECT_EQ(string_find_first_not_of(nullptr, 'a'), SIZE_MAX);
 
-    EXPECT_EQ(string_find_substr_from(nullptr, nullptr, 17), SIZE_MAX);
-    EXPECT_EQ(string_find_substr(nullptr, nullptr), SIZE_MAX);
+    EXPECT_EQ(string_find_from(nullptr, nullptr, 17), SIZE_MAX);
+    EXPECT_EQ(string_find(nullptr, nullptr), SIZE_MAX);
 
-    EXPECT_EQ(string_rfind_substr(nullptr, nullptr), SIZE_MAX);
-    EXPECT_EQ(string_find_substr_cstr_from(nullptr, nullptr, 1900), SIZE_MAX);
-    EXPECT_EQ(string_rfind_substr_cstr(nullptr, nullptr), SIZE_MAX);
-    EXPECT_EQ(string_find_substr_cstr(nullptr, nullptr), SIZE_MAX);
+    EXPECT_EQ(string_rfind(nullptr, nullptr), SIZE_MAX);
+    EXPECT_EQ(string_find_cstr_from(nullptr, nullptr, 1900), SIZE_MAX);
+    EXPECT_EQ(string_rfind_cstr(nullptr, nullptr), SIZE_MAX);
+    EXPECT_EQ(string_find_cstr(nullptr, nullptr), SIZE_MAX);
 
     EXPECT_FALSE(string_contains_char(nullptr, 'a'));
     EXPECT_FALSE(string_contains(nullptr, nullptr));
@@ -574,7 +574,7 @@ TEST(LiteStringTest, FindSubstrFromFindsCorrectIndex) {
     lite_string *sub = string_new();
     ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
     ASSERT_TRUE(string_append_cstr(sub, "World"));
-    EXPECT_EQ(string_find_substr_from(s, sub, 0), 7);
+    EXPECT_EQ(string_find_from(s, sub, 0), 7);
     string_free(s);
     string_free(sub);
 }
@@ -584,7 +584,7 @@ TEST(LiteStringTest, FindSubstrFromReturnsMaxSize) {
     lite_string *sub = string_new();
     ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
     ASSERT_TRUE(string_append_cstr(sub, "Planet"));
-    EXPECT_EQ(string_find_substr_from(s, sub, 0), SIZE_MAX);
+    EXPECT_EQ(string_find_from(s, sub, 0), SIZE_MAX);
     string_free(s);
     string_free(sub);
 }
@@ -594,7 +594,7 @@ TEST(LiteStringTest, FindSubstrFindsCorrectIndex) {
     lite_string *sub = string_new();
     ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
     ASSERT_TRUE(string_append_cstr(sub, "World"));
-    EXPECT_EQ(string_find_substr(s, sub), 7);
+    EXPECT_EQ(string_find(s, sub), 7);
     string_free(s);
     string_free(sub);
 }
@@ -604,7 +604,7 @@ TEST(LiteStringTest, RFindSubstrFindsCorrectIndex) {
     lite_string *sub = string_new();
     ASSERT_TRUE(string_append_cstr(s, "Hello, World! World!"));
     ASSERT_TRUE(string_append_cstr(sub, "World"));
-    EXPECT_EQ(string_rfind_substr(s, sub), 14);
+    EXPECT_EQ(string_rfind(s, sub), 14);
     string_free(s);
     string_free(sub);
 }
@@ -612,14 +612,14 @@ TEST(LiteStringTest, RFindSubstrFindsCorrectIndex) {
 TEST(LiteStringTest, FindSubstrCStrFromFindsCorrectIndex) {
     lite_string *s = string_new();
     ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
-    EXPECT_EQ(string_find_substr_cstr_from(s, "World", 0), 7);
+    EXPECT_EQ(string_find_cstr_from(s, "World", 0), 7);
     string_free(s);
 }
 
 TEST(LiteStringTest, RFindSubstrCStrFindsCorrectIndex) {
     lite_string *s = string_new();
     ASSERT_TRUE(string_append_cstr(s, "Hello, World! World!"));
-    EXPECT_EQ(string_rfind_substr_cstr(s, "World"), 14);
+    EXPECT_EQ(string_rfind_cstr(s, "World"), 14);
     string_free(s);
 }
 
@@ -646,14 +646,14 @@ TEST(LiteStringTest, ContainsCharReturnsFalseForEmptyString) {
 TEST(LiteStringTest, FindSubstrCStrReturnsCorrectIndex) {
     lite_string *s = string_new();
     ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
-    EXPECT_EQ(string_find_substr_cstr(s, "World"), 7);
+    EXPECT_EQ(string_find_cstr(s, "World"), 7);
     string_free(s);
 }
 
 TEST(LiteStringTest, FindSubstrCStrReturnsMaxSize) {
     lite_string *s = string_new();
     ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
-    EXPECT_EQ(string_find_substr_cstr(s, "Planet"), SIZE_MAX);
+    EXPECT_EQ(string_find_cstr(s, "Planet"), SIZE_MAX);
     string_free(s);
 }
 

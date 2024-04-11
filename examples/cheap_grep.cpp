@@ -36,7 +36,7 @@ int cheap_grep(const lite_string *pattern, std::istream &input, bool ignoreCase)
 
         if (ignoreCase) string_to_lower(lineCopy.get());
 
-        if (string_find_substr(lineCopy.get(), patternCopy.get()) != SIZE_MAX) {
+        if (string_find(lineCopy.get(), patternCopy.get()) != SIZE_MAX) {
             ret = 0;
             std::cout << line << '\n';
         }

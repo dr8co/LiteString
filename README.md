@@ -232,22 +232,22 @@ bool string_swap(lite_string *const restrict s1, lite_string *const restrict s2)
 ### Search
 
 ```c
-size_t string_find_substr_from(const lite_string *const restrict s, const lite_string *const restrict sub, const size_t start)
+size_t string_find_from(const lite_string *const restrict s, const lite_string *const restrict sub, const size_t start)
 // Finds the first occurrence of a substring in a string, starting from a specified index.
 
-size_t string_find_substr(const lite_string *const restrict s, const lite_string *const restrict sub)
+size_t string_find(const lite_string *const restrict s, const lite_string *const restrict sub)
 // Finds the first occurrence of a substring in a string.
 
-size_t string_rfind_substr(const lite_string *const restrict s, const lite_string *const restrict sub)
+size_t string_rfind(const lite_string *const restrict s, const lite_string *const restrict sub)
 // Finds the last occurrence of a substring in a string.
 
-size_t string_find_substr_cstr_from(const lite_string *const restrict s, const char *const restrict cstr, const size_t start)
+size_t string_find_cstr_from(const lite_string *const restrict s, const char *const restrict cstr, const size_t start)
 // Finds the first occurrence of a C-string in a string, starting from a specified index.
 
-size_t string_rfind_substr_cstr(const lite_string *const restrict s, const char *const restrict cstr)
+size_t string_rfind_cstr(const lite_string *const restrict s, const char *const restrict cstr)
 // Finds the last occurrence of a C-string in a string.
 
-size_t string_find_substr_cstr(const lite_string *const restrict s, const char *const restrict cstr)
+size_t string_find_cstr(const lite_string *const restrict s, const char *const restrict cstr)
 // Finds the first occurrence of a C-string in a string.
 
 size_t string_find_last_of(const lite_string *const restrict s, const char c)
