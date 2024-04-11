@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include <cstdlib>
 #include "../lite_string.h"
 
 TEST(LiteStringTest, NewCreatesEmptyString) {
@@ -211,7 +210,6 @@ TEST(LiteStringTest, CStrReturnsCorrectCStr) {
     ASSERT_EQ(cstr[3], '\0');
 
     ASSERT_STREQ(cstr, "abc");
-    free(cstr);
     string_free(s);
 }
 
@@ -438,7 +436,6 @@ TEST(LiteStringTest, InsertRangeInsertsAtValidIndex) {
     EXPECT_STREQ(cstr, "Hello");
     string_free(s);
     string_free(sub);
-    free((void *) cstr);
 }
 
 TEST(LiteStringTest, InsertRangeDoesNotInsertAtInvalidIndex) {
@@ -460,7 +457,6 @@ TEST(LiteStringTest, InsertRangeInsertsInMiddleOfString) {
     EXPECT_STREQ(cstr, "Hello");
     string_free(s);
     string_free(sub);
-    free((void *) cstr);
 }
 
 TEST(LiteStringTest, InsertRangeDoesNotInsertNullSubstring) {
@@ -508,7 +504,6 @@ TEST(LiteStringTest, InsertStringInsertsInMiddleOfString) {
     EXPECT_STREQ(cstr, "Hello");
     string_free(s);
     string_free(sub);
-    free((void *) cstr);
 }
 
 TEST(LiteStringTest, InsertStringDoesNotInsertNullSubstring) {
