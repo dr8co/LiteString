@@ -231,7 +231,11 @@ TEST(LiteStringTest, EmptyReturnsFalseForNonEmptyString) {
 TEST(LiteStringTest, EmptyReturnsTrueForEmptyString) {
     lite_string *s = string_new();
     EXPECT_TRUE(string_empty(s));
+    lite_string *s2 = string_new_cstr("abcd");
+    string_clear(s2);
+    EXPECT_TRUE(string_empty(s2));
     string_free(s);
+    string_free(s2);
 }
 
 TEST(LiteStringTest, AtReturnsCorrectValue) {
@@ -251,28 +255,18 @@ TEST(LiteStringTest, EraseRemovesCorrectValue) {
 }
 
 TEST(LiteStringTest, CompareWorksCorrectly) {
-    lite_string *s1 = string_new();
-    lite_string *s2 = string_new();
-    ASSERT_TRUE(string_push_back(s1, 'a'));
-    ASSERT_TRUE(string_push_back(s2, 'a'));
+    lite_string *s1 = string_new_cstr("abc");
+    lite_string *s2 = string_new_cstr("abc");
     EXPECT_TRUE(string_compare(s1, s2));
     string_free(s1);
     string_free(s2);
 }
 
 TEST(LiteStringTest, SwapSwapsContentsCorrectly) {
-    lite_string *s1 = string_new();
-    lite_string *s2 = string_new();
+    lite_string *s1 = string_new_cstr("abcz");
+    lite_string *s2 = string_new_cstr("def");
 
-    ASSERT_TRUE(string_push_back(s1, 'a'));
-    ASSERT_TRUE(string_push_back(s1, 'b'));
-    ASSERT_TRUE(string_push_back(s1, 'c'));
-    ASSERT_TRUE(string_push_back(s1, 'z'));
     const size_t size1 = string_length(s1);
-
-    ASSERT_TRUE(string_push_back(s2, 'd'));
-    ASSERT_TRUE(string_push_back(s2, 'e'));
-    ASSERT_TRUE(string_push_back(s2, 'f'));
     const size_t size2 = string_length(s2);
 
     ASSERT_TRUE(string_swap(s1, s2));
@@ -303,8 +297,7 @@ TEST(LiteStringTest, SwapHandlesEmptyStrings) {
 }
 
 TEST(LiteStringTest, SwapReturnsFalseForNullptr) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_push_back(s, 'a'));
+    lite_string *s = string_new_cstr("abc");
 
     EXPECT_FALSE(string_swap(s, nullptr));
     EXPECT_FALSE(string_swap(nullptr, s));
@@ -400,9 +393,7 @@ TEST(LiteStringTest, InsertCStrResizesStringIfNeeded) {
 }
 
 TEST(LiteStringTest, BackReturnsLastCharacterForNonEmptyString) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_push_back(s, 'H'));
-    ASSERT_TRUE(string_push_back(s, 'i'));
+    lite_string *s = string_new_cstr("Hi");
     EXPECT_EQ(string_back(s), 'i');
     string_free(s);
 }
@@ -414,9 +405,7 @@ TEST(LiteStringTest, BackReturnsNullCharacterForEmptyString) {
 }
 
 TEST(LiteStringTest, FrontReturnsFirstCharacterForNonEmptyString) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_push_back(s, 'H'));
-    ASSERT_TRUE(string_push_back(s, 'i'));
+    lite_string *s = string_new_cstr("Hi");
     EXPECT_EQ(string_front(s), 'H');
     string_free(s);
 }
@@ -429,8 +418,7 @@ TEST(LiteStringTest, FrontReturnsNullCharacterForEmptyString) {
 
 TEST(LiteStringTest, InsertRangeInsertsAtValidIndex) {
     lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(sub, "Hello"));
+    lite_string *sub = string_new_cstr("Hello");
     ASSERT_TRUE(string_insert_range(s, sub, 0, 5));
     const char *cstr = string_cstr(s);
     EXPECT_STREQ(cstr, "Hello");
@@ -440,18 +428,15 @@ TEST(LiteStringTest, InsertRangeInsertsAtValidIndex) {
 
 TEST(LiteStringTest, InsertRangeDoesNotInsertAtInvalidIndex) {
     lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(sub, "Hello"));
+    lite_string *sub = string_new_cstr("Hello");
     EXPECT_FALSE(string_insert_range(s, sub, 5, 5));
     string_free(s);
     string_free(sub);
 }
 
 TEST(LiteStringTest, InsertRangeInsertsInMiddleOfString) {
-    lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Helo"));
-    ASSERT_TRUE(string_append_cstr(sub, "l"));
+    lite_string *s = string_new_cstr("Helo");
+    lite_string *sub = string_new_cstr("l");
     ASSERT_TRUE(string_insert_range(s, sub, 2, 1));
     const char *cstr = string_cstr(s);
     EXPECT_STREQ(cstr, "Hello");
@@ -467,8 +452,7 @@ TEST(LiteStringTest, InsertRangeDoesNotInsertNullSubstring) {
 
 TEST(LiteStringTest, InsertRangeResizesStringIfNeeded) {
     lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(sub, "Hello, this is a long string that will require resizing"));
+    lite_string *sub = string_new_cstr("Hello, this is a long string that will require resizing");
     ASSERT_TRUE(string_insert_range(s, sub, 0, sub->size));
     EXPECT_TRUE(string_compare(s, sub));
     string_free(s);
@@ -477,8 +461,7 @@ TEST(LiteStringTest, InsertRangeResizesStringIfNeeded) {
 
 TEST(LiteStringTest, InsertStringInsertsAtValidIndex) {
     lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(sub, "Hello"));
+    lite_string *sub = string_new_cstr("Hello");
     ASSERT_TRUE(string_insert_string(s, sub, 0));
     EXPECT_TRUE(string_compare_cstr(s, "Hello"));
     string_free(s);
@@ -487,18 +470,15 @@ TEST(LiteStringTest, InsertStringInsertsAtValidIndex) {
 
 TEST(LiteStringTest, InsertStringDoesNotInsertAtInvalidIndex) {
     lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(sub, "Hello"));
+    lite_string *sub = string_new_cstr("Hello");
     EXPECT_FALSE(string_insert_string(s, sub, 5));
     string_free(s);
     string_free(sub);
 }
 
 TEST(LiteStringTest, InsertStringInsertsInMiddleOfString) {
-    lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Helo"));
-    ASSERT_TRUE(string_append_cstr(sub, "l"));
+    lite_string *s = string_new_cstr("Helo");
+    lite_string *sub = string_new_cstr("l");
     ASSERT_TRUE(string_insert_string(s, sub, 2));
     const char *cstr = string_cstr(s);
     EXPECT_STREQ(cstr, "Hello");
@@ -514,8 +494,7 @@ TEST(LiteStringTest, InsertStringDoesNotInsertNullSubstring) {
 
 TEST(LiteStringTest, InsertStringResizesStringIfNeeded) {
     lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(sub, "Hello, this is a long string that will require resizing"));
+    lite_string *sub = string_new_cstr("Hello, this is a long string that will require resizing");
     ASSERT_TRUE(string_insert_string(s, sub, 0));
     EXPECT_TRUE(string_compare(s, sub));
     string_free(s);
@@ -523,111 +502,93 @@ TEST(LiteStringTest, InsertStringResizesStringIfNeeded) {
 }
 
 TEST(LiteStringTest, FindLastOfReturnsCorrectIndex) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
+    lite_string *s = string_new_cstr("Hello, World!");
     EXPECT_EQ(string_find_last_of(s, 'o'), 8);
     string_free(s);
 }
 
 TEST(LiteStringTest, FindLastOfReturnsMaxSize) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
+    lite_string *s = string_new_cstr("Hello, World!");
     EXPECT_EQ(string_find_last_of(s, 'z'), SIZE_MAX);
     string_free(s);
 }
 
 TEST(LiteStringTest, FindLastNotOfReturnsCorrectIndex) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
+    lite_string *s = string_new_cstr("Hello, World!");
     EXPECT_EQ(string_find_last_not_of(s, '!'), 11);
     string_free(s);
 }
 
 TEST(LiteStringTest, FindFirstFromReturnsCorrectIndex) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
+    lite_string *s = string_new_cstr("Hello, World!");
     EXPECT_EQ(string_find_first_from(s, 'o', 5), 8);
     string_free(s);
 }
 
 TEST(LiteStringTest, FindFirstOfReturnsCorrectIndex) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
+    lite_string *s = string_new_cstr("Hello, World!");
     EXPECT_EQ(string_find_first_of(s, 'o'), 4);
     string_free(s);
 }
 
 TEST(LiteStringTest, FindFirstNotOfReturnsCorrectIndex) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
+    lite_string *s = string_new_cstr("Hello, World!");
     EXPECT_EQ(string_find_first_not_of(s, 'H'), 1);
     string_free(s);
 }
 
 TEST(LiteStringTest, FindSubstrFromFindsCorrectIndex) {
-    lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
-    ASSERT_TRUE(string_append_cstr(sub, "World"));
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *sub = string_new_cstr("World");
     EXPECT_EQ(string_find_from(s, sub, 0), 7);
     string_free(s);
     string_free(sub);
 }
 
 TEST(LiteStringTest, FindSubstrFromReturnsMaxSize) {
-    lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
-    ASSERT_TRUE(string_append_cstr(sub, "Planet"));
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *sub = string_new_cstr("Planet");
     EXPECT_EQ(string_find_from(s, sub, 0), SIZE_MAX);
     string_free(s);
     string_free(sub);
 }
 
 TEST(LiteStringTest, FindSubstrFindsCorrectIndex) {
-    lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
-    ASSERT_TRUE(string_append_cstr(sub, "World"));
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *sub = string_new_cstr("World");
     EXPECT_EQ(string_find(s, sub), 7);
     string_free(s);
     string_free(sub);
 }
 
 TEST(LiteStringTest, RFindSubstrFindsCorrectIndex) {
-    lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World! World!"));
-    ASSERT_TRUE(string_append_cstr(sub, "World"));
+    lite_string *s = string_new_cstr("Hello, World! World!");
+    lite_string *sub = string_new_cstr("World");
     EXPECT_EQ(string_rfind(s, sub), 14);
     string_free(s);
     string_free(sub);
 }
 
 TEST(LiteStringTest, FindSubstrCStrFromFindsCorrectIndex) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
+    lite_string *s = string_new_cstr("Hello, World!");
     EXPECT_EQ(string_find_cstr_from(s, "World", 0), 7);
     string_free(s);
 }
 
 TEST(LiteStringTest, RFindSubstrCStrFindsCorrectIndex) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World! World!"));
+    lite_string *s = string_new_cstr("Hello, World! World!");
     EXPECT_EQ(string_rfind_cstr(s, "World"), 14);
     string_free(s);
 }
 
 TEST(LiteStringTest, ContainsCharReturnsTrueWhenCharExists) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello"));
+    lite_string *s = string_new_cstr("Hello");
     EXPECT_TRUE(string_contains_char(s, 'e'));
     string_free(s);
 }
 
 TEST(LiteStringTest, ContainsCharReturnsFalseWhenCharDoesNotExist) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello"));
+    lite_string *s = string_new_cstr("Hello");
     EXPECT_FALSE(string_contains_char(s, 'z'));
     string_free(s);
 }
@@ -639,120 +600,100 @@ TEST(LiteStringTest, ContainsCharReturnsFalseForEmptyString) {
 }
 
 TEST(LiteStringTest, FindSubstrCStrReturnsCorrectIndex) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
+    lite_string *s = string_new_cstr("Hello, World!");
     EXPECT_EQ(string_find_cstr(s, "World"), 7);
     string_free(s);
 }
 
 TEST(LiteStringTest, FindSubstrCStrReturnsMaxSize) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
+    lite_string *s = string_new_cstr("Hello, World!");
     EXPECT_EQ(string_find_cstr(s, "Planet"), SIZE_MAX);
     string_free(s);
 }
 
 TEST(LiteStringTest, ContainsReturnsTrueWhenSubstringExists) {
-    lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
-    ASSERT_TRUE(string_append_cstr(sub, "World"));
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *sub = string_new_cstr("World");
     EXPECT_TRUE(string_contains(s, sub));
     string_free(s);
     string_free(sub);
 }
 
 TEST(LiteStringTest, ContainsReturnsFalseWhenSubstringDoesNotExist) {
-    lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
-    ASSERT_TRUE(string_append_cstr(sub, "Planet"));
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *sub = string_new_cstr("Planet");
     EXPECT_FALSE(string_contains(s, sub));
     string_free(s);
     string_free(sub);
 }
 
 TEST(LiteStringTest, StartsWithReturnsTrueWhenSubstringIsPrefix) {
-    lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
-    ASSERT_TRUE(string_append_cstr(sub, "Hello"));
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *sub = string_new_cstr("Hello");
     EXPECT_TRUE(string_starts_with(s, sub));
     string_free(s);
     string_free(sub);
 }
 
 TEST(LiteStringTest, StartsWithReturnsFalseWhenSubstringIsNotPrefix) {
-    lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
-    ASSERT_TRUE(string_append_cstr(sub, "World"));
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *sub = string_new_cstr("World");
     EXPECT_FALSE(string_starts_with(s, sub));
     string_free(s);
     string_free(sub);
 }
 
 TEST(LiteStringTest, EndsWithReturnsTrueWhenSubstringIsSuffix) {
-    lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
-    ASSERT_TRUE(string_append_cstr(sub, "World!"));
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *sub = string_new_cstr("World!");
     EXPECT_TRUE(string_ends_with(s, sub));
     string_free(s);
     string_free(sub);
 }
 
 TEST(LiteStringTest, EndsWithReturnsFalseWhenSubstringIsNotSuffix) {
-    lite_string *s = string_new();
-    lite_string *sub = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
-    ASSERT_TRUE(string_append_cstr(sub, "Hello"));
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *sub = string_new_cstr("Hello");
     EXPECT_FALSE(string_ends_with(s, sub));
     string_free(s);
     string_free(sub);
 }
 
 TEST(LiteStringTest, EndsWithCStrReturnsTrueWhenCStrIsSuffix) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
+    lite_string *s = string_new_cstr("Hello, World!");
     EXPECT_TRUE(string_ends_with_cstr(s, "World!"));
     string_free(s);
 }
 
 TEST(LiteStringTest, EndsWithCStrReturnsFalseWhenCStrIsNotSuffix) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
+    lite_string *s = string_new_cstr("Hello, World!");
     EXPECT_FALSE(string_ends_with_cstr(s, "Hello"));
     string_free(s);
 }
 
 TEST(LiteStringTest, ShrinkReducesSizeCorrectly) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
+    lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_TRUE(string_shrink(s, 5));
     EXPECT_EQ(s->size, 5);
     string_free(s);
 }
 
 TEST(LiteStringTest, ShrinkDoesNothingWhenNewSizeIsGreater) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
+    lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_FALSE(string_shrink(s, 20));
     EXPECT_EQ(s->size, 13);
     string_free(s);
 }
 
 TEST(LiteStringTest, ShrinkToFitReducesCapacityToSize) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello, World!"));
+    lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_TRUE(string_shrink_to_fit(s));
     EXPECT_EQ(s->capacity, s->size);
     string_free(s);
 }
 
 TEST(LiteStringTest, ShrinkToFitDoesNothingWhenSizeIsCapacity) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_append_cstr(s, "Hello"));
+    lite_string *s = string_new_cstr("Hello");
     ASSERT_TRUE(string_shrink_to_fit(s));
     EXPECT_EQ(s->capacity, s->size);
     string_free(s);
@@ -760,8 +701,7 @@ TEST(LiteStringTest, ShrinkToFitDoesNothingWhenSizeIsCapacity) {
 
 // Test copying a non-empty string to a buffer
 TEST(LiteStringTest, CopyingStringToBufferStoresCorrectValue) {
-    lite_string *s = string_new();
-    string_append_cstr(s, "Hello, World!");
+    lite_string *s = string_new_cstr("Hello, World!");
     char buf[50];
     ASSERT_TRUE(string_copy_buffer(s, buf));
     ASSERT_STREQ(buf, "Hello, World!");
@@ -778,8 +718,7 @@ TEST(LiteStringTest, CopyingEmptyStringToBufferStoresNullCharacter) {
 
 // Test copying a string to a null buffer
 TEST(LiteStringTest, CopyingStringToNullBufferFails) {
-    lite_string *s = string_new();
-    string_append_cstr(s, "Hello, World!");
+    lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_FALSE(string_copy_buffer(s, nullptr));
     string_free(s);
 }
@@ -792,9 +731,8 @@ TEST(LiteStringTest, CopyingNullStringToBufferFails) {
 
 // Copying a non-empty string to another string
 TEST(LiteStringTest, CopyingStringStoresCorrectValue) {
-    lite_string *src = string_new();
+    lite_string *src = string_new_cstr("Hello, World!");
     lite_string *dest = string_new();
-    string_append_cstr(src, "Hello, World!");
     ASSERT_TRUE(string_copy(src, dest));
     ASSERT_TRUE(string_compare(src, dest));
     string_free(src);
@@ -813,8 +751,7 @@ TEST(LiteStringTest, CopyingEmptyStringStoresCorrectValue) {
 
 // Copying a string to a null string
 TEST(LiteStringTest, CopyingStringToNullStringFails) {
-    lite_string *src = string_new();
-    string_append_cstr(src, "Hello, World!");
+    lite_string *src = string_new_cstr("Hello, World!");
     ASSERT_FALSE(string_copy(src, nullptr));
     string_free(src);
 }
@@ -828,8 +765,7 @@ TEST(LiteStringTest, CopyingNullStringFails) {
 
 // Comparing a string with a C-string for equality, ignoring case
 TEST(LiteStringTest, CaseCompareCstrReturnsCorrectValue) {
-    lite_string *s = string_new();
-    string_append_cstr(s, "Hello, World!");
+    lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_TRUE(string_case_compare_cstr(s, "HELLO, WORLD!"));
     ASSERT_FALSE(string_case_compare_cstr(s, "HELLO, UNIVERSE!"));
     string_free(s);
@@ -837,8 +773,7 @@ TEST(LiteStringTest, CaseCompareCstrReturnsCorrectValue) {
 
 // Comparing a string with a null C-string
 TEST(LiteStringTest, CaseCompareWithNullCStrReturnsFalse) {
-    lite_string *s = string_new();
-    string_append_cstr(s, "Hello, World!");
+    lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_FALSE(string_case_compare_cstr(s, nullptr));
     string_free(s);
 }
@@ -850,8 +785,7 @@ TEST(LiteStringTest, CaseCompareCstrNullStringReturnsFalse) {
 
 // String contains the C-string
 TEST(LiteStringTest, ContainsCstrReturnsCorrectValue) {
-    lite_string *s = string_new();
-    string_append_cstr(s, "Hello, World!");
+    lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_TRUE(string_contains_cstr(s, "World"));
     ASSERT_FALSE(string_contains_cstr(s, "Universe"));
     string_free(s);
@@ -864,8 +798,7 @@ TEST(LiteStringTest, ContainsCstrNullReturnsFalse) {
 
 // C-string is null
 TEST(LiteStringTest, ContainsCstrNullCStrReturnsFalse) {
-    lite_string *s = string_new();
-    string_append_cstr(s, "Hello, World!");
+    lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_FALSE(string_contains_cstr(s, nullptr));
     string_free(s);
 }
@@ -884,8 +817,7 @@ TEST(LiteStringTest, ContainsCstrEmptyStringReturnsFalse) {
 
 // C-string is empty
 TEST(LiteStringTest, ContainsCstrEmptyCStrReturnsTrue) {
-    lite_string *s = string_new();
-    string_append_cstr(s, "Hello, World!");
+    lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_TRUE(string_contains_cstr(s, ""));
     string_free(s);
 }
@@ -899,8 +831,7 @@ TEST(LiteStringTest, ContainsCstrEmptyStringAndCStrReturnsTrue) {
 
 // String starts with the C-string
 TEST(LiteStringTest, StartsWithCstrReturnsCorrectValue) {
-    lite_string *s = string_new();
-    string_append_cstr(s, "Hello, World!");
+    lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_TRUE(string_starts_with_cstr(s, "Hello"));
     ASSERT_FALSE(string_starts_with_cstr(s, "World"));
     string_free(s);
@@ -913,8 +844,7 @@ TEST(LiteStringTest, StartsWithCstrNullReturnsFalse) {
 
 // C-string is null
 TEST(LiteStringTest, StartsWithCstrNullCStrReturnsFalse) {
-    lite_string *s = string_new();
-    string_append_cstr(s, "Hello, World!");
+    lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_FALSE(string_starts_with_cstr(s, nullptr));
     string_free(s);
 }
@@ -933,8 +863,7 @@ TEST(LiteStringTest, StartsWithCstrEmptyStringReturnsFalse) {
 
 // C-string is empty
 TEST(LiteStringTest, StartsWithCstrEmptyCStrReturnsTrue) {
-    lite_string *s = string_new();
-    string_append_cstr(s, "Hello, World!");
+    lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_TRUE(string_starts_with_cstr(s, ""));
     string_free(s);
 }
@@ -948,13 +877,9 @@ TEST(LiteStringTest, StartsWithCstrEmptyStringAndCStrReturnsTrue) {
 
 // Comparing two identical strings, ignoring case
 TEST(LiteStringTest, CaseCompareReturnsCorrectValue) {
-    lite_string *s1 = string_new();
-    lite_string *s2 = string_new();
-    lite_string *s3 = string_new();
-
-    string_append_cstr(s1, "Hello, World!");
-    string_append_cstr(s2, "HELLO, WORLD!");
-    string_append_cstr(s3, "HELLO, UNIVERSE!");
+    lite_string *s1 = string_new_cstr("Hello, World!");
+    lite_string *s2 = string_new_cstr("HELLO, WORLD!");
+    lite_string *s3 = string_new_cstr("HELLO, UNIVERSE!");
 
     ASSERT_TRUE(string_case_compare(s1, s2));
     ASSERT_FALSE(string_case_compare(s1, s3));
@@ -965,11 +890,10 @@ TEST(LiteStringTest, CaseCompareReturnsCorrectValue) {
 
 // Comparing a string with a null string, ignoring case
 TEST(LiteStringTest, CaseCompareNullStringReturnsFalse) {
-    lite_string *s1 = string_new();
-    string_append_cstr(s1, "Hello, World!");
-    ASSERT_FALSE(string_case_compare(s1, nullptr));
-    ASSERT_FALSE(string_case_compare(nullptr, s1));
-    string_free(s1);
+    lite_string *s = string_new_cstr("Hello, World!");
+    ASSERT_FALSE(string_case_compare(s, nullptr));
+    ASSERT_FALSE(string_case_compare(nullptr, s));
+    string_free(s);
 }
 
 // Comparing two null strings, ignoring case
