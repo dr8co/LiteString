@@ -19,13 +19,51 @@ LiteString is written in C and can be used in both C and C++ projects.
 
 ## Building
 
-A C23 compiler (such as [GCC 13](https://gcc.gnu.org/) or [Clang 18](https://clang.llvm.org/))
-is required to build the library.
+### Prerequisites
+
+- A C23 compiler (such as [GCC 13](https://gcc.gnu.org/) or [Clang 18](https://clang.llvm.org/))
+- [CMake 3.27](https://cmake.org/) or later (optional)
+- [Ninja](https://ninja-build.org/) (optional)
+
+### Building with CMake (Recommended)
+
+To build the library using CMake, run the following commands:
+
+```bash
+# Clone the repository or download the source code.
+git clone https://github.com/dr8co/LiteString.git
+
+# Change to the LiteString directory.
+cd LiteString
+
+# Switch to the main branch.
+git checkout main
+
+# Create a build directory
+mkdir build
+
+# Configure the project
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc -G Ninja
+
+# Build the library
+cmake --build build -j 4
+```
+
+Replace `Ninja` with `"Unix Makefiles"` or another generator if Ninja is not available.
+The `-G` option can be omitted to use the default generator.
+
+The library will be built as a static library named `libLiteString.a`, in the `build` directory.
+
+### Building Manually
 
 To build the library, run the following commands:
 
-[//]: # (TODO: Complete the build instructions.)
+```bash
+gcc -c -O3 -std=c23 -o lite_string.o lite_string.c
+ar rcs libLiteString.a lite_string.o
+```
 
+`clang` can be used instead of `gcc` to compile the source code with Clang.
 
 ## Usage
 
@@ -38,12 +76,19 @@ To use the library, include the header file in your source code:
 Compile the source code and link it with the library:
 
 ```bash
-gcc example.c -o example -llite_string
+# C
+gcc -std=c2x -O3 -o example example.c /path/to/libLiteString.a
+# C++
+g++ -std=c++20 -O3 -o example example.cpp /path/to/libLiteString.a
 ```
 
-Projects using CMake can link the library with the following commands:
+Projects using CMake can link the library through the `target_link_libraries` command:
 
-[//]: # (TODO: Add CMake instructions.)
+```cmake
+target_link_libraries(example /path/to/libLiteString.a)
+```
+
+See the [CMakeLists.txt](./examples/CMakeLists.txt) file in the `examples` directory for an example.
 
 ## API
 
