@@ -245,6 +245,37 @@ char string_front(const lite_string *const restrict s) {
 }
 
 /**
+ * @brief Erases a range of characters from a string.
+ *
+ * @param s A pointer to the string from which the characters will be removed.
+ * @param start The starting index of the range to be removed.
+ * @param count The number of characters to be removed.
+ * @return true if the characters were successfully removed, false otherwise.
+ */
+bool string_erase_range(lite_string *const restrict s, const size_t start, const size_t count) {
+    if (s && start < s->size) {
+        if (count == 0) return true;
+#if (__GNUC__ || __clang__) && __has_builtin(__builtin_add_overflow)
+        size_t end;
+        if (!__builtin_uaddl_overflow(start, count, &end) && end <= s->size) {
+#else
+        if (count < s->size && start + count <= s->size) {
+#endif
+            // Copy the characters after the range to overwrite the characters to be removed
+            memmove(s->data + start * sizeof(char), s->data + (start + count) * sizeof(char),
+                    (s->size - start - count) * sizeof(char));
+            s->size -= count;
+
+            // Fill the remaining space with null characters
+            memset(s->data + s->size, '\0', s->capacity - s->size);
+            return true;
+        }
+    }
+    return false;
+}
+
+
+/**
  * @brief Removes the character at a given index in the string.
  *
  * @param s A pointer to the string.
@@ -447,7 +478,7 @@ string_insert_string(lite_string *const restrict s, const lite_string *const res
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
 [[nodiscard]] lite_string *string_concat(const lite_string *const restrict s1,
-                           const lite_string *const restrict s2) {
+                                         const lite_string *const restrict s2) {
     if (s1 && s2) {
         lite_string *s = string_new();
         if (s) {
@@ -756,7 +787,7 @@ bool string_contains_char(const lite_string *const restrict s, const char c) {
  * @return The index of the first occurrence of the substring in the string, or \p SIZE_MAX if the substring was not found.
  */
 size_t string_find_from(const lite_string *const restrict s, const lite_string *const restrict sub,
-                               const size_t start) {
+                        const size_t start) {
     if (s && sub && start < s->size) {
         if (sub->size == 0) return start;
         if (sub->size > s->size) return SIZE_MAX;
@@ -825,7 +856,7 @@ size_t string_rfind(const lite_string *const restrict s, const lite_string *cons
  * @return The index of the first occurrence of the C-string in the string, or \p SIZE_MAX if the C-string was not found.
  */
 size_t string_find_cstr_from(const lite_string *const restrict s, const char *const restrict cstr,
-                                    const size_t start) {
+                             const size_t start) {
     // The string and the C-string must be valid
     if (s && cstr) {
         const size_t len = strlen(cstr);
@@ -1013,4 +1044,132 @@ void string_to_lower(const lite_string *const restrict s) {
                 s->data[i] += 32;
         }
     }
+}
+
+/**
+ * @brief Converts all the lowercase characters in a string to uppercase.
+ *
+ * @param s A pointer to the string to be converted to uppercase.
+ */
+void string_to_upper(const lite_string *const restrict s) {
+    if (s) {
+        for (size_t i = 0; i < s->size; ++i) {
+            if (s->data[i] >= 'a' && s->data[i] <= 'z')
+                s->data[i] -= 32;
+        }
+    }
+}
+
+/**
+ * @brief Converts a string to title case.
+ *
+ * @param s A pointer to the string to be converted to title case.
+ */
+void string_to_title(const lite_string *const restrict s) {
+    if (s) {
+        if (s->data[0] >= 'a' && s->data[0] <= 'z')
+            s->data[0] -= 32;
+
+        // Iterate over the rest of the string
+        for (size_t i = 1; i < s->size; ++i) {
+            if (s->data[i] == ' ' && s->data[i + 1] >= 'a' && s->data[i + 1] <= 'z')
+                s->data[i + 1] -= 32;
+        }
+    }
+}
+
+/**
+ * @brief Replaces all occurrences of a substring in a string with another substring.
+ *
+ * @param s A pointer to the string where the substrings will be replaced.
+ * @param old_sub A pointer to the substring to be replaced.
+ * @param new_sub A pointer to the substring that will replace the old substring.
+ * @return true if the substrings were successfully replaced, false otherwise.
+ */
+bool string_replace(lite_string *const restrict s, const lite_string *const restrict old_sub,
+                    const lite_string *const restrict new_sub) {
+    if (s && old_sub && new_sub) {
+        if (old_sub->size == 0) return true;
+        if (old_sub->size > s->size) return false;
+
+        size_t count = 0;
+        size_t start = 0;
+        while ((start = string_find_from(s, old_sub, start)) != SIZE_MAX) {
+            if (string_erase_range(s, start, old_sub->size)) {
+                if (!string_insert_range(s, new_sub, start, new_sub->size)) return false;
+                start += new_sub->size;
+                ++count;
+            }
+        }
+        return count > 0;
+    }
+    return false;
+}
+
+
+/**
+ * @brief Replaces all occurrences of a character in a string with another character.
+ *
+ * @param s A pointer to the string where the characters will be replaced.
+ * @param old_char The character to be replaced.
+ * @param new_char The character to replace the old character.
+ */
+void string_replace_char(const lite_string *const restrict s, const char old_char, const char new_char) {
+    if (s && old_char != new_char) {
+        for (size_t i = 0; i < s->size; ++i) {
+            if (s->data[i] == old_char)
+                s->data[i] = new_char;
+        }
+    }
+}
+
+/**
+ * @brief Replaces all occurrences of a C-string in a string with another C-string.
+ *
+ * @param s A pointer to the string where the C-strings will be replaced.
+ * @param old_cstr The C-string to be replaced.
+ * @param new_cstr The C-string that will replace the old C-string.
+ * @return true if the C-strings were successfully replaced, false otherwise.
+ */
+bool string_replace_cstr(lite_string *const restrict s, const char *const restrict old_cstr,
+                         const char *const restrict new_cstr) {
+    if (s && old_cstr && new_cstr) {
+        const size_t old_len = strlen(old_cstr);
+        const size_t new_len = strlen(new_cstr);
+        if (old_len == 0) return true;
+        if (old_len > s->size) return false;
+
+        size_t count = 0;
+        size_t start = 0;
+        while ((start = string_find_cstr_from(s, old_cstr, start)) != SIZE_MAX) {
+            if (string_erase_range(s, start, old_len)) {
+                if (!string_insert_cstr_range(s, new_cstr, start, new_len)) return false;
+                start += new_len;
+                ++count;
+            }
+        }
+        return count > 0;
+    }
+    return false;
+}
+
+/**
+ * @brief Duplicates a string.
+ *
+ * @param s A pointer to the string to be duplicated.
+ * @return A pointer to the new string, or NULL if the duplication failed.
+ *
+ * @note The returned pointer must be freed by the caller, using the \p string_free() function.
+ */
+lite_string *string_duplicate(const lite_string *const restrict s) {
+    if (s) {
+        lite_string *dup = string_new();
+        if (dup) {
+            if (string_copy(s, dup)) {
+                return dup;
+            }
+            string_free(dup);
+        }
+    }
+    return nullptr;
 }

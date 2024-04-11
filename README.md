@@ -10,6 +10,8 @@ with a focus on simplicity, performance, and ease of use.
 
 LiteString is written in C and can be used in both C and C++ projects.
 
+The current implementation does not support Unicode or multibyte characters.
+
 ## Features
 
 - Simple and easy to use
@@ -129,6 +131,9 @@ A lite_string object is allocated on the heap and must be freed when no longer n
 lite_string *string_new()
 // Creates a new string with an initial capacity of 16.
 
+lite_string *string_new_cstr(const char *restrict cstr);
+// Creates a new string from a C-string.
+
 void string_free(lite_string *const restrict s)
 // Frees the memory used by a string.
 ```
@@ -195,6 +200,9 @@ bool string_insert_range(lite_string *const restrict s, const lite_string *const
 bool string_erase(lite_string *const restrict s, const size_t index)
 // Removes the character at a given index in the string.
 
+bool string_erase_range(lite_string *restrict s, size_t start, size_t count)
+// Removes a specified number of characters from a string, starting from a specified index.
+
 bool string_push_back(lite_string *const restrict s, const char c)
 // Appends a character to the end of a string.
 
@@ -227,6 +235,30 @@ bool string_copy(const lite_string *const restrict src, lite_string *const restr
 
 bool string_swap(lite_string *const restrict s1, lite_string *const restrict s2)
 // Swaps the contents of two strings.
+
+bool string_replace(lite_string *restrict s, const lite_string *restrict old_sub,
+                    const lite_string *restrict new_sub)
+// Replaces all occurrences of a substring in a string with another substring.
+
+void string_replace_char(const lite_string *restrict s, char old_char, char new_char)
+// Replaces all occurrences of a character in a string with another character.
+
+bool string_replace_cstr(lite_string *restrict s, const char *restrict old_cstr,
+                         const char *restrict new_cstr)
+// Replaces all occurrences of a C-string in a string with another C-string.
+```
+
+### Conversion
+
+```c
+void string_to_lower(const lite_string *restrict s);
+// Converts a string to lowercase.
+
+void string_to_upper(const lite_string *restrict s);
+// Converts a string to uppercase.
+
+void string_to_title(const lite_string *restrict s);
+// Converts a string to title case.
 ```
 
 ### Search

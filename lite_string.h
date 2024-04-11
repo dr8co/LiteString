@@ -52,8 +52,8 @@ extern "C" {
  * When the size reaches the capacity, the string is resized to a larger capacity to accommodate more characters.
  */
 struct lite_string {
-    char *data;      ///< A pointer to the character data.
-    size_t size;     ///< The number of characters in the string, not including the null character.
+    char *data; ///< A pointer to the character data.
+    size_t size; ///< The number of characters in the string, not including the null character.
     size_t capacity; ///< The total number of characters that the string can hold.
 };
 
@@ -168,8 +168,23 @@ bool string_shrink_to_fit(lite_string *restrict s);
 
 void string_to_lower(const lite_string *restrict s);
 
+void string_to_upper(const lite_string *restrict s);
+
+void string_to_title(const lite_string *restrict s);
+
 [[nodiscard]] lite_string *string_new_cstr(const char *restrict cstr);
 
+bool string_replace(lite_string *restrict s, const lite_string *restrict old_sub,
+                    const lite_string *restrict new_sub);
+
+void string_replace_char(const lite_string *restrict s, char old_char, char new_char);
+
+bool string_replace_cstr(lite_string *restrict s, const char *restrict old_cstr,
+                         const char *restrict new_cstr);
+
+bool string_erase_range(lite_string *restrict s, size_t start, size_t count);
+
+lite_string *string_duplicate(const lite_string *restrict s);
 #if __cplusplus
 }
 #endif
