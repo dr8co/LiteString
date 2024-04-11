@@ -517,3 +517,6 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
+Doxyfile
+
+build
