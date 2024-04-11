@@ -909,3 +909,277 @@ TEST(LiteStringTest, CaseCompareEmptyStringsReturnsTrue) {
     string_free(s1);
     string_free(s2);
 }
+
+TEST(LiteStringTest, ToLowerConvertsUppercaseToLowerCase) {
+    lite_string *s = string_new_cstr("HELLO");
+    string_to_lower(s);
+    EXPECT_STREQ("hello", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ToLowerLeavesLowerCaseUnchanged) {
+    lite_string *s = string_new_cstr("hello");
+    string_to_lower(s);
+    EXPECT_STREQ("hello", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ToUpperConvertsLowerCaseToUpperCase) {
+    lite_string *s = string_new_cstr("hello");
+    string_to_upper(s);
+    EXPECT_STREQ("HELLO", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ToUpperLeavesUpperCaseUnchanged) {
+    lite_string *s = string_new_cstr("HELLO");
+    string_to_upper(s);
+    EXPECT_STREQ("HELLO", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ToTitleConvertsFirstLetterToUpperCase) {
+    lite_string *s = string_new_cstr("hello world");
+    string_to_title(s);
+    EXPECT_STREQ("Hello World", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ToTitleLeavesTitleCaseUnchanged) {
+    lite_string *s = string_new_cstr("Hello World");
+    string_to_title(s);
+    EXPECT_STREQ("Hello World", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ToTitleHandlesSingleWord) {
+    lite_string *s = string_new_cstr("hello");
+    string_to_title(s);
+    EXPECT_STREQ("Hello", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ToTitleHandlesEmptyString) {
+    lite_string *s = string_new_cstr("");
+    string_to_title(s);
+    EXPECT_STREQ("", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ToTitleHandlesSingleLetter) {
+    lite_string *s = string_new_cstr("a");
+    string_to_title(s);
+    EXPECT_STREQ("A", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ReplaceSubstringWithDifferentLengthSubstring) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *old_sub = string_new_cstr("World");
+    lite_string *new_sub = string_new_cstr("GitHub Copilot");
+    EXPECT_TRUE(string_replace(s, old_sub, new_sub));
+    EXPECT_STREQ("Hello, GitHub Copilot!", string_cstr(s));
+    string_free(s);
+    string_free(old_sub);
+    string_free(new_sub);
+}
+
+TEST(LiteStringTest, ReplaceSubstringWithSameLengthSubstring) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *old_sub = string_new_cstr("World");
+    lite_string *new_sub = string_new_cstr("Earth");
+    EXPECT_TRUE(string_replace(s, old_sub, new_sub));
+    EXPECT_STREQ("Hello, Earth!", string_cstr(s));
+    string_free(s);
+    string_free(old_sub);
+    string_free(new_sub);
+}
+
+TEST(LiteStringTest, ReplaceNonExistentSubstring) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *old_sub = string_new_cstr("Universe");
+    lite_string *new_sub = string_new_cstr("GitHub Copilot");
+    EXPECT_FALSE(string_replace(s, old_sub, new_sub));
+    EXPECT_STREQ("Hello, World!", string_cstr(s));
+    string_free(s);
+    string_free(old_sub);
+    string_free(new_sub);
+}
+
+TEST(LiteStringTest, ReplaceSubstringInEmptyString) {
+    lite_string *s = string_new_cstr("");
+    lite_string *old_sub = string_new_cstr("World");
+    lite_string *new_sub = string_new_cstr("GitHub Copilot");
+    EXPECT_FALSE(string_replace(s, old_sub, new_sub));
+    EXPECT_STREQ("", string_cstr(s));
+    string_free(s);
+    string_free(old_sub);
+    string_free(new_sub);
+}
+
+TEST(LiteStringTest, ReplaceSubstringWithEmptyString) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *old_sub = string_new_cstr("World");
+    lite_string *new_sub = string_new_cstr("");
+    EXPECT_TRUE(string_replace(s, old_sub, new_sub));
+    EXPECT_STREQ("Hello, !", string_cstr(s));
+    string_free(s);
+    string_free(old_sub);
+    string_free(new_sub);
+}
+
+TEST(LiteStringTest, ReplaceEmptyStringWithSubstring) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *old_sub = string_new_cstr("");
+    lite_string *new_sub = string_new_cstr("GitHub Copilot");
+    EXPECT_TRUE(string_replace(s, old_sub, new_sub));
+    EXPECT_STREQ("Hello, World!", string_cstr(s));
+    string_free(s);
+    string_free(old_sub);
+    string_free(new_sub);
+}
+
+TEST(LiteStringTest, ReplaceEmptyStringWithEmptyString) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *old_sub = string_new_cstr("");
+    lite_string *new_sub = string_new_cstr("");
+    EXPECT_TRUE(string_replace(s, old_sub, new_sub));
+    EXPECT_STREQ("Hello, World!", string_cstr(s));
+    string_free(s);
+    string_free(old_sub);
+    string_free(new_sub);
+}
+
+TEST(LiteStringTest, ReplaceCharInNonEmptyString) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    string_replace_char(s, 'o', 'a');
+    EXPECT_STREQ("Hella, Warld!", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ReplaceCharInEmptyString) {
+    lite_string *s = string_new_cstr("");
+    string_replace_char(s, 'o', 'a');
+    EXPECT_STREQ("", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ReplaceCharWithItself) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    string_replace_char(s, 'o', 'o');
+    EXPECT_STREQ("Hello, World!", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ReplaceNonExistentChar) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    string_replace_char(s, 'x', 'a');
+    EXPECT_STREQ("Hello, World!", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ReplaceCStrInNonEmptyString) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    EXPECT_TRUE(string_replace_cstr(s, "World", "User"));
+    EXPECT_STREQ("Hello, User!", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ReplaceCStrInEmptyString) {
+    lite_string *s = string_new_cstr("");
+    EXPECT_FALSE(string_replace_cstr(s, "World", "User"));
+    EXPECT_STREQ("", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ReplaceNonExistentCStr) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    EXPECT_FALSE(string_replace_cstr(s, "Universe", "User"));
+    EXPECT_STREQ("Hello, World!", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ReplaceCStrWithEmptyString) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    EXPECT_TRUE(string_replace_cstr(s, "World", ""));
+    EXPECT_STREQ("Hello, !", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, ReplaceEmptyCStrWithCStr) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    EXPECT_TRUE(string_replace_cstr(s, "", "User"));
+    EXPECT_STREQ("Hello, World!", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, EraseRangeInNonEmptyString) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    EXPECT_TRUE(string_erase_range(s, 0, 5));
+    EXPECT_STREQ(", World!", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, EraseRangeAtEndOfString) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    EXPECT_TRUE(string_erase_range(s, 7, 6));
+    EXPECT_STREQ("Hello, ", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, EraseRangeExceedingStringSize) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    EXPECT_FALSE(string_erase_range(s, 5, 20));
+    EXPECT_STREQ("Hello, World!", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, EraseRangeWithCountZero) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    EXPECT_TRUE(string_erase_range(s, 5, 0));
+    EXPECT_STREQ("Hello, World!", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, EraseRangeInEmptyString) {
+    lite_string *s = string_new_cstr("");
+    EXPECT_FALSE(string_erase_range(s, 0, 1));
+    EXPECT_STREQ("", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, EraseRangeWithNegativeCount) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    EXPECT_FALSE(string_erase_range(s, 5, -1));
+    EXPECT_STREQ("Hello, World!", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, EraseRangeWithNegativeIndex) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    EXPECT_FALSE(string_erase_range(s, -1, 5));
+    EXPECT_STREQ("Hello, World!", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringTest, DuplicateNonEmptyString) {
+    lite_string *s = string_new_cstr("Hello, World!");
+    lite_string *dup = string_duplicate(s);
+    EXPECT_TRUE(string_compare(s, dup));
+    string_free(s);
+    string_free(dup);
+}
+
+TEST(LiteStringTest, DuplicateEmptyString) {
+    lite_string *s = string_new_cstr("");
+    lite_string *dup = string_duplicate(s);
+    EXPECT_TRUE(string_compare(s, dup));
+    string_free(s);
+    string_free(dup);
+}
+
+TEST(LiteStringTest, DuplicateNullString) {
+    const lite_string *s = nullptr;
+    lite_string *dup = string_duplicate(s);
+    EXPECT_EQ(dup, nullptr);
+}
