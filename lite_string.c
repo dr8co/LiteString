@@ -24,6 +24,27 @@
 }
 
 /**
+ * @brief Creates a new string and initializes it with a C-string.
+ *
+ * @param cstr A pointer to the C-string that will be used to initialize the new string.
+ * @return A pointer to the newly created string, or NULL if the function failed.
+ * @note The returned pointer must be freed by the caller, using the \p string_free() function.
+ */
+[[nodiscard]] lite_string *string_new_cstr(const char *const restrict cstr) {
+    if (cstr) {
+        lite_string *s = string_new();
+        if (s) {
+            if (!string_append_cstr(s, cstr)) {
+                string_free(s);
+                return nullptr;
+            }
+            return s;
+        }
+    }
+    return nullptr;
+}
+
+/**
  * @brief Frees the memory used by a string.
  *
  * If the input pointer is NULL, the function does nothing.
@@ -528,24 +549,23 @@ bool string_append_cstr(lite_string *const restrict s, const char *const restric
 }
 
 /**
- * @brief Converts a string to a C-string.
+ * @brief Returns a pointer to the C-string representation of a string.
  *
- * @param s A pointer to the string to be converted.
- * @return A pointer to the newly created C-string, or NULL if the string could not be converted.
- * @note The returned C-string must be freed by the caller.\n
- * It is better to use \p string_copy_buffer if the C-string is only needed temporarily.
+ * @param s A pointer to the string.
+ * @return A pointer to the C-string representation of the string, or NULL if the string is invalid.
  */
-[[nodiscard]] char *string_cstr(const lite_string *const restrict s) {
+char *string_cstr(lite_string *const restrict s) {
     if (s) {
-        // Allocate memory for the C-string
-        char *cstr = (char *) malloc((s->size + 1) * sizeof(char));
-        if (cstr) {
-            // Copy the characters from the string to the C-string
-            memcpy(cstr, s->data, s->size);
+        if (s->size == 0) s->data[0] = '\0';
 
-            // Append the null character to the end of the C-string
-            cstr[s->size] = '\0';
-            return cstr;
+        // Check if the string is null-terminated
+        if (s->data[s->size] == '\0')
+            return s->data;
+
+        // Resize the string to add the null character
+        if (string_reserve(s, s->size + 1)) {
+            s->data[s->size] = '\0';
+            return s->data;
         }
     }
     return nullptr;
@@ -982,4 +1002,18 @@ bool string_shrink_to_fit(lite_string *const restrict s) {
         }
     }
     return false;
+}
+
+/**
+ * @brief Converts all the uppercase characters in a string to lowercase.
+ *
+ * @param s A pointer to the string to be converted to lowercase.
+ */
+void string_to_lower(const lite_string *const restrict s) {
+    if (s) {
+        for (size_t i = 0; i < s->size; ++i) {
+            if (s->data[i] >= 'A' && s->data[i] <= 'Z')
+                s->data[i] += 32;
+        }
+    }
 }
