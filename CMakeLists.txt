@@ -29,6 +29,9 @@ endif ()
 
 add_library(LiteString STATIC lite_string.h lite_string.c)
 
+# Examples
+add_subdirectory(examples)
+
 # Google Test
 include(FetchContent)
 
