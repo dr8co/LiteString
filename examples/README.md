@@ -13,7 +13,9 @@ For building the LiteString library, refer to the [README](../README.md) file in
 The text file should not be bigger than 1MB.
 
 ```bash
-gcc -o word_stats word_stats.c -L /path/to/libLiteString.a -llite_string
+# Compile and link the example
+gcc -o word_stats word_stats.c /path/to/libLiteString.a -std=c2x
+# Run the example
 ./word_stats blindtext.txt
 ```
 
@@ -22,8 +24,13 @@ gcc -o word_stats word_stats.c -L /path/to/libLiteString.a -llite_string
 [grep clone](./cheap_grep.cpp) - A simple clone of the `grep` command.
 
 ```bash
-g++ -o cheap_grep cheap_grep.cpp -L /path/to/libLiteString.a -llite_string
+# Compile and link the example
+g++ -o cheap_grep cheap_grep.cpp /path/to/libLiteString.a -std=c++20
+# Run the example
 ./cheap_grep -i "ipsum dolor" blindtext.txt
+# The program can also read from standard input, when the file name is replaced with a hyphen
+cat blindtext.txt | ./cheap_grep -i "ipsum dolor" -
+./cheap_grep -i "lorem ipsum dolor sit amet consectetur adipiscing" - < blindtext.txt
 ```
 
 ## Building with CMake
