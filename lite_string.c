@@ -27,21 +27,18 @@
  * @brief Creates a new string and initializes it with a C-string.
  *
  * @param cstr A pointer to the C-string that will be used to initialize the new string.
- * @return A pointer to the newly created string, or NULL if the function failed.
+ * @return A pointer to the newly created string, or NULL if the memory allocation failed or the C-string is NULL.
  * @note The returned pointer must be freed by the caller, using the \p string_free() function.
  */
 [[nodiscard]] lite_string *string_new_cstr(const char *const restrict cstr) {
-    if (cstr) {
-        lite_string *s = string_new();
-        if (s) {
-            if (!string_append_cstr(s, cstr)) {
-                string_free(s);
-                return nullptr;
-            }
-            return s;
+    lite_string *s = string_new();
+    if (cstr && s) {
+        if (!string_append_cstr(s, cstr)) {
+            string_free(s);
+            return nullptr;
         }
     }
-    return nullptr;
+    return s;
 }
 
 /**
