@@ -449,7 +449,7 @@ string_insert_string(lite_string *const restrict s, const lite_string *const res
 [[nodiscard]] lite_string *string_substr(const lite_string *const restrict s, const size_t start, const size_t len) {
     if (s) {
         // The requested substring must be within the bounds of the string
-        if (len == 0 || start + len - 1 > s->size) return nullptr;
+        if (len == 0 || start >= s->size || len > s->size || start + len - 1 > s->size) return nullptr;
 
         // Create a new string to store the substring
         lite_string *sub = string_new();
