@@ -102,11 +102,15 @@ LITE_ATTR_UNSEQUENCED LITE_ATTR_ALWAYS_INLINE static inline size_t lite_clp2_(si
  */
 LITE_ATTR_HOT bool string_reserve(lite_string *const restrict s, size_t size) {
     if (s) {
-        // Round up the new size to the next power of 2, and reallocate the memory if necessary
+        // Space for the null terminator
+        ++size;
+
+        // Round up the new size to the next power of 2
         size = lite_clp2_(size);
         if (size < 16) size = 16;
 
-        if (size > s->capacity) {
+        // Reallocate the memory
+        if (size > s->capacity - 1) {
             void *temp = realloc(s->data, size * sizeof(char));
             if (temp == nullptr) return false;
 
@@ -142,7 +146,7 @@ bool string_insert_cstr_range(lite_string *const restrict s, const char *const r
             // The index must be within the bounds of the string
             if (index < s->size) {
                 // Resize the string if necessary
-                if (s->size + count >= s->capacity) {
+                if (s->size + count >= s->capacity - 1) {
                     if (!string_reserve(s, s->size + count)) return false;
                 }
                 // Move the characters after the index to make room for the C-string
@@ -186,8 +190,8 @@ bool string_insert_cstr(lite_string *const restrict s, const char *restrict cstr
  */
 bool string_push_back(lite_string *const restrict s, const char c) {
     if (s && c != '\0') {
-        if (s->size == s->capacity) {
-            if (!string_reserve(s, s->capacity * 2)) return false;
+        if (s->size >= s->capacity - 1) {
+            if (!string_reserve(s, s->capacity << 1)) return false;
         }
         s->data[s->size++] = c;
         return true;
@@ -383,8 +387,8 @@ bool string_insert(lite_string *const restrict s, const size_t index, const char
     if (s && c != '\0') {
         if (index < s->size) {
             // Resize the string if necessary
-            if (s->size == s->capacity) {
-                if (!string_reserve(s, s->capacity * 2)) return false;
+            if (s->size >= s->capacity - 1) {
+                if (!string_reserve(s, s->capacity << 1)) return false;
             }
             // Move the characters after the index to make room for the new character
             memmove(s->data + (index + 1) * sizeof(char), s->data + index * sizeof(char),
@@ -420,7 +424,7 @@ string_insert_range(lite_string *const restrict s, const lite_string *const rest
         if (!count) return true;
         if (count <= sub->size) {
             if (index < s->size) {
-                if (s->size + count >= s->capacity) {
+                if (s->size + count >= s->capacity - 1) {
                     if (!string_reserve(s, s->size + count)) return false;
                 }
                 memmove(s->data + (index + count) * sizeof(char), s->data + index * sizeof(char),
@@ -464,7 +468,8 @@ string_insert_string(lite_string *const restrict s, const lite_string *const res
  *
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
-LITE_ATTR_NODISCARD lite_string *string_substr(const lite_string *const restrict s, const size_t start, const size_t len) {
+LITE_ATTR_NODISCARD lite_string *string_substr(const lite_string *const restrict s, const size_t start,
+                                               const size_t len) {
     if (s) {
         // The requested substring must be within the bounds of the string
         if (len == 0 || start >= s->size || len > s->size || start + len - 1 > s->size) return nullptr;
@@ -496,7 +501,7 @@ LITE_ATTR_NODISCARD lite_string *string_substr(const lite_string *const restrict
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
 LITE_ATTR_NODISCARD lite_string *string_concat(const lite_string *const restrict s1,
-                                         const lite_string *const restrict s2) {
+                                               const lite_string *const restrict s2) {
     if (s1 && s2) {
         lite_string *s = string_new();
         if (s) {
@@ -599,22 +604,30 @@ bool string_append_cstr(lite_string *const restrict s, const char *const restric
  *
  * @param s A pointer to the string.
  * @return A pointer to the C-string representation of the string, or NULL if the string is invalid.
+ * @note It is not recommended to modify the string's data directly. Use the provided functions instead.
  */
-LITE_ATTR_HOT char *string_cstr(lite_string *const restrict s) {
+LITE_ATTR_HOT char *string_cstr(const lite_string *const restrict s) {
     if (s) {
-        if (s->size == 0) s->data[0] = '\0';
-
         // Check if the string is null-terminated
-        if (s->data[s->size] == '\0')
-            return s->data;
-
-        // Resize the string to add the null character
-        if (string_reserve(s, s->size + 1)) {
+        if (s->data[s->size] != '\0')
             s->data[s->size] = '\0';
-            return s->data;
-        }
+
+        return s->data;
     }
     return nullptr;
+}
+
+/**
+ * @brief Returns a pointer to the underlying character array holding the string data.
+ *
+ * @param s A pointer to the string.
+ * @return A pointer to the string's data, or a null pointer if the string is null.
+ * @note It is not recommended to modify the string's data directly. Use the provided functions instead.
+ * @note The returned pointer is not guaranteed to be null-terminated.
+ * Use \p string_cstr() to get a null-terminated C-string.
+ */
+LITE_ATTR_HOT char *string_data(const lite_string *const restrict s) {
+    return s ? s->data : nullptr;
 }
 
 /**

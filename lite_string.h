@@ -141,7 +141,9 @@ bool string_append(lite_string *restrict s1, const lite_string *restrict s2);
 
 bool string_append_cstr(lite_string *restrict s, const char *restrict cstr);
 
-LITE_ATTR_HOT char *string_cstr(lite_string *restrict s);
+LITE_ATTR_HOT char *string_cstr(const lite_string *restrict s);
+
+LITE_ATTR_HOT char *string_data(const lite_string *restrict s);
 
 bool string_compare_cstr(const lite_string *restrict s, const char *restrict cstr);
 
