@@ -728,7 +728,7 @@ bool string_swap(lite_string *const restrict s1, lite_string *const restrict s2)
  */
 size_t string_find_last_of(const lite_string *const restrict s, const char c) {
     if (s && c != '\0') {
-#if _GNU_SOURCE
+#ifdef _GNU_SOURCE
         const char *found = (const char *) memrchr(s->data, c, s->size);
         if (found) return found - s->data;
 #else
@@ -830,7 +830,7 @@ size_t string_find_from(const lite_string *const restrict s, const lite_string *
     if (s && sub && start < s->size) {
         if (sub->size == 0) return start;
         if (sub->size > s->size) return lite_string_npos;
-#if _GNU_SOURCE
+#ifdef _GNU_SOURCE
         const char *found = (const char *) memmem(s->data + start, s->size - start, sub->data, sub->size);
         if (found) return found - s->data;
 #else
@@ -913,7 +913,7 @@ size_t string_find_cstr_from(const lite_string *const restrict s, const char *co
 
         // The search must start from a valid index
         if (start < s->size) {
-#if _GNU_SOURCE
+#ifdef _GNU_SOURCE
             const char *found = (const char *) memmem(s->data + start, s->size - start, cstr, len);
             if (found) return found - s->data;
 #else
@@ -930,8 +930,8 @@ size_t string_find_cstr_from(const lite_string *const restrict s, const char *co
                     if (found) return i;
                 }
             }
-        }
 #endif
+        }
     }
     // The C-string was not found
     return lite_string_npos;
