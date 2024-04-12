@@ -2,7 +2,7 @@
 add_executable(testLiteString testLiteString.cpp)
 
 # Link with gtest
-target_link_libraries(testLiteString LiteString gtest gtest_main)
+target_link_libraries(testLiteString lite-string gtest gtest_main)
 
 include(GoogleTest)
 

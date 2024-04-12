@@ -27,7 +27,7 @@ if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
     # set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS} -fsanitize=memory -fPIE -fno-optimize-sibling-calls -fno-omit-frame-pointer -g -O1")
 endif ()
 
-add_library(LiteString STATIC lite_string.h lite_string.c)
+add_library(lite-string STATIC lite_string.h lite_string.c)
 
 # Examples
 add_subdirectory(examples)

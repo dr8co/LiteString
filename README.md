@@ -52,7 +52,7 @@ cmake --build build -j 4
 Replace `Ninja` with `"Unix Makefiles"` or another generator if Ninja is not available.
 The `-G` option can be omitted to use the default generator.
 
-The library will be built as a static library named `libLiteString.a`, in the `build` directory.
+The library will be built as a static library named `liblite-string.a`, in the `build` directory.
 
 ### Building Manually
 
@@ -60,7 +60,7 @@ To build the library, run the following commands:
 
 ```bash
 gcc -c -O3 -std=c23 -o lite_string.o lite_string.c
-ar rcs libLiteString.a lite_string.o
+ar rcs liblite-string.a lite_string.o
 ```
 
 `clang` can be used instead of `gcc` to compile the source code with Clang.
@@ -77,9 +77,9 @@ Compile the source code and link it with the library:
 
 ```bash
 # C
-gcc -std=c2x -O3 -o example example.c /path/to/libLiteString.a
+gcc -std=c2x -O3 -o example example.c /path/to/liblite-string.a
 # C++
-g++ -std=c++20 -O3 -o example example.cpp /path/to/libLiteString.a
+g++ -std=c++20 -O3 -o example example.cpp /path/to/liblite-string.a
 ```
 
 Projects using CMake can link the library through the `target_link_libraries` command:

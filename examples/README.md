@@ -14,7 +14,7 @@ The text file should not be bigger than 1MB.
 
 ```bash
 # Compile and link the example
-gcc -o word_stats word_stats.c /path/to/libLiteString.a -std=c2x
+gcc -o word_stats word_stats.c /path/to/liblite-string.a -std=c2x
 # Run the example
 ./word_stats blindtext.txt
 ```
@@ -25,7 +25,7 @@ gcc -o word_stats word_stats.c /path/to/libLiteString.a -std=c2x
 
 ```bash
 # Compile and link the example
-g++ -o cheap_grep cheap_grep.cpp /path/to/libLiteString.a -std=c++20
+g++ -o cheap_grep cheap_grep.cpp /path/to/liblite-string.a -std=c++20
 # Run the example
 ./cheap_grep -i "ipsum dolor" blindtext.txt
 # The program can also read from standard input, when the file name is replaced with a hyphen
