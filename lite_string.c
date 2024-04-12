@@ -257,10 +257,11 @@ bool string_erase_range(lite_string *const restrict s, const size_t start, const
         if (count == 0) return true;
 #if (__GNUC__ || __clang__) && __has_builtin(__builtin_add_overflow)
         size_t end;
-        if (!__builtin_uaddl_overflow(start, count, &end) && end <= s->size) {
+        if (!__builtin_uaddl_overflow(start, count, &end) && end <= s->size)
 #else
-        if (count < s->size && start + count <= s->size) {
+        if (count < s->size && start + count <= s->size)
 #endif
+        {
             // Copy the characters after the range to overwrite the characters to be removed
             memmove(s->data + start * sizeof(char), s->data + (start + count) * sizeof(char),
                     (s->size - start - count) * sizeof(char));
@@ -1041,7 +1042,7 @@ void string_to_lower(const lite_string *const restrict s) {
     if (s) {
         for (size_t i = 0; i < s->size; ++i) {
             if (s->data[i] >= 'A' && s->data[i] <= 'Z')
-                s->data[i] += 32;
+                s->data[i] |= 32;
         }
     }
 }
@@ -1055,7 +1056,7 @@ void string_to_upper(const lite_string *const restrict s) {
     if (s) {
         for (size_t i = 0; i < s->size; ++i) {
             if (s->data[i] >= 'a' && s->data[i] <= 'z')
-                s->data[i] -= 32;
+                s->data[i] &= ~32;
         }
     }
 }
@@ -1068,12 +1069,12 @@ void string_to_upper(const lite_string *const restrict s) {
 void string_to_title(const lite_string *const restrict s) {
     if (s) {
         if (s->data[0] >= 'a' && s->data[0] <= 'z')
-            s->data[0] -= 32;
+            s->data[0] &= ~32;
 
         // Iterate over the rest of the string
         for (size_t i = 1; i < s->size; ++i) {
             if (s->data[i] == ' ' && s->data[i + 1] >= 'a' && s->data[i + 1] <= 'z')
-                s->data[i + 1] -= 32;
+                s->data[i + 1] &= ~32;
         }
     }
 }
