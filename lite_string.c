@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include "lite_string.h"
 
+#include <stdio.h>
+
 /**
  * @brief Creates a new string with an initial capacity of 16.
  *
@@ -323,13 +325,23 @@ bool string_case_compare(const lite_string *const restrict s1, const lite_string
 }
 
 /**
- * @brief Returns the length of the string.
+ * @brief Returns the length of a string.
  *
  * @param s A pointer to the string.
  * @return The length of the string, or 0 if the string is invalid.
  */
 size_t string_length(const lite_string *const restrict s) {
     return s ? s->size : 0;
+}
+
+/**
+ * @brief Returns the size of a string.
+ *
+ * @param s A pointer to the string.
+ * @return The length of the string, or 0 if the string is invalid.
+ */
+size_t string_size(const lite_string *const restrict s) {
+    return string_length(s);
 }
 
 /**
@@ -696,10 +708,15 @@ bool string_swap(lite_string *const restrict s1, lite_string *const restrict s2)
  */
 size_t string_find_last_of(const lite_string *const restrict s, const char c) {
     if (s && c != '\0') {
+#if _GNU_SOURCE
+        const char *found = (const char *) memrchr(s->data, c, s->size);
+        if (found) return found - s->data;
+#else
         for (size_t i = s->size; i > 0; --i) {
             if (s->data[i - 1] == c)
                 return i - 1;
         }
+#endif
     }
     return SIZE_MAX;
 }
@@ -732,10 +749,8 @@ size_t string_find_last_not_of(const lite_string *const restrict s, const char c
  */
 size_t string_find_first_from(const lite_string *const restrict s, const char c, const size_t start) {
     if (s && c != '\0' && start < s->size) {
-        for (size_t i = start; i < s->size; ++i) {
-            if (s->data[i] == c)
-                return i;
-        }
+        const char *found = (const char *) memchr(s->data + start, c, s->size - start);
+        if (found) return found - s->data;
     }
     return SIZE_MAX;
 }
@@ -792,7 +807,10 @@ size_t string_find_from(const lite_string *const restrict s, const lite_string *
     if (s && sub && start < s->size) {
         if (sub->size == 0) return start;
         if (sub->size > s->size) return SIZE_MAX;
-
+#if _GNU_SOURCE
+        const char *found = (const char *) memmem(s->data + start, s->size - start, sub->data, sub->size);
+        if (found) return found - s->data;
+#else
         for (size_t i = start; i < s->size - sub->size + 1; ++i) {
             if (s->data[i] == sub->data[0]) {
                 bool found = true;
@@ -805,6 +823,7 @@ size_t string_find_from(const lite_string *const restrict s, const lite_string *
                 if (found) return i;
             }
         }
+#endif
     }
     return SIZE_MAX;
 }
@@ -868,6 +887,10 @@ size_t string_find_cstr_from(const lite_string *const restrict s, const char *co
 
         // The search must start from a valid index
         if (start < s->size) {
+#if _GNU_SOURCE
+            const char *found = (const char *) memmem(s->data + start, s->size - start, cstr, len);
+            if (found) return found - s->data;
+#else
             // Search for the C-string in the string
             for (size_t i = start; i < s->size - len + 1; ++i) {
                 if (s->data[i] == cstr[0]) {
@@ -882,6 +905,7 @@ size_t string_find_cstr_from(const lite_string *const restrict s, const char *co
                 }
             }
         }
+#endif
     }
     // The C-string was not found
     return SIZE_MAX;
@@ -1162,7 +1186,7 @@ bool string_replace_cstr(lite_string *const restrict s, const char *const restri
  *
  * @note The returned pointer must be freed by the caller, using the \p string_free() function.
  */
-lite_string *string_duplicate(const lite_string *const restrict s) {
+[[nodiscard]] lite_string *string_duplicate(const lite_string *const restrict s) {
     if (s) {
         lite_string *dup = string_new();
         if (dup) {
@@ -1173,4 +1197,266 @@ lite_string *string_duplicate(const lite_string *const restrict s) {
         }
     }
     return nullptr;
+}
+
+/**
+ * @brief Reverses the order of characters in a string.
+ *
+ * @param s A pointer to the string to be reversed.
+ */
+void string_reverse(const lite_string *const restrict s) {
+    if (s) {
+        // Iterate over the first half of the string
+        for (size_t i = 0; i < s->size / 2; ++i) {
+            // Swap the character at the current position with the character at the symmetric position from the end
+            const char tmp = s->data[i];
+            s->data[i] = s->data[s->size - i - 1];
+            s->data[s->size - i - 1] = tmp;
+        }
+    }
+}
+
+/**
+ * @brief Converts a string to a long long integer.
+ *
+ * @param s A pointer to the string to be converted.
+ * @return The long long integer representation of the string, or 0 if the string is NULL.
+ */
+long long string_to_ll(lite_string *const restrict s) {
+    long long result = 0;
+    if (s) result = strtoll(string_cstr(s), nullptr, 10);
+    return result;
+}
+
+/**
+ * @brief Converts a string to an unsigned long long integer.
+ *
+ * @param s A pointer to the string to be converted.
+ * @return The unsigned long long integer representation of the string, or 0 if the string is NULL.
+ */
+unsigned long long string_to_ull(lite_string *const restrict s) {
+    unsigned long long result = 0;
+    if (s) result = strtoull(string_cstr(s), nullptr, 10);
+    return result;
+}
+
+/**
+ * @brief Converts a string to a long integer.
+ *
+ * @param s A pointer to the string to be converted.
+ * @return The long integer representation of the string, or 0 if the string is NULL.
+ */
+long string_to_l(lite_string *const restrict s) {
+    long result = 0;
+    if (s) result = strtol(string_cstr(s), nullptr, 10);
+    return result;
+}
+
+/**
+ * @brief Converts a string to an unsigned long integer.
+ *
+ * @param s A pointer to the string to be converted.
+ * @return The unsigned long integer representation of the string, or 0 if the string is NULL.
+ */
+unsigned long string_to_ul(lite_string *const restrict s) {
+    unsigned long result = 0;
+    if (s) result = strtoul(string_cstr(s), nullptr, 10);
+    return result;
+}
+
+/**
+ * @brief Converts a string to an integer.
+ *
+ * @param s A pointer to the string to be converted.
+ * @return The integer representation of the string, or 0 if the string is NULL.
+ */
+int string_to_int(lite_string *const restrict s) {
+    return (int) string_to_l(s);
+}
+
+/**
+ * @brief Converts a string to an unsigned integer.
+ *
+ * @param s A pointer to the string to be converted.
+ * @return The unsigned integer representation of the string, or 0 if the string is NULL.
+ */
+unsigned int string_to_uint(lite_string *const restrict s) {
+    return (unsigned int) string_to_ul(s);
+}
+
+/**
+ * @brief Converts a string to a double.
+ *
+ * @param s A pointer to the string to be converted.
+ * @return The double representation of the string, or 0.0 if the string is NULL.
+ */
+double string_to_double(lite_string *const restrict s) {
+    double result = 0.0;
+    if (s) result = strtod(string_cstr(s), nullptr);
+    return result;
+}
+
+/**
+ * @brief Converts a string to a float.
+ *
+ * @param s A pointer to the string to be converted.
+ * @return The float representation of the string, or 0.0f if the string is NULL.
+ */
+float string_to_float(lite_string *const restrict s) {
+    float result = 0.0f;
+    if (s) result = strtof(string_cstr(s), nullptr);
+    return result;
+}
+
+/**
+ * @brief Converts a string to a long double.
+ *
+ * @param s A pointer to the string to be converted.
+ * @return The long double representation of the string, or 0.0 if the string is NULL.
+ */
+long double string_to_ldouble(lite_string *const restrict s) {
+    long double result = 0.0;
+    if (s) result = strtold(string_cstr(s), nullptr);
+    return result;
+}
+
+/**
+ * @brief Converts a long long integer to a string.
+ *
+ * @param value The long long integer to be converted.
+ * @return A pointer to the new string containing the long long integer, or NULL if the string creation failed.
+ * @note The returned pointer must be freed by the caller, using \p string_free()
+ */
+[[nodiscard]] lite_string *string_from_ll(const long long value) {
+    lite_string *s = string_new();
+    if (s) {
+        char buf[32];
+        snprintf(buf, sizeof(buf), "%lld", value);
+        string_append_cstr(s, buf);
+    }
+    return s;
+}
+
+/**
+ * @brief Converts an unsigned long long integer to a string.
+ *
+ * @param value The unsigned long long integer to be converted.
+ * @return A pointer to the new string containing the unsigned long long integer, or NULL if the string creation failed.
+ * @note The returned pointer must be freed by the caller, using \p string_free()
+ */
+[[nodiscard]] lite_string *string_from_ull(const unsigned long long value) {
+    lite_string *s = string_new();
+    if (s) {
+        char buf[32];
+        snprintf(buf, sizeof(buf), "%llu", value);
+        string_append_cstr(s, buf);
+    }
+    return s;
+}
+
+/**
+ * @brief Converts a long integer to a string.
+ *
+ * @param value The long integer to be converted.
+ * @return A pointer to the new string containing the long integer, or NULL if the string creation failed.
+ * @note The returned pointer must be freed by the caller, using \p string_free()
+ */
+[[nodiscard]] lite_string *string_from_l(const long value) {
+    lite_string *s = string_new();
+    if (s) {
+        char buf[32];
+        snprintf(buf, sizeof(buf), "%ld", value);
+        string_append_cstr(s, buf);
+    }
+    return s;
+}
+
+/**
+ * @brief Converts an unsigned long integer to a string.
+ *
+ * @param value The unsigned long integer to be converted.
+ * @return A pointer to the new string containing the unsigned long integer, or NULL if the string creation failed.
+ * @note The returned pointer must be freed by the caller, using \p string_free()
+ */
+[[nodiscard]] lite_string *string_from_ul(const unsigned long value) {
+    lite_string *s = string_new();
+    if (s) {
+        char buf[32];
+        snprintf(buf, sizeof(buf), "%lu", value);
+        string_append_cstr(s, buf);
+    }
+    return s;
+}
+
+/**
+ * @brief Converts an integer to a string.
+ *
+ * @param value The integer to be converted.
+ * @return A pointer to the new string containing the integer.
+ * @note The returned pointer must be freed by the caller, using \p string_free()
+ */
+[[nodiscard]] lite_string *string_from_int(const int value) {
+    return string_from_l(value);
+}
+
+/**
+ * @brief Converts an unsigned integer to a string.
+ *
+ * @param value The unsigned integer to be converted.
+ * @return A pointer to the new string containing the unsigned integer.
+ * @note The returned pointer must be freed by the caller, using \p string_free()
+ */
+[[nodiscard]] lite_string *string_from_uint(const unsigned int value) {
+    return string_from_ul(value);
+}
+
+/**
+ * @brief Converts a double to a string.
+ *
+ * @param value The double to be converted.
+ * @return A pointer to the new string containing the double, or NULL if the string creation failed.
+ * @note The returned pointer must be freed by the caller, using \p string_free()
+ */
+[[nodiscard]] lite_string *string_from_double(const double value) {
+    lite_string *s = string_new();
+    if (s) {
+        char buf[32];
+        snprintf(buf, sizeof(buf), "%f", value);
+        string_append_cstr(s, buf);
+    }
+    return s;
+}
+
+/**
+ * @brief Converts a float to a string.
+ *
+ * @param value The float to be converted.
+ * @return A pointer to the new string containing the float, or NULL if the string creation failed.
+ * @note The returned pointer must be freed by the caller, using \p string_free()
+ */
+[[nodiscard]] lite_string *string_from_float(const float value) {
+    lite_string *s = string_new();
+    if (s) {
+        char buf[32];
+        snprintf(buf, sizeof(buf), "%f", value);
+        string_append_cstr(s, buf);
+    }
+    return s;
+}
+
+/**
+ * @brief Converts a long double to a string.
+ *
+ * @param value The long double to be converted.
+ * @return A pointer to the new string containing the long double, or NULL if the string creation failed.
+ * @note The returned pointer must be freed by the caller, using \p string_free()
+ */
+[[nodiscard]] lite_string *string_from_ldouble(const long double value) {
+    lite_string *s = string_new();
+    if (s) {
+        char buf[32];
+        snprintf(buf, sizeof(buf), "%Lf", value);
+        string_append_cstr(s, buf);
+    }
+    return s;
 }

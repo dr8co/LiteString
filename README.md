@@ -131,8 +131,11 @@ A lite_string object is allocated on the heap and must be freed when no longer n
 lite_string *string_new()
 // Creates a new string with an initial capacity of 16.
 
-lite_string *string_new_cstr(const char *restrict cstr);
+lite_string *string_new_cstr(const char *restrict cstr)
 // Creates a new string from a C-string.
+
+lite_string *string_duplicate(const lite_string *restrict s)
+// Creates a copy of a string.
 
 void string_free(lite_string *const restrict s)
 // Frees the memory used by a string.
@@ -160,6 +163,7 @@ char *string_cstr(const lite_string *const restrict s)
 bool string_empty(const lite_string *const restrict s)
 // Checks if the string is empty.
 
+size_t string_size(const lite_string *restrict s)
 size_t string_length(const lite_string *const restrict s)
 // Returns the length of the string.
 
@@ -246,6 +250,9 @@ void string_replace_char(const lite_string *restrict s, char old_char, char new_
 bool string_replace_cstr(lite_string *restrict s, const char *restrict old_cstr,
                          const char *restrict new_cstr)
 // Replaces all occurrences of a C-string in a string with another C-string.
+
+void string_reverse(const lite_string *restrict s)
+// Reverses the characters in a string.
 ```
 
 ### Conversion
@@ -259,6 +266,60 @@ void string_to_upper(const lite_string *restrict s);
 
 void string_to_title(const lite_string *restrict s);
 // Converts a string to title case.
+
+long long string_to_ll(lite_string *restrict s);
+// Converts a string to a long long integer.
+
+unsigned long long string_to_ull(lite_string *restrict s);
+// Converts a string to an unsigned long long integer.
+
+long string_to_l(lite_string *restrict s);
+// Converts a string to a long integer.
+
+unsigned long string_to_ul(lite_string *restrict s);
+// Converts a string to an unsigned long integer.
+
+int string_to_int(lite_string *restrict s);
+// Converts a string to an integer.
+
+unsigned int string_to_uint(lite_string *restrict s);
+// Converts a string to an unsigned integer.
+
+double string_to_double(lite_string *restrict s);
+// Converts a string to a double-precision floating-point number.
+
+float string_to_float(lite_string *restrict s);
+// Converts a string to a single-precision floating-point number.
+
+long double string_to_ldouble(lite_string *restrict s);
+// Converts a string to a long double-precision floating-point number.
+
+lite_string *string_from_l(long value);
+// Converts a long integer to a string.
+
+lite_string *string_from_ll(long long value);
+// Converts a long long integer to a string.
+
+[[nodiscard]] lite_string *string_from_ul(unsigned long value);
+// Converts an unsigned long integer to a string.
+
+[[nodiscard]] lite_string *string_from_ull(unsigned long long value);
+// Converts an unsigned long long integer to a string.
+
+[[nodiscard]] lite_string *string_from_int(int value);
+// Converts an integer to a string.
+
+[[nodiscard]] lite_string *string_from_uint(unsigned int value);
+// Converts an unsigned integer to a string.
+
+[[nodiscard]] lite_string *string_from_double(double value);
+// Converts a double-precision floating-point number to a string.
+
+[[nodiscard]] lite_string *string_from_float(float value);
+// Converts a single-precision floating-point number to a string.
+
+[[nodiscard]] lite_string *string_from_ldouble(long double value);
+// Converts a long double-precision floating-point number to a string.
 ```
 
 ### Search
@@ -369,4 +430,5 @@ More examples can be found in the `examples` directory.
 ## License
 
 LiteString is released under the MIT License. See `LICENSE` for more information.
+
 ```

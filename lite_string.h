@@ -184,7 +184,48 @@ bool string_replace_cstr(lite_string *restrict s, const char *restrict old_cstr,
 
 bool string_erase_range(lite_string *restrict s, size_t start, size_t count);
 
-lite_string *string_duplicate(const lite_string *restrict s);
+[[nodiscard]] lite_string *string_duplicate(const lite_string *restrict s);
+
+size_t string_size(const lite_string *restrict s);
+
+void string_reverse(const lite_string *restrict s);
+
+long long string_to_ll(lite_string *restrict s);
+
+unsigned long long string_to_ull(lite_string *restrict s);
+
+long string_to_l(lite_string *restrict s);
+
+unsigned long string_to_ul(lite_string *restrict s);
+
+int string_to_int(lite_string *restrict s);
+
+unsigned int string_to_uint(lite_string *restrict s);
+
+double string_to_double(lite_string *restrict s);
+
+float string_to_float(lite_string *restrict s);
+
+long double string_to_ldouble(lite_string *restrict s);
+
+[[nodiscard]] lite_string *string_from_l(long value);
+
+[[nodiscard]] lite_string *string_from_ll(long long value);
+
+[[nodiscard]] lite_string *string_from_ul(unsigned long value);
+
+[[nodiscard]] lite_string *string_from_ull(unsigned long long value);
+
+[[nodiscard]] lite_string *string_from_int(int value);
+
+[[nodiscard]] lite_string *string_from_uint(unsigned int value);
+
+[[nodiscard]] lite_string *string_from_double(double value);
+
+[[nodiscard]] lite_string *string_from_float(float value);
+
+[[nodiscard]] lite_string *string_from_ldouble(long double value);
+
 #if __cplusplus
 }
 #endif
