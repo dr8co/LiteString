@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
 #include "../lite_string.h"
 
-
-TEST(LiteStringTest, SubstrReturnsCorrectString) {
+TEST(LiteStringOperationsTest, SubstrReturnsCorrectString) {
     lite_string *s = string_new();
     ASSERT_TRUE(string_push_back(s, 'a'));
     ASSERT_TRUE(string_push_back(s, 'b'));
@@ -16,7 +15,7 @@ TEST(LiteStringTest, SubstrReturnsCorrectString) {
     string_free(s2);
 }
 
-TEST(LiteStringTest, CompareCStrReturnsTrueForEqualStrings) {
+TEST(LiteStringOperationsTest, CompareCStrReturnsTrueForEqualStrings) {
     lite_string *s = string_new();
     ASSERT_TRUE(string_push_back(s, 'a'));
     ASSERT_TRUE(string_push_back(s, 'b'));
@@ -24,7 +23,7 @@ TEST(LiteStringTest, CompareCStrReturnsTrueForEqualStrings) {
     string_free(s);
 }
 
-TEST(LiteStringTest, CompareWorksCorrectly) {
+TEST(LiteStringOperationsTest, CompareWorksCorrectly) {
     lite_string *s1 = string_new_cstr("abc");
     lite_string *s2 = string_new_cstr("abc");
     EXPECT_TRUE(string_compare(s1, s2));
@@ -32,7 +31,7 @@ TEST(LiteStringTest, CompareWorksCorrectly) {
     string_free(s2);
 }
 
-TEST(LiteStringTest, ContainsReturnsTrueWhenSubstringExists) {
+TEST(LiteStringOperationsTest, ContainsReturnsTrueWhenSubstringExists) {
     lite_string *s = string_new_cstr("Hello, World!");
     lite_string *sub = string_new_cstr("World");
     EXPECT_TRUE(string_contains(s, sub));
@@ -40,7 +39,7 @@ TEST(LiteStringTest, ContainsReturnsTrueWhenSubstringExists) {
     string_free(sub);
 }
 
-TEST(LiteStringTest, ContainsReturnsFalseWhenSubstringDoesNotExist) {
+TEST(LiteStringOperationsTest, ContainsReturnsFalseWhenSubstringDoesNotExist) {
     lite_string *s = string_new_cstr("Hello, World!");
     lite_string *sub = string_new_cstr("Planet");
     EXPECT_FALSE(string_contains(s, sub));
@@ -48,7 +47,7 @@ TEST(LiteStringTest, ContainsReturnsFalseWhenSubstringDoesNotExist) {
     string_free(sub);
 }
 
-TEST(LiteStringTest, StartsWithReturnsTrueWhenSubstringIsPrefix) {
+TEST(LiteStringOperationsTest, StartsWithReturnsTrueWhenSubstringIsPrefix) {
     lite_string *s = string_new_cstr("Hello, World!");
     lite_string *sub = string_new_cstr("Hello");
     EXPECT_TRUE(string_starts_with(s, sub));
@@ -56,7 +55,7 @@ TEST(LiteStringTest, StartsWithReturnsTrueWhenSubstringIsPrefix) {
     string_free(sub);
 }
 
-TEST(LiteStringTest, StartsWithReturnsFalseWhenSubstringIsNotPrefix) {
+TEST(LiteStringOperationsTest, StartsWithReturnsFalseWhenSubstringIsNotPrefix) {
     lite_string *s = string_new_cstr("Hello, World!");
     lite_string *sub = string_new_cstr("World");
     EXPECT_FALSE(string_starts_with(s, sub));
@@ -64,7 +63,7 @@ TEST(LiteStringTest, StartsWithReturnsFalseWhenSubstringIsNotPrefix) {
     string_free(sub);
 }
 
-TEST(LiteStringTest, EndsWithReturnsTrueWhenSubstringIsSuffix) {
+TEST(LiteStringOperationsTest, EndsWithReturnsTrueWhenSubstringIsSuffix) {
     lite_string *s = string_new_cstr("Hello, World!");
     lite_string *sub = string_new_cstr("World!");
     EXPECT_TRUE(string_ends_with(s, sub));
@@ -72,7 +71,7 @@ TEST(LiteStringTest, EndsWithReturnsTrueWhenSubstringIsSuffix) {
     string_free(sub);
 }
 
-TEST(LiteStringTest, EndsWithReturnsFalseWhenSubstringIsNotSuffix) {
+TEST(LiteStringOperationsTest, EndsWithReturnsFalseWhenSubstringIsNotSuffix) {
     lite_string *s = string_new_cstr("Hello, World!");
     lite_string *sub = string_new_cstr("Hello");
     EXPECT_FALSE(string_ends_with(s, sub));
@@ -80,32 +79,32 @@ TEST(LiteStringTest, EndsWithReturnsFalseWhenSubstringIsNotSuffix) {
     string_free(sub);
 }
 
-TEST(LiteStringTest, EndsWithCStrReturnsTrueWhenCStrIsSuffix) {
+TEST(LiteStringOperationsTest, EndsWithCStrReturnsTrueWhenCStrIsSuffix) {
     lite_string *s = string_new_cstr("Hello, World!");
     EXPECT_TRUE(string_ends_with_cstr(s, "World!"));
     string_free(s);
 }
 
-TEST(LiteStringTest, EndsWithCStrReturnsFalseWhenCStrIsNotSuffix) {
+TEST(LiteStringOperationsTest, EndsWithCStrReturnsFalseWhenCStrIsNotSuffix) {
     lite_string *s = string_new_cstr("Hello, World!");
     EXPECT_FALSE(string_ends_with_cstr(s, "Hello"));
     string_free(s);
 }
 
 
-TEST(LiteStringTest, ContainsCharReturnsTrueWhenCharExists) {
+TEST(LiteStringOperationsTest, ContainsCharReturnsTrueWhenCharExists) {
     lite_string *s = string_new_cstr("Hello");
     EXPECT_TRUE(string_contains_char(s, 'e'));
     string_free(s);
 }
 
-TEST(LiteStringTest, ContainsCharReturnsFalseWhenCharDoesNotExist) {
+TEST(LiteStringOperationsTest, ContainsCharReturnsFalseWhenCharDoesNotExist) {
     lite_string *s = string_new_cstr("Hello");
     EXPECT_FALSE(string_contains_char(s, 'z'));
     string_free(s);
 }
 
-TEST(LiteStringTest, ContainsCharReturnsFalseForEmptyString) {
+TEST(LiteStringOperationsTest, ContainsCharReturnsFalseForEmptyString) {
     lite_string *s = string_new();
     EXPECT_FALSE(string_contains_char(s, 'e'));
     string_free(s);
@@ -113,7 +112,7 @@ TEST(LiteStringTest, ContainsCharReturnsFalseForEmptyString) {
 
 
 // Comparing a string with a C-string for equality, ignoring case
-TEST(LiteStringTest, CaseCompareCstrReturnsCorrectValue) {
+TEST(LiteStringOperationsTest, CaseCompareCstrReturnsCorrectValue) {
     lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_TRUE(string_case_compare_cstr(s, "HELLO, WORLD!"));
     ASSERT_FALSE(string_case_compare_cstr(s, "HELLO, UNIVERSE!"));
@@ -121,19 +120,19 @@ TEST(LiteStringTest, CaseCompareCstrReturnsCorrectValue) {
 }
 
 // Comparing a string with a null C-string
-TEST(LiteStringTest, CaseCompareWithNullCStrReturnsFalse) {
+TEST(LiteStringOperationsTest, CaseCompareWithNullCStrReturnsFalse) {
     lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_FALSE(string_case_compare_cstr(s, nullptr));
     string_free(s);
 }
 
 // Comparing a null string with a C-string
-TEST(LiteStringTest, CaseCompareCstrNullStringReturnsFalse) {
+TEST(LiteStringOperationsTest, CaseCompareCstrNullStringReturnsFalse) {
     ASSERT_FALSE(string_case_compare_cstr(nullptr, "HELLO, WORLD!"));
 }
 
 // String contains the C-string
-TEST(LiteStringTest, ContainsCstrReturnsCorrectValue) {
+TEST(LiteStringOperationsTest, ContainsCstrReturnsCorrectValue) {
     lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_TRUE(string_contains_cstr(s, "World"));
     ASSERT_FALSE(string_contains_cstr(s, "Universe"));
@@ -141,45 +140,45 @@ TEST(LiteStringTest, ContainsCstrReturnsCorrectValue) {
 }
 
 // String is null
-TEST(LiteStringTest, ContainsCstrNullReturnsFalse) {
+TEST(LiteStringOperationsTest, ContainsCstrNullReturnsFalse) {
     ASSERT_FALSE(string_contains_cstr(nullptr, "World"));
 }
 
 // C-string is null
-TEST(LiteStringTest, ContainsCstrNullCStrReturnsFalse) {
+TEST(LiteStringOperationsTest, ContainsCstrNullCStrReturnsFalse) {
     lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_FALSE(string_contains_cstr(s, nullptr));
     string_free(s);
 }
 
 // String and C-string are both null
-TEST(LiteStringTest, ContainsCstrNullStringAndCStrReturnsFalse) {
+TEST(LiteStringOperationsTest, ContainsCstrNullStringAndCStrReturnsFalse) {
     ASSERT_FALSE(string_contains_cstr(nullptr, nullptr));
 }
 
 // String is empty
-TEST(LiteStringTest, ContainsCstrEmptyStringReturnsFalse) {
+TEST(LiteStringOperationsTest, ContainsCstrEmptyStringReturnsFalse) {
     lite_string *s = string_new();
     ASSERT_FALSE(string_contains_cstr(s, "World"));
     string_free(s);
 }
 
 // C-string is empty
-TEST(LiteStringTest, ContainsCstrEmptyCStrReturnsTrue) {
+TEST(LiteStringOperationsTest, ContainsCstrEmptyCStrReturnsTrue) {
     lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_TRUE(string_contains_cstr(s, ""));
     string_free(s);
 }
 
 // String and C-string are both empty
-TEST(LiteStringTest, ContainsCstrEmptyStringAndCStrReturnsTrue) {
+TEST(LiteStringOperationsTest, ContainsCstrEmptyStringAndCStrReturnsTrue) {
     lite_string *s = string_new();
     ASSERT_TRUE(string_contains_cstr(s, ""));
     string_free(s);
 }
 
 // String starts with the C-string
-TEST(LiteStringTest, StartsWithCstrReturnsCorrectValue) {
+TEST(LiteStringOperationsTest, StartsWithCstrReturnsCorrectValue) {
     lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_TRUE(string_starts_with_cstr(s, "Hello"));
     ASSERT_FALSE(string_starts_with_cstr(s, "World"));
@@ -187,45 +186,45 @@ TEST(LiteStringTest, StartsWithCstrReturnsCorrectValue) {
 }
 
 // String is null
-TEST(LiteStringTest, StartsWithCstrNullReturnsFalse) {
+TEST(LiteStringOperationsTest, StartsWithCstrNullReturnsFalse) {
     ASSERT_FALSE(string_starts_with_cstr(nullptr, "Hello"));
 }
 
 // C-string is null
-TEST(LiteStringTest, StartsWithCstrNullCStrReturnsFalse) {
+TEST(LiteStringOperationsTest, StartsWithCstrNullCStrReturnsFalse) {
     lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_FALSE(string_starts_with_cstr(s, nullptr));
     string_free(s);
 }
 
 // String and C-string are both null
-TEST(LiteStringTest, StartsWithCstrNullStringAndCStrReturnsFalse) {
+TEST(LiteStringOperationsTest, StartsWithCstrNullStringAndCStrReturnsFalse) {
     ASSERT_FALSE(string_starts_with_cstr(nullptr, nullptr));
 }
 
 // String is empty
-TEST(LiteStringTest, StartsWithCstrEmptyStringReturnsFalse) {
+TEST(LiteStringOperationsTest, StartsWithCstrEmptyStringReturnsFalse) {
     lite_string *s = string_new();
     ASSERT_FALSE(string_starts_with_cstr(s, "Hello"));
     string_free(s);
 }
 
 // C-string is empty
-TEST(LiteStringTest, StartsWithCstrEmptyCStrReturnsTrue) {
+TEST(LiteStringOperationsTest, StartsWithCstrEmptyCStrReturnsTrue) {
     lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_TRUE(string_starts_with_cstr(s, ""));
     string_free(s);
 }
 
 // String and C-string are both empty
-TEST(LiteStringTest, StartsWithCstrEmptyStringAndCStrReturnsTrue) {
+TEST(LiteStringOperationsTest, StartsWithCstrEmptyStringAndCStrReturnsTrue) {
     lite_string *s = string_new();
     ASSERT_TRUE(string_starts_with_cstr(s, ""));
     string_free(s);
 }
 
 // Comparing two identical strings, ignoring case
-TEST(LiteStringTest, CaseCompareReturnsCorrectValue) {
+TEST(LiteStringOperationsTest, CaseCompareReturnsCorrectValue) {
     lite_string *s1 = string_new_cstr("Hello, World!");
     lite_string *s2 = string_new_cstr("HELLO, WORLD!");
     lite_string *s3 = string_new_cstr("HELLO, UNIVERSE!");
@@ -238,7 +237,7 @@ TEST(LiteStringTest, CaseCompareReturnsCorrectValue) {
 }
 
 // Comparing a string with a null string, ignoring case
-TEST(LiteStringTest, CaseCompareNullStringReturnsFalse) {
+TEST(LiteStringOperationsTest, CaseCompareNullStringReturnsFalse) {
     lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_FALSE(string_case_compare(s, nullptr));
     ASSERT_FALSE(string_case_compare(nullptr, s));
@@ -246,12 +245,12 @@ TEST(LiteStringTest, CaseCompareNullStringReturnsFalse) {
 }
 
 // Comparing two null strings, ignoring case
-TEST(LiteStringTest, CaseCompareNullStringsReturnsFalse) {
+TEST(LiteStringOperationsTest, CaseCompareNullStringsReturnsFalse) {
     ASSERT_FALSE(string_case_compare(nullptr, nullptr));
 }
 
 // Comparing two empty strings, ignoring case
-TEST(LiteStringTest, CaseCompareEmptyStringsReturnsTrue) {
+TEST(LiteStringOperationsTest, CaseCompareEmptyStringsReturnsTrue) {
     lite_string *s1 = string_new();
     lite_string *s2 = string_new();
     ASSERT_TRUE(string_case_compare(s1, s2));
