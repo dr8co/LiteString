@@ -332,20 +332,20 @@ TEST(LiteStringTest, FunctionsDoNotCrashForNullptr) {
     EXPECT_FALSE(string_insert_range(nullptr, nullptr, 99, 1102));
     EXPECT_FALSE(string_insert_string(nullptr, nullptr, 601));
 
-    EXPECT_EQ(string_find_last_of(nullptr, 'a'), SIZE_MAX);
-    EXPECT_EQ(string_find_last_not_of(nullptr, 'a'), SIZE_MAX);
+    EXPECT_EQ(string_find_last_of(nullptr, 'a'), lite_string_npos);
+    EXPECT_EQ(string_find_last_not_of(nullptr, 'a'), lite_string_npos);
 
-    EXPECT_EQ(string_find_first_from(nullptr, 'a', 10), SIZE_MAX);
-    EXPECT_EQ(string_find_first_of(nullptr, 'a'), SIZE_MAX);
-    EXPECT_EQ(string_find_first_not_of(nullptr, 'a'), SIZE_MAX);
+    EXPECT_EQ(string_find_first_from(nullptr, 'a', 10), lite_string_npos);
+    EXPECT_EQ(string_find_first_of(nullptr, 'a'), lite_string_npos);
+    EXPECT_EQ(string_find_first_not_of(nullptr, 'a'), lite_string_npos);
 
-    EXPECT_EQ(string_find_from(nullptr, nullptr, 17), SIZE_MAX);
-    EXPECT_EQ(string_find(nullptr, nullptr), SIZE_MAX);
+    EXPECT_EQ(string_find_from(nullptr, nullptr, 17), lite_string_npos);
+    EXPECT_EQ(string_find(nullptr, nullptr), lite_string_npos);
 
-    EXPECT_EQ(string_rfind(nullptr, nullptr), SIZE_MAX);
-    EXPECT_EQ(string_find_cstr_from(nullptr, nullptr, 1900), SIZE_MAX);
-    EXPECT_EQ(string_rfind_cstr(nullptr, nullptr), SIZE_MAX);
-    EXPECT_EQ(string_find_cstr(nullptr, nullptr), SIZE_MAX);
+    EXPECT_EQ(string_rfind(nullptr, nullptr), lite_string_npos);
+    EXPECT_EQ(string_find_cstr_from(nullptr, nullptr, 1900), lite_string_npos);
+    EXPECT_EQ(string_rfind_cstr(nullptr, nullptr), lite_string_npos);
+    EXPECT_EQ(string_find_cstr(nullptr, nullptr), lite_string_npos);
 
     EXPECT_FALSE(string_contains_char(nullptr, 'a'));
     EXPECT_FALSE(string_contains(nullptr, nullptr));
@@ -509,7 +509,7 @@ TEST(LiteStringTest, FindLastOfReturnsCorrectIndex) {
 
 TEST(LiteStringTest, FindLastOfReturnsMaxSize) {
     lite_string *s = string_new_cstr("Hello, World!");
-    EXPECT_EQ(string_find_last_of(s, 'z'), SIZE_MAX);
+    EXPECT_EQ(string_find_last_of(s, 'z'), lite_string_npos);
     string_free(s);
 }
 
@@ -548,7 +548,7 @@ TEST(LiteStringTest, FindSubstrFromFindsCorrectIndex) {
 TEST(LiteStringTest, FindSubstrFromReturnsMaxSize) {
     lite_string *s = string_new_cstr("Hello, World!");
     lite_string *sub = string_new_cstr("Planet");
-    EXPECT_EQ(string_find_from(s, sub, 0), SIZE_MAX);
+    EXPECT_EQ(string_find_from(s, sub, 0), lite_string_npos);
     string_free(s);
     string_free(sub);
 }
@@ -607,7 +607,7 @@ TEST(LiteStringTest, FindSubstrCStrReturnsCorrectIndex) {
 
 TEST(LiteStringTest, FindSubstrCStrReturnsMaxSize) {
     lite_string *s = string_new_cstr("Hello, World!");
-    EXPECT_EQ(string_find_cstr(s, "Planet"), SIZE_MAX);
+    EXPECT_EQ(string_find_cstr(s, "Planet"), lite_string_npos);
     string_free(s);
 }
 

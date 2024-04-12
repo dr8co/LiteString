@@ -1,9 +1,14 @@
 #include <stdlib.h>
 #include <string.h>
-#include <stdint.h>
 #include "lite_string.h"
-
 #include <stdio.h>
+
+#if __has_c_attribute(gnu::always_inline)
+#define LITE_ATTR_ALWAYS_INLINE [[gnu::always_inline]]
+#else
+#define LITE_ATTR_ALWAYS_INLINE
+#endif
+
 
 /**
  * @brief Creates a new string with an initial capacity of 16.
@@ -11,7 +16,7 @@
  * @return A pointer to the newly created string, or NULL if memory allocation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
-[[nodiscard]] lite_string *string_new() {
+LITE_ATTR_NODISCARD LITE_ATTR_HOT lite_string *string_new() {
     lite_string *s = (lite_string *) malloc(sizeof(lite_string));
     if (s) {
         if ((s->data = (char *) calloc(16, sizeof(char)))) {
@@ -32,7 +37,7 @@
  * @return A pointer to the newly created string, or NULL if the memory allocation failed or the C-string is NULL.
  * @note The returned pointer must be freed by the caller, using the \p string_free() function.
  */
-[[nodiscard]] lite_string *string_new_cstr(const char *const restrict cstr) {
+LITE_ATTR_NODISCARD LITE_ATTR_HOT lite_string *string_new_cstr(const char *const restrict cstr) {
     lite_string *s = string_new();
     if (cstr && s) {
         if (!string_append_cstr(s, cstr)) {
@@ -50,7 +55,7 @@
  *
  * @param s A pointer to the string to be freed.
  */
-void string_free(lite_string *const restrict s) {
+LITE_ATTR_HOT void string_free(lite_string *const restrict s) {
     if (s) {
         if (s->data) {
             free(s->data);
@@ -71,7 +76,7 @@ void string_free(lite_string *const restrict s) {
  *
  * @note This function is for internal use only, and should not be called directly by the user.
  */
-__attribute_pure__ static inline size_t lite_clp2_(size_t x) {
+LITE_ATTR_UNSEQUENCED LITE_ATTR_ALWAYS_INLINE static inline size_t lite_clp2_(size_t x) {
     --x;
     x |= x >> 1;
     x |= x >> 2;
@@ -95,13 +100,13 @@ __attribute_pure__ static inline size_t lite_clp2_(size_t x) {
  * The new size is rounded up to the next power of 2 to improve performance.
  * @warning This function is for internal use only, and should not be called directly by the user.
  */
-bool string_reserve(lite_string *const restrict s, size_t size) {
+LITE_ATTR_HOT bool string_reserve(lite_string *const restrict s, size_t size) {
     if (s) {
-        if (size <= 16) return true;
-
         // Round up the new size to the next power of 2, and reallocate the memory if necessary
         size = lite_clp2_(size);
-        if (size >= s->capacity) {
+        if (size < 16) size = 16;
+
+        if (size > s->capacity) {
             void *temp = realloc(s->data, size * sizeof(char));
             if (temp == nullptr) return false;
 
@@ -330,7 +335,7 @@ bool string_case_compare(const lite_string *const restrict s1, const lite_string
  * @param s A pointer to the string.
  * @return The length of the string, or 0 if the string is invalid.
  */
-size_t string_length(const lite_string *const restrict s) {
+LITE_ATTR_HOT size_t string_length(const lite_string *const restrict s) {
     return s ? s->size : 0;
 }
 
@@ -340,7 +345,7 @@ size_t string_length(const lite_string *const restrict s) {
  * @param s A pointer to the string.
  * @return The length of the string, or 0 if the string is invalid.
  */
-size_t string_size(const lite_string *const restrict s) {
+LITE_ATTR_HOT size_t string_size(const lite_string *const restrict s) {
     return string_length(s);
 }
 
@@ -459,7 +464,7 @@ string_insert_string(lite_string *const restrict s, const lite_string *const res
  *
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
-[[nodiscard]] lite_string *string_substr(const lite_string *const restrict s, const size_t start, const size_t len) {
+LITE_ATTR_NODISCARD lite_string *string_substr(const lite_string *const restrict s, const size_t start, const size_t len) {
     if (s) {
         // The requested substring must be within the bounds of the string
         if (len == 0 || start >= s->size || len > s->size || start + len - 1 > s->size) return nullptr;
@@ -490,7 +495,7 @@ string_insert_string(lite_string *const restrict s, const lite_string *const res
  * or NULL if the strings could not be concatenated.
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
-[[nodiscard]] lite_string *string_concat(const lite_string *const restrict s1,
+LITE_ATTR_NODISCARD lite_string *string_concat(const lite_string *const restrict s1,
                                          const lite_string *const restrict s2) {
     if (s1 && s2) {
         lite_string *s = string_new();
@@ -595,7 +600,7 @@ bool string_append_cstr(lite_string *const restrict s, const char *const restric
  * @param s A pointer to the string.
  * @return A pointer to the C-string representation of the string, or NULL if the string is invalid.
  */
-char *string_cstr(lite_string *const restrict s) {
+LITE_ATTR_HOT char *string_cstr(lite_string *const restrict s) {
     if (s) {
         if (s->size == 0) s->data[0] = '\0';
 
@@ -704,7 +709,8 @@ bool string_swap(lite_string *const restrict s1, lite_string *const restrict s2)
  *
  * @param s A pointer to the string.
  * @param c The character to be found.
- * @return The index of the last occurrence of the character in the string, or \p SIZE_MAX if the character was not found.
+ * @return The index of the last occurrence of the character in the string,
+ * or \p lite_string_npos if the character was not found.
  */
 size_t string_find_last_of(const lite_string *const restrict s, const char c) {
     if (s && c != '\0') {
@@ -718,7 +724,7 @@ size_t string_find_last_of(const lite_string *const restrict s, const char c) {
         }
 #endif
     }
-    return SIZE_MAX;
+    return lite_string_npos;
 }
 
 /**
@@ -727,7 +733,7 @@ size_t string_find_last_of(const lite_string *const restrict s, const char c) {
  * @param s A pointer to the string.
  * @param c The character to be compared against.
  * @return The index of the last occurrence of a character that does not match the specified character in the string,
- * or \p SIZE_MAX if all characters match or the string is invalid.
+ * or \p lite_string_npos if all characters match or the string is invalid.
  */
 size_t string_find_last_not_of(const lite_string *const restrict s, const char c) {
     if (s && c != '\0') {
@@ -736,7 +742,7 @@ size_t string_find_last_not_of(const lite_string *const restrict s, const char c
                 return i - 1;
         }
     }
-    return SIZE_MAX;
+    return lite_string_npos;
 }
 
 /**
@@ -745,14 +751,15 @@ size_t string_find_last_not_of(const lite_string *const restrict s, const char c
  * @param s A pointer to the string.
  * @param c The character to be found.
  * @param start The index from which the search will start.
- * @return The index of the first occurrence of the character in the string, or \p SIZE_MAX if the character was not found.
+ * @return The index of the first occurrence of the character in the string,
+ * or \p lite_string_npos if the character was not found.
  */
 size_t string_find_first_from(const lite_string *const restrict s, const char c, const size_t start) {
     if (s && c != '\0' && start < s->size) {
         const char *found = (const char *) memchr(s->data + start, c, s->size - start);
         if (found) return found - s->data;
     }
-    return SIZE_MAX;
+    return lite_string_npos;
 }
 
 /**
@@ -760,7 +767,8 @@ size_t string_find_first_from(const lite_string *const restrict s, const char c,
  *
  * @param s A pointer to the string.
  * @param c The character to be found.
- * @return The index of the first occurrence of the character in the string, or \p SIZE_MAX if the character was not found.
+ * @return The index of the first occurrence of the character in the string,
+ * or \p lite_string_npos if the character was not found.
  */
 size_t string_find_first_of(const lite_string *const restrict s, const char c) {
     return string_find_first_from(s, c, 0);
@@ -772,7 +780,7 @@ size_t string_find_first_of(const lite_string *const restrict s, const char c) {
  * @param s A pointer to the string.
  * @param c The character to be compared against.
  * @return The index of the first occurrence of a character that does not match the specified character in the string,
- * or \p SIZE_MAX if all characters match or the string is invalid.
+ * or \p lite_string_npos if all characters match or the string is invalid.
  */
 size_t string_find_first_not_of(const lite_string *const restrict s, const char c) {
     if (s && c != '\0') {
@@ -781,7 +789,7 @@ size_t string_find_first_not_of(const lite_string *const restrict s, const char 
                 return i;
         }
     }
-    return SIZE_MAX;
+    return lite_string_npos;
 }
 
 /**
@@ -791,7 +799,7 @@ size_t string_find_first_not_of(const lite_string *const restrict s, const char 
  * @return True if the string contains the character, false otherwise.
  */
 bool string_contains_char(const lite_string *const restrict s, const char c) {
-    return string_find_first_of(s, c) != SIZE_MAX;
+    return string_find_first_of(s, c) != lite_string_npos;
 }
 
 /**
@@ -800,13 +808,14 @@ bool string_contains_char(const lite_string *const restrict s, const char c) {
  * @param s A pointer to the string.
  * @param sub A pointer to the substring to be found.
  * @param start The index from which the search will start.
- * @return The index of the first occurrence of the substring in the string, or \p SIZE_MAX if the substring was not found.
+ * @return The index of the first occurrence of the substring in the string,
+ * or \p lite_string_npos if the substring was not found.
  */
 size_t string_find_from(const lite_string *const restrict s, const lite_string *const restrict sub,
                         const size_t start) {
     if (s && sub && start < s->size) {
         if (sub->size == 0) return start;
-        if (sub->size > s->size) return SIZE_MAX;
+        if (sub->size > s->size) return lite_string_npos;
 #if _GNU_SOURCE
         const char *found = (const char *) memmem(s->data + start, s->size - start, sub->data, sub->size);
         if (found) return found - s->data;
@@ -825,7 +834,7 @@ size_t string_find_from(const lite_string *const restrict s, const lite_string *
         }
 #endif
     }
-    return SIZE_MAX;
+    return lite_string_npos;
 }
 
 /**
@@ -833,7 +842,8 @@ size_t string_find_from(const lite_string *const restrict s, const lite_string *
  *
  * @param s A pointer to the string.
  * @param sub A pointer to the substring to be found.
- * @return The index of the first occurrence of the substring in the string, or \p SIZE_MAX if the substring was not found.
+ * @return The index of the first occurrence of the substring in the string,
+ * or \p lite_string_npos if the substring was not found.
  */
 size_t string_find(const lite_string *const restrict s, const lite_string *const restrict sub) {
     return string_find_from(s, sub, 0);
@@ -844,12 +854,13 @@ size_t string_find(const lite_string *const restrict s, const lite_string *const
  *
  * @param s A pointer to the string.
  * @param sub A pointer to the substring to be found.
- * @return The index of the last occurrence of the substring in the string, or \p SIZE_MAX if the substring was not found.
+ * @return The index of the last occurrence of the substring in the string,
+ * or \p lite_string_npos if the substring was not found.
  */
 size_t string_rfind(const lite_string *const restrict s, const lite_string *const restrict sub) {
     if (s && sub) {
         if (sub->size == 0) return s->size;
-        if (sub->size > s->size) return SIZE_MAX;
+        if (sub->size > s->size) return lite_string_npos;
 
         for (size_t i = s->size - sub->size; i > 0; --i) {
             if (s->data[i] == sub->data[0]) {
@@ -864,7 +875,7 @@ size_t string_rfind(const lite_string *const restrict s, const lite_string *cons
             }
         }
     }
-    return SIZE_MAX;
+    return lite_string_npos;
 }
 
 /**
@@ -873,7 +884,8 @@ size_t string_rfind(const lite_string *const restrict s, const lite_string *cons
  * @param s A pointer to the string.
  * @param cstr The C-string to be found.
  * @param start The index from which the search will start.
- * @return The index of the first occurrence of the C-string in the string, or \p SIZE_MAX if the C-string was not found.
+ * @return The index of the first occurrence of the C-string in the string,
+ * or \p lite_string_npos if the C-string was not found.
  */
 size_t string_find_cstr_from(const lite_string *const restrict s, const char *const restrict cstr,
                              const size_t start) {
@@ -883,7 +895,7 @@ size_t string_find_cstr_from(const lite_string *const restrict s, const char *co
         // Empty C-strings are always found
         if (len == 0) return start;
         // The C-string must be within the bounds of the string
-        if (len > s->size) return SIZE_MAX;
+        if (len > s->size) return lite_string_npos;
 
         // The search must start from a valid index
         if (start < s->size) {
@@ -908,7 +920,7 @@ size_t string_find_cstr_from(const lite_string *const restrict s, const char *co
 #endif
     }
     // The C-string was not found
-    return SIZE_MAX;
+    return lite_string_npos;
 }
 
 /**
@@ -916,13 +928,14 @@ size_t string_find_cstr_from(const lite_string *const restrict s, const char *co
  *
  * @param s A pointer to the string.
  * @param cstr The C-string to be found.
- * @return The index of the last occurrence of the C-string in the string, or \p SIZE_MAX if the C-string was not found.
+ * @return The index of the last occurrence of the C-string in the string,
+ * or \p lite_string_npos if the C-string was not found.
  */
 size_t string_rfind_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     if (s && cstr) {
         const size_t len = strlen(cstr);
         if (len == 0) return s->size;
-        if (len > s->size) return SIZE_MAX;
+        if (len > s->size) return lite_string_npos;
 
         for (size_t i = s->size - len; i > 0; --i) {
             if (s->data[i] == cstr[0]) {
@@ -937,7 +950,7 @@ size_t string_rfind_cstr(const lite_string *const restrict s, const char *const 
             }
         }
     }
-    return SIZE_MAX;
+    return lite_string_npos;
 }
 
 /**
@@ -945,7 +958,8 @@ size_t string_rfind_cstr(const lite_string *const restrict s, const char *const 
  *
  * @param s A pointer to the string.
  * @param cstr The C-string to be found.
- * @return The index of the first occurrence of the C-string in the string, or \p SIZE_MAX if the C-string was not found.
+ * @return The index of the first occurrence of the C-string in the string,
+ * or \p lite_string_npos if the C-string was not found.
  */
 size_t string_find_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     return string_find_cstr_from(s, cstr, 0);
@@ -959,7 +973,7 @@ size_t string_find_cstr(const lite_string *const restrict s, const char *const r
  * @return True if the string contains the substring, false otherwise.
  */
 bool string_contains(const lite_string *const restrict s, const lite_string *const restrict sub) {
-    return string_find(s, sub) != SIZE_MAX;
+    return string_find(s, sub) != lite_string_npos;
 }
 
 /**
@@ -970,7 +984,7 @@ bool string_contains(const lite_string *const restrict s, const lite_string *con
  * @return True if the string contains the C-string, false otherwise.
  */
 bool string_contains_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
-    return string_find_cstr(s, cstr) != SIZE_MAX;
+    return string_find_cstr(s, cstr) != lite_string_npos;
 }
 
 /**
@@ -1119,7 +1133,7 @@ bool string_replace(lite_string *const restrict s, const lite_string *const rest
 
         size_t count = 0;
         size_t start = 0;
-        while ((start = string_find_from(s, old_sub, start)) != SIZE_MAX) {
+        while ((start = string_find_from(s, old_sub, start)) != lite_string_npos) {
             if (string_erase_range(s, start, old_sub->size)) {
                 if (!string_insert_range(s, new_sub, start, new_sub->size)) return false;
                 start += new_sub->size;
@@ -1166,7 +1180,7 @@ bool string_replace_cstr(lite_string *const restrict s, const char *const restri
 
         size_t count = 0;
         size_t start = 0;
-        while ((start = string_find_cstr_from(s, old_cstr, start)) != SIZE_MAX) {
+        while ((start = string_find_cstr_from(s, old_cstr, start)) != lite_string_npos) {
             if (string_erase_range(s, start, old_len)) {
                 if (!string_insert_cstr_range(s, new_cstr, start, new_len)) return false;
                 start += new_len;
@@ -1186,7 +1200,7 @@ bool string_replace_cstr(lite_string *const restrict s, const char *const restri
  *
  * @note The returned pointer must be freed by the caller, using the \p string_free() function.
  */
-[[nodiscard]] lite_string *string_duplicate(const lite_string *const restrict s) {
+LITE_ATTR_NODISCARD lite_string *string_duplicate(const lite_string *const restrict s) {
     if (s) {
         lite_string *dup = string_new();
         if (dup) {
@@ -1327,7 +1341,7 @@ long double string_to_ldouble(lite_string *const restrict s) {
  * @return A pointer to the new string containing the long long integer, or NULL if the string creation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
-[[nodiscard]] lite_string *string_from_ll(const long long value) {
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ll(const long long value) {
     lite_string *s = string_new();
     if (s) {
         char buf[32];
@@ -1344,7 +1358,7 @@ long double string_to_ldouble(lite_string *const restrict s) {
  * @return A pointer to the new string containing the unsigned long long integer, or NULL if the string creation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
-[[nodiscard]] lite_string *string_from_ull(const unsigned long long value) {
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ull(const unsigned long long value) {
     lite_string *s = string_new();
     if (s) {
         char buf[32];
@@ -1361,7 +1375,7 @@ long double string_to_ldouble(lite_string *const restrict s) {
  * @return A pointer to the new string containing the long integer, or NULL if the string creation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
-[[nodiscard]] lite_string *string_from_l(const long value) {
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_l(const long value) {
     lite_string *s = string_new();
     if (s) {
         char buf[32];
@@ -1378,7 +1392,7 @@ long double string_to_ldouble(lite_string *const restrict s) {
  * @return A pointer to the new string containing the unsigned long integer, or NULL if the string creation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
-[[nodiscard]] lite_string *string_from_ul(const unsigned long value) {
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ul(const unsigned long value) {
     lite_string *s = string_new();
     if (s) {
         char buf[32];
@@ -1395,7 +1409,7 @@ long double string_to_ldouble(lite_string *const restrict s) {
  * @return A pointer to the new string containing the integer.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
-[[nodiscard]] lite_string *string_from_int(const int value) {
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_int(const int value) {
     return string_from_l(value);
 }
 
@@ -1406,7 +1420,7 @@ long double string_to_ldouble(lite_string *const restrict s) {
  * @return A pointer to the new string containing the unsigned integer.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
-[[nodiscard]] lite_string *string_from_uint(const unsigned int value) {
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_uint(const unsigned int value) {
     return string_from_ul(value);
 }
 
@@ -1417,7 +1431,7 @@ long double string_to_ldouble(lite_string *const restrict s) {
  * @return A pointer to the new string containing the double, or NULL if the string creation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
-[[nodiscard]] lite_string *string_from_double(const double value) {
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_double(const double value) {
     lite_string *s = string_new();
     if (s) {
         char buf[32];
@@ -1434,7 +1448,7 @@ long double string_to_ldouble(lite_string *const restrict s) {
  * @return A pointer to the new string containing the float, or NULL if the string creation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
-[[nodiscard]] lite_string *string_from_float(const float value) {
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_float(const float value) {
     lite_string *s = string_new();
     if (s) {
         char buf[32];
@@ -1451,7 +1465,7 @@ long double string_to_ldouble(lite_string *const restrict s) {
  * @return A pointer to the new string containing the long double, or NULL if the string creation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
-[[nodiscard]] lite_string *string_from_ldouble(const long double value) {
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ldouble(const long double value) {
     lite_string *s = string_new();
     if (s) {
         char buf[32];

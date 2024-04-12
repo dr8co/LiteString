@@ -43,6 +43,43 @@ extern "C" {
 
 #include <stddef.h>
 
+#if __STDC_VERSION__ < 202311L
+#include <stdbool.h>
+#endif
+#define lite_string_npos ((size_t) -1)
+
+#ifndef __has_c_attribute
+#define __has_c_attribute(x) 0  // Compatibility with non-gnu compilers
+#endif
+
+#if __has_c_attribute(nodiscard)
+#define LITE_ATTR_NODISCARD [[__nodiscard__]]
+#else
+#define LITE_ATTR_NODISCARD
+#endif
+
+#if __has_c_attribute(gnu::hot)
+#define LITE_ATTR_HOT [[gnu::hot]]
+#else
+#define LITE_ATTR_HOT
+#endif
+
+#if __has_c_attribute(reproducible)
+#define LITE_ATTR_REPRODUCIBLE [[__reproducible__]]
+#elif __has_c_attribute(gnu::pure)
+#define LITE_ATTR_REPRODUCIBLE [[gnu::pure]]
+#else
+#define LITE_ATTR_REPRODUCIBLE
+#endif
+
+#if __has_c_attribute(unsequenced)
+#define LITE_ATTR_UNSEQUENCED [[__unsequenced__]]
+#elif __has_c_attribute(gnu::const)
+#define LITE_ATTR_UNSEQUENCED [[gnu::const]]
+#else
+#define LITE_ATTR_UNSEQUENCED
+#endif
+
 
 /**
  * @brief A simple emulation of a C++ string in C.
@@ -60,11 +97,11 @@ struct lite_string {
 typedef struct lite_string lite_string;
 
 
-[[nodiscard]] lite_string *string_new();
+LITE_ATTR_NODISCARD LITE_ATTR_HOT lite_string *string_new();
 
-void string_free(lite_string *restrict s);
+LITE_ATTR_HOT void string_free(lite_string *restrict s);
 
-bool string_reserve(lite_string *restrict s, size_t size);
+LITE_ATTR_HOT bool string_reserve(lite_string *restrict s, size_t size);
 
 bool string_push_back(lite_string *restrict s, char c);
 
@@ -82,7 +119,9 @@ char string_front(const lite_string *restrict s);
 
 bool string_compare(const lite_string *restrict s1, const lite_string *restrict s2);
 
-size_t string_length(const lite_string *restrict s);
+LITE_ATTR_HOT size_t string_length(const lite_string *restrict s);
+
+LITE_ATTR_HOT size_t string_size(const lite_string *restrict s);
 
 size_t string_capacity(const lite_string *restrict s);
 
@@ -92,9 +131,9 @@ bool string_insert(lite_string *restrict s, size_t index, char c);
 
 void string_set(const lite_string *restrict s, size_t index, char c);
 
-[[nodiscard]] lite_string *string_substr(const lite_string *restrict s, size_t start, size_t len);
+LITE_ATTR_NODISCARD lite_string *string_substr(const lite_string *restrict s, size_t start, size_t len);
 
-[[nodiscard]] lite_string *string_concat(const lite_string *restrict s1, const lite_string *restrict s2);
+LITE_ATTR_NODISCARD lite_string *string_concat(const lite_string *restrict s1, const lite_string *restrict s2);
 
 bool string_append_range(lite_string *restrict s1, const lite_string *restrict s2, size_t count);
 
@@ -102,7 +141,7 @@ bool string_append(lite_string *restrict s1, const lite_string *restrict s2);
 
 bool string_append_cstr(lite_string *restrict s, const char *restrict cstr);
 
-char *string_cstr(lite_string *restrict s);
+LITE_ATTR_HOT char *string_cstr(lite_string *restrict s);
 
 bool string_compare_cstr(const lite_string *restrict s, const char *restrict cstr);
 
@@ -172,7 +211,7 @@ void string_to_upper(const lite_string *restrict s);
 
 void string_to_title(const lite_string *restrict s);
 
-[[nodiscard]] lite_string *string_new_cstr(const char *restrict cstr);
+LITE_ATTR_NODISCARD LITE_ATTR_HOT lite_string *string_new_cstr(const char *restrict cstr);
 
 bool string_replace(lite_string *restrict s, const lite_string *restrict old_sub,
                     const lite_string *restrict new_sub);
@@ -184,9 +223,7 @@ bool string_replace_cstr(lite_string *restrict s, const char *restrict old_cstr,
 
 bool string_erase_range(lite_string *restrict s, size_t start, size_t count);
 
-[[nodiscard]] lite_string *string_duplicate(const lite_string *restrict s);
-
-size_t string_size(const lite_string *restrict s);
+LITE_ATTR_NODISCARD lite_string *string_duplicate(const lite_string *restrict s);
 
 void string_reverse(const lite_string *restrict s);
 
@@ -208,23 +245,23 @@ float string_to_float(lite_string *restrict s);
 
 long double string_to_ldouble(lite_string *restrict s);
 
-[[nodiscard]] lite_string *string_from_l(long value);
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_l(long value);
 
-[[nodiscard]] lite_string *string_from_ll(long long value);
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ll(long long value);
 
-[[nodiscard]] lite_string *string_from_ul(unsigned long value);
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ul(unsigned long value);
 
-[[nodiscard]] lite_string *string_from_ull(unsigned long long value);
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ull(unsigned long long value);
 
-[[nodiscard]] lite_string *string_from_int(int value);
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_int(int value);
 
-[[nodiscard]] lite_string *string_from_uint(unsigned int value);
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_uint(unsigned int value);
 
-[[nodiscard]] lite_string *string_from_double(double value);
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_double(double value);
 
-[[nodiscard]] lite_string *string_from_float(float value);
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_float(float value);
 
-[[nodiscard]] lite_string *string_from_ldouble(long double value);
+LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ldouble(long double value);
 
 #if __cplusplus
 }
