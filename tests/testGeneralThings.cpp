@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
 #include "../lite_string.h"
 
-TEST(LiteStringTest, NewCreatesEmptyString) {
+// Creation and destruction
+TEST(LiteStringGeneralTest, NewCreatesEmptyString) {
     lite_string *s = string_new();
     ASSERT_NE(s, nullptr);
     EXPECT_EQ(string_length(s), 0);
@@ -9,27 +10,24 @@ TEST(LiteStringTest, NewCreatesEmptyString) {
     string_free(s);
 }
 
-TEST(LiteStringTest, CStrReturnsCorrectCStr) {
-    lite_string *s = string_new();
-    ASSERT_TRUE(string_push_back(s, 'a'));
-    ASSERT_TRUE(string_push_back(s, 'b'));
-    ASSERT_TRUE(string_push_back(s, 'c'));
+TEST(LiteStringGeneralTest, CStrReturnsCorrectCStr) {
+    lite_string *s = string_new_cstr("abc");
 
-    char *cstr = string_cstr(s);
+    const char *cstr = string_cstr(s);
     ASSERT_EQ(cstr[3], '\0');
 
     ASSERT_STREQ(cstr, "abc");
     string_free(s);
 }
 
-TEST(LiteStringTest, EmptyReturnsFalseForNonEmptyString) {
+TEST(LiteStringGeneralTest, EmptyReturnsFalseForNonEmptyString) {
     lite_string *s = string_new();
     ASSERT_TRUE(string_push_back(s, 'a'));
     EXPECT_FALSE(string_empty(s));
     string_free(s);
 }
 
-TEST(LiteStringTest, EmptyReturnsTrueForEmptyString) {
+TEST(LiteStringGeneralTest, EmptyReturnsTrueForEmptyString) {
     lite_string *s = string_new();
     EXPECT_TRUE(string_empty(s));
     lite_string *s2 = string_new_cstr("abcd");
@@ -39,7 +37,7 @@ TEST(LiteStringTest, EmptyReturnsTrueForEmptyString) {
     string_free(s2);
 }
 
-TEST(LiteStringTest, AtReturnsCorrectValue) {
+TEST(LiteStringGeneralTest, AtReturnsCorrectValue) {
     lite_string *s = string_new();
     ASSERT_TRUE(string_push_back(s, 'a'));
     EXPECT_EQ(string_at(s, 0), 'a');
@@ -47,31 +45,31 @@ TEST(LiteStringTest, AtReturnsCorrectValue) {
 }
 
 
-TEST(LiteStringTest, BackReturnsLastCharacterForNonEmptyString) {
+TEST(LiteStringGeneralTest, BackReturnsLastCharacterForNonEmptyString) {
     lite_string *s = string_new_cstr("Hi");
     EXPECT_EQ(string_back(s), 'i');
     string_free(s);
 }
 
-TEST(LiteStringTest, BackReturnsNullCharacterForEmptyString) {
+TEST(LiteStringGeneralTest, BackReturnsNullCharacterForEmptyString) {
     lite_string *s = string_new();
     EXPECT_EQ(string_back(s), '\0');
     string_free(s);
 }
 
-TEST(LiteStringTest, FrontReturnsFirstCharacterForNonEmptyString) {
+TEST(LiteStringGeneralTest, FrontReturnsFirstCharacterForNonEmptyString) {
     lite_string *s = string_new_cstr("Hi");
     EXPECT_EQ(string_front(s), 'H');
     string_free(s);
 }
 
-TEST(LiteStringTest, FrontReturnsNullCharacterForEmptyString) {
+TEST(LiteStringGeneralTest, FrontReturnsNullCharacterForEmptyString) {
     lite_string *s = string_new();
     EXPECT_EQ(string_front(s), '\0');
     string_free(s);
 }
 
-TEST(LiteStringTest, DuplicateNonEmptyString) {
+TEST(LiteStringGeneralTest, DuplicateNonEmptyString) {
     lite_string *s = string_new_cstr("Hello, World!");
     lite_string *dup = string_duplicate(s);
     EXPECT_TRUE(string_compare(s, dup));
@@ -79,7 +77,7 @@ TEST(LiteStringTest, DuplicateNonEmptyString) {
     string_free(dup);
 }
 
-TEST(LiteStringTest, DuplicateEmptyString) {
+TEST(LiteStringGeneralTest, DuplicateEmptyString) {
     lite_string *s = string_new_cstr("");
     lite_string *dup = string_duplicate(s);
     EXPECT_TRUE(string_compare(s, dup));
@@ -87,13 +85,13 @@ TEST(LiteStringTest, DuplicateEmptyString) {
     string_free(dup);
 }
 
-TEST(LiteStringTest, DuplicateNullString) {
+TEST(LiteStringGeneralTest, DuplicateNullString) {
     const lite_string *s = nullptr;
     lite_string *dup = string_duplicate(s);
     EXPECT_EQ(dup, nullptr);
 }
 
-TEST(LiteStringTest, FunctionsDoNotCrashForNullptr) {
+TEST(LiteStringGeneralTest, FunctionsDoNotCrashForNullptr) {
     string_free(nullptr);
     EXPECT_FALSE(string_push_back(nullptr, 'a'));
     EXPECT_EQ(string_at(nullptr, 10), '\0');

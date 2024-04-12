@@ -4,7 +4,7 @@ project(LiteString C CXX)
 
 # Test executable
 add_executable(testLiteString
-        testLiteString.cpp
+        testGeneralThings.cpp
         testConversion.cpp
         testModifiers.cpp
         testOperations.cpp
