@@ -267,7 +267,7 @@ char string_front(const lite_string *const restrict s) {
 bool string_erase_range(lite_string *const restrict s, const size_t start, const size_t count) {
     if (s && start < s->size) {
         if (count == 0) return true;
-#if (__GNUC__ || __clang__) && __has_builtin(__builtin_add_overflow)
+#if (__GNUC__ || __clang__) && __has_builtin(__builtin_uaddl_overflow)
         size_t end;
         if (!__builtin_uaddl_overflow(start, count, &end) && end <= s->size)
 #else
