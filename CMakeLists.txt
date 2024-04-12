@@ -10,8 +10,10 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Additional options for the Debug build
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -Wpedantic -g")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wpedantic -g")
+if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_C_COMPILER_ID} STREQUAL "AppleClang" OR ${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -Wpedantic -g")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wpedantic -g")
+endif ()
 
 # Sanitizers for debugging and testing
 # GCC does not support all sanitizers, so Clang is recommended for this purpose. Requires llvm-symbolizer.
@@ -28,6 +30,10 @@ if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
 endif ()
 
 add_library(lite-string STATIC lite_string.h lite_string.c)
+
+if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
+    target_compile_definitions(lite-string PRIVATE _GNU_SOURCE)
+endif ()
 
 # Examples
 add_subdirectory(examples)
