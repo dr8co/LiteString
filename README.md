@@ -2,15 +2,13 @@
 
 ## About
 
-A simple string library for C (and C++).
+A simple byte string library for C (and C++).
 
 LiteString provides an extended set of functions for working with strings.
 It is intended to be a lightweight emulation of the C++ `std::string` class,
 with a focus on simplicity, performance, and ease of use.
 
 LiteString is written in C and can be used in both C and C++ projects.
-
-The current implementation does not support Unicode or multibyte characters.
 
 ## Features
 
@@ -153,8 +151,11 @@ char string_front(const lite_string *const restrict s)
 char string_back(const lite_string *const restrict s)
 // Retrieves the last character of a string.
 
+char *string_data(const lite_string *restrict s)
+// Returns a pointer to the underlying character array. Not guaranteed to be null-terminated.
+
 char *string_cstr(const lite_string *const restrict s)
-// Returns a pointer to the underlying C-string.
+// Returns a pointer to the underlying C-string. Guaranteed to be null-terminated.
 ```
 
 ### Capacity
@@ -267,31 +268,31 @@ void string_to_upper(const lite_string *restrict s);
 void string_to_title(const lite_string *restrict s);
 // Converts a string to title case.
 
-long long string_to_ll(lite_string *restrict s);
+long long string_to_ll(const lite_string *restrict s);
 // Converts a string to a long long integer.
 
-unsigned long long string_to_ull(lite_string *restrict s);
+unsigned long long string_to_ull(const lite_string *restrict s);
 // Converts a string to an unsigned long long integer.
 
-long string_to_l(lite_string *restrict s);
+long string_to_l(const lite_string *restrict s);
 // Converts a string to a long integer.
 
-unsigned long string_to_ul(lite_string *restrict s);
+unsigned long string_to_ul(const lite_string *restrict s);
 // Converts a string to an unsigned long integer.
 
-int string_to_int(lite_string *restrict s);
+int string_to_int(const lite_string *restrict s);
 // Converts a string to an integer.
 
-unsigned int string_to_uint(lite_string *restrict s);
+unsigned int string_to_uint(const lite_string *restrict s);
 // Converts a string to an unsigned integer.
 
-double string_to_double(lite_string *restrict s);
+double string_to_double(const lite_string *restrict s);
 // Converts a string to a double-precision floating-point number.
 
-float string_to_float(lite_string *restrict s);
+float string_to_float(const lite_string *restrict s);
 // Converts a string to a single-precision floating-point number.
 
-long double string_to_ldouble(lite_string *restrict s);
+long double string_to_ldouble(const lite_string *restrict s);
 // Converts a string to a long double-precision floating-point number.
 
 lite_string *string_from_l(long value);
@@ -425,10 +426,8 @@ int main() {
 }
 ```
 
-More examples can be found in the `examples` directory.
+More examples can be found in the `[examples](./examples)` directory.
 
 ## License
 
 LiteString is released under the MIT License. See `LICENSE` for more information.
-
-```

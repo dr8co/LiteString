@@ -13,7 +13,7 @@
 /**
  * @brief Creates a new string with an initial capacity of 16.
  *
- * @return A pointer to the newly created string, or NULL if memory allocation failed.
+ * @return A pointer to the newly created string, or nullptr if memory allocation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
 LITE_ATTR_NODISCARD LITE_ATTR_HOT lite_string *string_new() {
@@ -34,7 +34,8 @@ LITE_ATTR_NODISCARD LITE_ATTR_HOT lite_string *string_new() {
  * @brief Creates a new string and initializes it with a C-string.
  *
  * @param cstr A pointer to the C-string that will be used to initialize the new string.
- * @return A pointer to the newly created string, or NULL if the memory allocation failed or the C-string is NULL.
+ * @return A pointer to the newly created string, or nullptr if the memory allocation failed
+ * or the C-string is nullptr.
  * @note The returned pointer must be freed by the caller, using the \p string_free() function.
  */
 LITE_ATTR_NODISCARD LITE_ATTR_HOT lite_string *string_new_cstr(const char *const restrict cstr) {
@@ -51,7 +52,7 @@ LITE_ATTR_NODISCARD LITE_ATTR_HOT lite_string *string_new_cstr(const char *const
 /**
  * @brief Frees the memory used by a string.
  *
- * If the input pointer is NULL, the function does nothing.
+ * If the input pointer is nullptr, the function does nothing.
  *
  * @param s A pointer to the string to be freed.
  */
@@ -464,7 +465,7 @@ string_insert_string(lite_string *const restrict s, const lite_string *const res
  * @param s A pointer to the string from which the substring will be retrieved.
  * @param start The start index of the substring.
  * @param len The length of the substring.
- * @return A pointer to the new string containing the substring, or NULL if the substring could not be retrieved.
+ * @return A pointer to the new string containing the substring, or nullptr if the substring could not be retrieved.
  *
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
@@ -497,7 +498,7 @@ LITE_ATTR_NODISCARD lite_string *string_substr(const lite_string *const restrict
  * @param s1 A pointer to the first string.
  * @param s2 A pointer to the second string.
  * @return A pointer to the new string containing the concatenated strings,
- * or NULL if the strings could not be concatenated.
+ * or nullptr if the strings could not be concatenated.
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
 LITE_ATTR_NODISCARD lite_string *string_concat(const lite_string *const restrict s1,
@@ -603,7 +604,7 @@ bool string_append_cstr(lite_string *const restrict s, const char *const restric
  * @brief Returns a pointer to the C-string representation of a string.
  *
  * @param s A pointer to the string.
- * @return A pointer to the C-string representation of the string, or NULL if the string is invalid.
+ * @return A pointer to the C-string representation of the string, or nullptr if the string is invalid.
  * @note It is not recommended to modify the string's data directly. Use the provided functions instead.
  */
 LITE_ATTR_HOT char *string_cstr(const lite_string *const restrict s) {
@@ -621,7 +622,7 @@ LITE_ATTR_HOT char *string_cstr(const lite_string *const restrict s) {
  * @brief Returns a pointer to the underlying character array holding the string data.
  *
  * @param s A pointer to the string.
- * @return A pointer to the string's data, or a null pointer if the string is null.
+ * @return A pointer to the string's data, or a nullptr if the string is null.
  * @note It is not recommended to modify the string's data directly. Use the provided functions instead.
  * @note The returned pointer is not guaranteed to be null-terminated.
  * Use \p string_cstr() to get a null-terminated C-string.
@@ -1209,7 +1210,7 @@ bool string_replace_cstr(lite_string *const restrict s, const char *const restri
  * @brief Duplicates a string.
  *
  * @param s A pointer to the string to be duplicated.
- * @return A pointer to the new string, or NULL if the duplication failed.
+ * @return A pointer to the new string, or nullptr if the duplication failed.
  *
  * @note The returned pointer must be freed by the caller, using the \p string_free() function.
  */
@@ -1247,9 +1248,9 @@ void string_reverse(const lite_string *const restrict s) {
  * @brief Converts a string to a long long integer.
  *
  * @param s A pointer to the string to be converted.
- * @return The long long integer representation of the string, or 0 if the string is NULL.
+ * @return The long long integer representation of the string, or 0 if the string is nullptr.
  */
-long long string_to_ll(lite_string *const restrict s) {
+long long string_to_ll(const lite_string *const restrict s) {
     long long result = 0;
     if (s) result = strtoll(string_cstr(s), nullptr, 10);
     return result;
@@ -1259,9 +1260,9 @@ long long string_to_ll(lite_string *const restrict s) {
  * @brief Converts a string to an unsigned long long integer.
  *
  * @param s A pointer to the string to be converted.
- * @return The unsigned long long integer representation of the string, or 0 if the string is NULL.
+ * @return The unsigned long long integer representation of the string, or 0 if the string is nullptr.
  */
-unsigned long long string_to_ull(lite_string *const restrict s) {
+unsigned long long string_to_ull(const lite_string *const restrict s) {
     unsigned long long result = 0;
     if (s) result = strtoull(string_cstr(s), nullptr, 10);
     return result;
@@ -1271,9 +1272,9 @@ unsigned long long string_to_ull(lite_string *const restrict s) {
  * @brief Converts a string to a long integer.
  *
  * @param s A pointer to the string to be converted.
- * @return The long integer representation of the string, or 0 if the string is NULL.
+ * @return The long integer representation of the string, or 0 if the string is nullptr.
  */
-long string_to_l(lite_string *const restrict s) {
+long string_to_l(const lite_string *const restrict s) {
     long result = 0;
     if (s) result = strtol(string_cstr(s), nullptr, 10);
     return result;
@@ -1283,9 +1284,9 @@ long string_to_l(lite_string *const restrict s) {
  * @brief Converts a string to an unsigned long integer.
  *
  * @param s A pointer to the string to be converted.
- * @return The unsigned long integer representation of the string, or 0 if the string is NULL.
+ * @return The unsigned long integer representation of the string, or 0 if the string is nullptr.
  */
-unsigned long string_to_ul(lite_string *const restrict s) {
+unsigned long string_to_ul(const lite_string *const restrict s) {
     unsigned long result = 0;
     if (s) result = strtoul(string_cstr(s), nullptr, 10);
     return result;
@@ -1295,9 +1296,9 @@ unsigned long string_to_ul(lite_string *const restrict s) {
  * @brief Converts a string to an integer.
  *
  * @param s A pointer to the string to be converted.
- * @return The integer representation of the string, or 0 if the string is NULL.
+ * @return The integer representation of the string, or 0 if the string is nullptr.
  */
-int string_to_int(lite_string *const restrict s) {
+int string_to_int(const lite_string *const restrict s) {
     return (int) string_to_l(s);
 }
 
@@ -1305,9 +1306,9 @@ int string_to_int(lite_string *const restrict s) {
  * @brief Converts a string to an unsigned integer.
  *
  * @param s A pointer to the string to be converted.
- * @return The unsigned integer representation of the string, or 0 if the string is NULL.
+ * @return The unsigned integer representation of the string, or 0 if the string is nullptr.
  */
-unsigned int string_to_uint(lite_string *const restrict s) {
+unsigned int string_to_uint(const lite_string *const restrict s) {
     return (unsigned int) string_to_ul(s);
 }
 
@@ -1315,9 +1316,9 @@ unsigned int string_to_uint(lite_string *const restrict s) {
  * @brief Converts a string to a double.
  *
  * @param s A pointer to the string to be converted.
- * @return The double representation of the string, or 0.0 if the string is NULL.
+ * @return The double representation of the string, or 0.0 if the string is nullptr.
  */
-double string_to_double(lite_string *const restrict s) {
+double string_to_double(const lite_string *const restrict s) {
     double result = 0.0;
     if (s) result = strtod(string_cstr(s), nullptr);
     return result;
@@ -1327,9 +1328,9 @@ double string_to_double(lite_string *const restrict s) {
  * @brief Converts a string to a float.
  *
  * @param s A pointer to the string to be converted.
- * @return The float representation of the string, or 0.0f if the string is NULL.
+ * @return The float representation of the string, or 0.0f if the string is nullptr.
  */
-float string_to_float(lite_string *const restrict s) {
+float string_to_float(const lite_string *const restrict s) {
     float result = 0.0f;
     if (s) result = strtof(string_cstr(s), nullptr);
     return result;
@@ -1339,9 +1340,9 @@ float string_to_float(lite_string *const restrict s) {
  * @brief Converts a string to a long double.
  *
  * @param s A pointer to the string to be converted.
- * @return The long double representation of the string, or 0.0 if the string is NULL.
+ * @return The long double representation of the string, or 0.0 if the string is nullptr.
  */
-long double string_to_ldouble(lite_string *const restrict s) {
+long double string_to_ldouble(const lite_string *const restrict s) {
     long double result = 0.0;
     if (s) result = strtold(string_cstr(s), nullptr);
     return result;
@@ -1351,7 +1352,7 @@ long double string_to_ldouble(lite_string *const restrict s) {
  * @brief Converts a long long integer to a string.
  *
  * @param value The long long integer to be converted.
- * @return A pointer to the new string containing the long long integer, or NULL if the string creation failed.
+ * @return A pointer to the new string containing the long long integer, or nullptr if the string creation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
 LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ll(const long long value) {
@@ -1368,7 +1369,7 @@ LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ll(const long
  * @brief Converts an unsigned long long integer to a string.
  *
  * @param value The unsigned long long integer to be converted.
- * @return A pointer to the new string containing the unsigned long long integer, or NULL if the string creation failed.
+ * @return A pointer to the new string containing the unsigned long long integer, or nullptr if the string creation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
 LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ull(const unsigned long long value) {
@@ -1385,7 +1386,7 @@ LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ull(const uns
  * @brief Converts a long integer to a string.
  *
  * @param value The long integer to be converted.
- * @return A pointer to the new string containing the long integer, or NULL if the string creation failed.
+ * @return A pointer to the new string containing the long integer, or nullptr if the string creation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
 LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_l(const long value) {
@@ -1402,7 +1403,7 @@ LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_l(const long 
  * @brief Converts an unsigned long integer to a string.
  *
  * @param value The unsigned long integer to be converted.
- * @return A pointer to the new string containing the unsigned long integer, or NULL if the string creation failed.
+ * @return A pointer to the new string containing the unsigned long integer, or nullptr if the string creation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
 LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ul(const unsigned long value) {
@@ -1441,7 +1442,7 @@ LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_uint(const un
  * @brief Converts a double to a string.
  *
  * @param value The double to be converted.
- * @return A pointer to the new string containing the double, or NULL if the string creation failed.
+ * @return A pointer to the new string containing the double, or nullptr if the string creation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
 LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_double(const double value) {
@@ -1458,7 +1459,7 @@ LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_double(const 
  * @brief Converts a float to a string.
  *
  * @param value The float to be converted.
- * @return A pointer to the new string containing the float, or NULL if the string creation failed.
+ * @return A pointer to the new string containing the float, or nullptr if the string creation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
 LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_float(const float value) {
@@ -1475,7 +1476,7 @@ LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_float(const f
  * @brief Converts a long double to a string.
  *
  * @param value The long double to be converted.
- * @return A pointer to the new string containing the long double, or NULL if the string creation failed.
+ * @return A pointer to the new string containing the long double, or nullptr if the string creation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
 LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ldouble(const long double value) {

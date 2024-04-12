@@ -229,23 +229,23 @@ LITE_ATTR_NODISCARD lite_string *string_duplicate(const lite_string *restrict s)
 
 void string_reverse(const lite_string *restrict s);
 
-long long string_to_ll(lite_string *restrict s);
+long long string_to_ll(const lite_string *restrict s);
 
-unsigned long long string_to_ull(lite_string *restrict s);
+unsigned long long string_to_ull(const lite_string *restrict s);
 
-long string_to_l(lite_string *restrict s);
+long string_to_l(const lite_string *restrict s);
 
-unsigned long string_to_ul(lite_string *restrict s);
+unsigned long string_to_ul(const lite_string *restrict s);
 
-int string_to_int(lite_string *restrict s);
+int string_to_int(const lite_string *restrict s);
 
-unsigned int string_to_uint(lite_string *restrict s);
+unsigned int string_to_uint(const lite_string *restrict s);
 
-double string_to_double(lite_string *restrict s);
+double string_to_double(const lite_string *restrict s);
 
-float string_to_float(lite_string *restrict s);
+float string_to_float(const lite_string *restrict s);
 
-long double string_to_ldouble(lite_string *restrict s);
+long double string_to_ldouble(const lite_string *restrict s);
 
 LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_l(long value);
 
