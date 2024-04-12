@@ -4,7 +4,7 @@
 #include "../lite_string.h"
 
 // A simple program that reads a file and prints the number of words and characters in the file.
-int main(int argc, char *argv[]) {
+int main(const int argc, char *argv[]) {
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
         return 1;
@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     // If the file size is greater than 1 MB, return an error.
-    size_t file_size = st.st_size;
+    const size_t file_size = st.st_size;
     if (file_size > 1 << 20) {
         fputs("Error: File size is too large.\n", stderr);
         string_free(s);
@@ -76,11 +76,9 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    double avg_word_length = (double) char_count / word_count;
-
     printf("Word count: %zu\n", word_count);
     printf("Character count: %zu\n", char_count);
-    printf("Average word length: %.2f\n", avg_word_length);
+    printf("Average word length: %.2f\n", (double) char_count / word_count);
 
     string_free(s);
     return 0;
