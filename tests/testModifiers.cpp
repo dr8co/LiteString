@@ -190,7 +190,7 @@ TEST(LiteStringModifiersTest, InsertCStrStoresCorrectValues) {
 TEST(LiteStringModifiersTest, InsertCStrInsertsAtValidIndex) {
     lite_string *s = string_new();
     ASSERT_TRUE(string_insert_cstr(s, "Hello", 0));
-    EXPECT_STREQ(s->data, "Hello");
+    EXPECT_STREQ(string_data(s), "Hello");
     string_free(s);
 }
 
@@ -204,7 +204,7 @@ TEST(LiteStringModifiersTest, InsertCStrInsertsInMiddleOfString) {
     lite_string *s = string_new();
     ASSERT_TRUE(string_insert_cstr(s, "Hello", 0));
     ASSERT_TRUE(string_insert_cstr(s, " world", 5));
-    EXPECT_STREQ(s->data, "Hello world");
+    EXPECT_STREQ(string_data(s), "Hello world");
     string_free(s);
 }
 
@@ -217,7 +217,7 @@ TEST(LiteStringModifiersTest, InsertCStrDoesNotInsertNullCStr) {
 TEST(LiteStringModifiersTest, InsertCStrResizesStringIfNeeded) {
     lite_string *s = string_new();
     ASSERT_TRUE(string_insert_cstr(s, "Hello, this is a long string that will require resizing", 0));
-    EXPECT_STREQ(s->data, "Hello, this is a long string that will require resizing");
+    EXPECT_STREQ(string_data(s), "Hello, this is a long string that will require resizing");
     string_free(s);
 }
 
@@ -258,7 +258,7 @@ TEST(LiteStringModifiersTest, InsertRangeDoesNotInsertNullSubstring) {
 TEST(LiteStringModifiersTest, InsertRangeResizesStringIfNeeded) {
     lite_string *s = string_new();
     lite_string *sub = string_new_cstr("Hello, this is a long string that will require resizing");
-    ASSERT_TRUE(string_insert_range(s, sub, 0, sub->size));
+    ASSERT_TRUE(string_insert_range(s, sub, 0, string_size(sub)));
     EXPECT_TRUE(string_compare(s, sub));
     string_free(s);
     string_free(sub);
@@ -353,28 +353,28 @@ TEST(LiteStringModifiersTest, SwapReturnsFalseForNullptr) {
 TEST(LiteStringModifiersTest, ShrinkReducesSizeCorrectly) {
     lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_TRUE(string_shrink(s, 5));
-    EXPECT_EQ(s->size, 5);
+    EXPECT_EQ(string_size(s), 5);
     string_free(s);
 }
 
 TEST(LiteStringModifiersTest, ShrinkDoesNothingWhenNewSizeIsGreater) {
     lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_FALSE(string_shrink(s, 20));
-    EXPECT_EQ(s->size, 13);
+    EXPECT_EQ(string_size(s), 13);
     string_free(s);
 }
 
 TEST(LiteStringModifiersTest, ShrinkToFitReducesCapacityToSize) {
     lite_string *s = string_new_cstr("Hello, World!");
     ASSERT_TRUE(string_shrink_to_fit(s));
-    EXPECT_EQ(s->capacity, s->size);
+    EXPECT_EQ(string_capacity(s), string_size(s));
     string_free(s);
 }
 
 TEST(LiteStringModifiersTest, ShrinkToFitDoesNothingWhenSizeIsCapacity) {
     lite_string *s = string_new_cstr("Hello");
     ASSERT_TRUE(string_shrink_to_fit(s));
-    EXPECT_EQ(s->capacity, s->size);
+    EXPECT_EQ(string_capacity(s), string_size(s));
     string_free(s);
 }
 

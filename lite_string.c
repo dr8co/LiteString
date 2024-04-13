@@ -11,6 +11,19 @@
 
 
 /**
+ * @brief A simple emulation of a C++ string in C.
+ *
+ * The data is stored as a pointer to a dynamically allocated array of characters.\n
+ * The capacity represents the total number of characters that the string can hold without needing to be resized.\n
+ * When the size reaches the capacity, the string is resized to a larger capacity to accommodate more characters.
+ */
+struct lite_string {
+    char *data; ///< A pointer to the character data.
+    size_t size; ///< The number of characters in the string, not including the null character.
+    size_t capacity; ///< The total number of characters that the string can hold.
+};
+
+/**
  * @brief Creates a new string with an initial capacity of 16.
  *
  * @return A pointer to the newly created string, or nullptr if memory allocation failed.
