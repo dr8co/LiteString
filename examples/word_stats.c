@@ -48,7 +48,11 @@ int main(const int argc, char *argv[]) {
     }
     // Read the file into a buffer.
     char buffer[file_size + 1];
-    fread(buffer, sizeof(char), file_size, file);
+    if (fread(buffer, sizeof(char), file_size, file) != file_size) {
+        fputs("Failed to read the file.\n", stderr);
+        return 1;
+    }
+
     buffer[file_size] = '\0';
     fclose(file);
 
@@ -64,9 +68,7 @@ int main(const int argc, char *argv[]) {
     // Count the number of words and characters in the file.
     for (size_t i = 0; i < string_length(s); ++i) {
         if (isspace(string_at(s, i))) {
-            if (in_word) {
-                in_word = false;
-            }
+            if (in_word) in_word = false;
         } else {
             if (!in_word) {
                 in_word = true;
@@ -76,9 +78,11 @@ int main(const int argc, char *argv[]) {
         }
     }
 
-    printf("Word count: %zu\n", word_count);
-    printf("Character count: %zu\n", char_count);
-    printf("Average word length: %.2f\n", (double) char_count / word_count);
+    if (word_count && char_count) {
+        printf("Word count: %zu\n", word_count);
+        printf("Character count: %zu\n", char_count);
+        printf("Average word length: %.2f\n", (double) char_count / word_count);
+    } else fputs("The file contains binary data.\n", stderr);
 
     string_free(s);
     return 0;
