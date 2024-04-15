@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 
 project(LiteString
         VERSION 0.1.0
-        DESCRIPTION "A lightweight string library for C"
+        DESCRIPTION "A lightweight byte string library for C"
         HOMEPAGE_URL "https://github.com/dr8co/LiteString"
         LANGUAGES C CXX)
 
@@ -33,6 +33,8 @@ if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
     # set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS} -fsanitize=memory -fPIE -fno-optimize-sibling-calls -fno-omit-frame-pointer -g -O1")
 endif ()
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 add_library(lite-string lite_string.c lite_string.h)
 add_library(LiteString::lite-string ALIAS lite-string)
 
@@ -57,7 +59,9 @@ install(TARGETS lite-string
         EXPORT LiteStringTargets
         LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
         ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
+        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+        RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+)
 
 install(EXPORT LiteStringTargets
         FILE LiteStringTargets.cmake
@@ -98,12 +102,14 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
 FetchContent_GetProperties(googletest)
-if(NOT googletest_POPULATED)
+if (NOT googletest_POPULATED)
     FetchContent_Populate(googletest)
     add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
+endif ()
 
 enable_testing()
 
 # Tests
 add_subdirectory(tests)
+
+include(Packing)
