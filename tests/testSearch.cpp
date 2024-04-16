@@ -93,3 +93,59 @@ TEST(LiteStringSearchTest, FindSubstrCStrReturnsMaxSize) {
     EXPECT_EQ(string_find_cstr(s, "Planet"), lite_string_npos);
     string_free(s);
 }
+
+TEST(LiteStringTest, FindFirstOfCStrReturnsCorrectIndex) {
+    lite_string* s = string_new_cstr("Hello, World!");
+    const size_t index = string_find_first_of_chars(s, "World");
+    EXPECT_EQ(index, 2);
+    string_free(s);
+}
+
+TEST(LiteStringTest, FindFirstOfCStrReturnsNposWhenNotFound) {
+    lite_string* s = string_new_cstr("Hello, World!");
+    const size_t index = string_find_first_of_chars(s, "XYZ");
+    EXPECT_EQ(index, lite_string_npos);
+    string_free(s);
+}
+
+TEST(LiteStringTest, FindFirstNotOfCStrReturnsCorrectIndex) {
+    lite_string* s = string_new_cstr("Hello, World!");
+    const size_t index = string_find_first_not_of_chars(s, "Helo, ");
+    EXPECT_EQ(index, 7);
+    string_free(s);
+}
+
+TEST(LiteStringTest, FindFirstNotOfCStrReturnsNposWhenNotFound) {
+    lite_string* s = string_new_cstr("Hello, World!");
+    const size_t index = string_find_first_not_of_chars(s, "Hello, World!");
+    EXPECT_EQ(index, lite_string_npos);
+    string_free(s);
+}
+
+TEST(LiteStringTest, FindLastOfCStrReturnsCorrectIndex) {
+    lite_string* s = string_new_cstr("Hello, World!");
+    const size_t index = string_find_last_of_chars(s, "World");
+    EXPECT_EQ(index, 11);
+    string_free(s);
+}
+
+TEST(LiteStringTest, FindLastOfCStrReturnsNposWhenNotFound) {
+    lite_string* s = string_new_cstr("Hello, World!");
+    const size_t index = string_find_last_of_chars(s, "XYZ");
+    EXPECT_EQ(index, lite_string_npos);
+    string_free(s);
+}
+
+TEST(LiteStringTest, FindLastNotOfCStrReturnsCorrectIndex) {
+    lite_string* s = string_new_cstr("Hello, World!");
+    const size_t index = string_find_last_not_of_chars(s, "!dlroW");
+    EXPECT_EQ(index, 6);
+    string_free(s);
+}
+
+TEST(LiteStringTest, FindLastNotOfCStrReturnsNposWhenNotFound) {
+    lite_string* s = string_new_cstr("Hello, World!");
+    const size_t index = string_find_last_not_of_chars(s, "Hello, World!");
+    EXPECT_EQ(index, lite_string_npos);
+    string_free(s);
+}
