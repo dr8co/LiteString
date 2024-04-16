@@ -10,6 +10,19 @@
 #endif
 
 
+#ifndef __has_builtin
+#define __has_builtin(x) 0  // Compatibility with non-gnu compilers.
+#endif
+
+#if __has_builtin(__builtin_expect)
+#define likely(x)       __builtin_expect(!!(x), 1)
+#define unlikely(x)     __builtin_expect(!!(x), 0)
+#else
+#define likely(x)       (x)
+#define unlikely(x)     (x)
+#endif
+
+
 /**
  * @brief A simple emulation of a C++ string in C.
  *
@@ -112,7 +125,6 @@ LITE_ATTR_UNSEQUENCED LITE_ATTR_ALWAYS_INLINE static inline size_t lite_clp2_(si
  * Resizing is needed if the new size is greater than the current capacity
  * (which should be greater than 16).\n
  * The new size is rounded up to the next power of 2 to improve performance.
- * @warning This function is for internal use only, and should not be called directly by the user.
  */
 LITE_ATTR_HOT bool string_reserve(lite_string *const restrict s, size_t size) {
     if (s) {
@@ -280,7 +292,7 @@ char string_front(const lite_string *const restrict s) {
 bool string_erase_range(lite_string *const restrict s, const size_t start, const size_t count) {
     if (s && start < s->size) {
         if (count == 0) return true;
-#if (__GNUC__ || __clang__) && __has_builtin(__builtin_uaddl_overflow)
+#if __has_builtin(__builtin_uaddl_overflow)
         size_t end;
         if (!__builtin_uaddl_overflow(start, count, &end) && end <= s->size)
 #else
@@ -740,7 +752,7 @@ bool string_swap(lite_string *const restrict s1, lite_string *const restrict s2)
  * or \p lite_string_npos if the character was not found.
  */
 size_t string_find_last_of(const lite_string *const restrict s, const char c) {
-    if (s && c != '\0') {
+    if (s && s->size && c != '\0') {
 #ifdef _GNU_SOURCE
         const char *found = (const char *) memrchr(s->data, c, s->size);
         if (found) return found - s->data;
@@ -763,7 +775,7 @@ size_t string_find_last_of(const lite_string *const restrict s, const char c) {
  * or \p lite_string_npos if all characters match or the string is invalid.
  */
 size_t string_find_last_not_of(const lite_string *const restrict s, const char c) {
-    if (s && c != '\0') {
+    if (s && s->size && c != '\0') {
         for (size_t i = s->size; i > 0; --i) {
             if (s->data[i - 1] != c)
                 return i - 1;
@@ -782,7 +794,7 @@ size_t string_find_last_not_of(const lite_string *const restrict s, const char c
  * or \p lite_string_npos if the character was not found.
  */
 size_t string_find_first_from(const lite_string *const restrict s, const char c, const size_t start) {
-    if (s && c != '\0' && start < s->size) {
+    if (s && s->size && c != '\0' && start < s->size) {
         const char *found = (const char *) memchr(s->data + start, c, s->size - start);
         if (found) return found - s->data;
     }
@@ -810,7 +822,7 @@ size_t string_find_first_of(const lite_string *const restrict s, const char c) {
  * or \p lite_string_npos if all characters match or the string is invalid.
  */
 size_t string_find_first_not_of(const lite_string *const restrict s, const char c) {
-    if (s && c != '\0') {
+    if (s && s->size && c != '\0') {
         for (size_t i = 0; i < s->size; ++i) {
             if (s->data[i] != c)
                 return i;
@@ -828,19 +840,21 @@ size_t string_find_first_not_of(const lite_string *const restrict s, const char 
  * or \p lite_string_npos if no character was found.
  */
 size_t string_find_first_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
-    if (s && cstr) {
+    if (s && s->size && cstr) {
         const size_t len = strlen(cstr);
-        // Create a lookup table for the characters in the C-string
-        bool lookup[256] = {false};
+        if (len) {
+            // Create a lookup table for the characters in the C-string
+            bool lookup[256] = {false};
 
-        // Set the corresponding index to true for each character in the C-string
-        for (size_t i = 0; i < len; ++i)
-            lookup[(unsigned char)cstr[i]] = true;
+            // Set the corresponding index to true for each character in the C-string
+            for (size_t i = 0; i < len; ++i)
+                lookup[(unsigned char) cstr[i]] = true;
 
-        // Find the first occurrence of any character from the C-string in the string
-        for (size_t i = 0; i < s->size; ++i) {
-            if (lookup[(unsigned char)s->data[i]])
-                return i;
+            // Find the first occurrence of any character from the C-string in the string
+            for (size_t i = 0; i < s->size; ++i) {
+                if (lookup[(unsigned char) s->data[i]])
+                    return i;
+            }
         }
     }
     return lite_string_npos;
@@ -855,19 +869,21 @@ size_t string_find_first_of_chars(const lite_string *const restrict s, const cha
  * or \p lite_string_npos if all characters match or the string is invalid.
  */
 size_t string_find_first_not_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
-    if (s && cstr) {
+    if (s && s->size && cstr) {
         const size_t len = strlen(cstr);
-        // Create a lookup table for the characters in the C-string
-        bool lookup[256] = {false};
+        if (len) {
+            // Create a lookup table for the characters in the C-string
+            bool lookup[256] = {false};
 
-        // Set the corresponding index to true for each character in the C-string
-        for (size_t i = 0; i < len; ++i)
-            lookup[(unsigned char)cstr[i]] = true;
+            // Set the corresponding index to true for each character in the C-string
+            for (size_t i = 0; i < len; ++i)
+                lookup[(unsigned char) cstr[i]] = true;
 
-        // Find the first occurrence of any character not present in the C-string in the string
-        for (size_t i = 0; i < s->size; ++i) {
-            if (!lookup[(unsigned char)s->data[i]])
-                return i;
+            // Find the first occurrence of any character not present in the C-string in the string
+            for (size_t i = 0; i < s->size; ++i) {
+                if (!lookup[(unsigned char) s->data[i]])
+                    return i;
+            }
         }
     }
     return lite_string_npos;
@@ -882,19 +898,21 @@ size_t string_find_first_not_of_chars(const lite_string *const restrict s, const
  * or \p lite_string_npos if no character was found.
  */
 size_t string_find_last_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
-    if (s && cstr) {
+    if (s && s->size && cstr) {
         const size_t len = strlen(cstr);
-        // Create a lookup table for the characters in the C-string
-        bool lookup[256] = {false};
+        if (len) {
+            // Create a lookup table for the characters in the C-string
+            bool lookup[256] = {false};
 
-        // Set the corresponding index to true for each character in the C-string
-        for (size_t i = 0; i < len; ++i)
-            lookup[(unsigned char)cstr[i]] = true;
+            // Set the corresponding index to true for each character in the C-string
+            for (size_t i = 0; i < len; ++i)
+                lookup[(unsigned char) cstr[i]] = true;
 
-        // Find the last occurrence of any character from the C-string in the string
-        for (size_t i = s->size; i > 0; --i) {
-            if (lookup[(unsigned char)s->data[i - 1]])
-                return i - 1;
+            // Find the last occurrence of any character from the C-string in the string
+            for (size_t i = s->size; i > 0; --i) {
+                if (lookup[(unsigned char) s->data[i - 1]])
+                    return i - 1;
+            }
         }
     }
     return lite_string_npos;
@@ -909,19 +927,21 @@ size_t string_find_last_of_chars(const lite_string *const restrict s, const char
  * or \p lite_string_npos if all characters match or the string is invalid.
  */
 size_t string_find_last_not_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
-    if (s && cstr) {
+    if (s && s->size && cstr) {
         const size_t len = strlen(cstr);
-        // Create a lookup table for the characters in the C-string
-        bool lookup[256] = {false};
+        if (len) {
+            // Create a lookup table for the characters in the C-string
+            bool lookup[256] = {false};
 
-        // Set the corresponding index to true for each character in the C-string
-        for (size_t i = 0; i < len; ++i)
-            lookup[(unsigned char)cstr[i]] = true;
+            // Set the corresponding index to true for each character in the C-string
+            for (size_t i = 0; i < len; ++i)
+                lookup[(unsigned char) cstr[i]] = true;
 
-        // Find the last occurrence of any character not present in the C-string in the string
-        for (size_t i = s->size; i > 0; --i) {
-            if (!lookup[(unsigned char)s->data[i - 1]])
-                return i - 1;
+            // Find the last occurrence of any character not present in the C-string in the string
+            for (size_t i = s->size; i > 0; --i) {
+                if (!lookup[(unsigned char) s->data[i - 1]])
+                    return i - 1;
+            }
         }
     }
     return lite_string_npos;
