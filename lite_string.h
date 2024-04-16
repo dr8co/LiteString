@@ -18,16 +18,16 @@
 
 #if __cplusplus
 #if !LITE_STRING_NO_RESTRICT // The keyword has not been redefined
-#if __GNUC__ || __clang__ || _MSC_VER // Support for '__restrict'
+#if __GNUC__ || __clang__ || _MSC_VER // Support for '__restrict' in C++
 
-// Ignore the warning for redefining the 'restrict' keyword
+// Ignore the warning for redefining the 'restrict' keyword (So far, only Clang has this warning)
 #if __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wkeyword-macro"
 #endif // __clang__
 
-#define restrict __restrict
-#else // No support for '__restrict'
+#define restrict __restrict // Use '__restrict' in C++ for GCC, Clang, and MSVC
+#else // Support for '__restrict' in C++ is unknown
 #define restrict
 #endif // __GNUC__ || __clang__ || _MSC_VER
 
@@ -43,42 +43,88 @@ extern "C" {
 
 #include <stddef.h>
 
-#if __STDC_VERSION__ < 202311L
-#include <stdbool.h>
-#endif
 #define lite_string_npos ((size_t) -1)
 
 #ifndef __has_c_attribute
 #define __has_c_attribute(x) 0  // Compatibility with non-gnu compilers
 #endif
 
-#if __has_c_attribute(nodiscard)
+#if __STDC_VERSION__ >= 202311L // C23 is supported
+#if __has_c_attribute(nodiscard) // C23 'nodiscard' attribute
 #define LITE_ATTR_NODISCARD [[__nodiscard__]]
+#elif __has_c_attribute(gnu::warn_unused_result) // GNU 'warn_unused_result' attribute
+#define LITE_ATTR_NODISCARD [[gnu::warn_unused_result]]
 #else
 #define LITE_ATTR_NODISCARD
-#endif
+#endif // __has_c_attribute(nodiscard)
 
-#if __has_c_attribute(gnu::hot)
+#if __has_c_attribute(gnu::hot) // GNU 'hot' attribute
 #define LITE_ATTR_HOT [[gnu::hot]]
 #else
 #define LITE_ATTR_HOT
-#endif
+#endif // __has_c_attribute(gnu::hot)
 
-#if __has_c_attribute(reproducible)
+#if __has_c_attribute(reproducible) // C23 'reproducible' attribute
 #define LITE_ATTR_REPRODUCIBLE [[__reproducible__]]
-#elif __has_c_attribute(gnu::pure)
+#elif __has_c_attribute(gnu::pure) // GNU 'pure' attribute as a substitute
 #define LITE_ATTR_REPRODUCIBLE [[gnu::pure]]
 #else
 #define LITE_ATTR_REPRODUCIBLE
-#endif
+#endif // __has_c_attribute(reproducible)
 
-#if __has_c_attribute(unsequenced)
+#if __has_c_attribute(unsequenced) // C23 'unsequenced' attribute
 #define LITE_ATTR_UNSEQUENCED [[__unsequenced__]]
-#elif __has_c_attribute(gnu::const)
+#elif __has_c_attribute(gnu::const) // GNU 'const' attribute as a substitute
 #define LITE_ATTR_UNSEQUENCED [[gnu::const]]
 #else
 #define LITE_ATTR_UNSEQUENCED
-#endif
+#endif // __has_c_attribute(unsequenced)
+
+#if __has_c_attribute(gnu::nothrow) // GNU 'nothrow' attribute
+#define LITE_ATTR_NOEXCEPT [[gnu::nothrow]]
+#elif _MSC_VER
+#define LITE_ATTR_NOEXCEPT __declspec(nothrow) // MSVC equivalent
+#else
+#define LITE_ATTR_NOEXCEPT
+#endif // __has_c_attribute(gnu::nothrow)
+
+#else // C23 is not supported
+#include <stdbool.h>
+
+#if __has_c_attribute(__warn_unused_result__) // GNU 'warn_unused_result' attribute, pre-C23 syntax
+#define LITE_ATTR_NODISCARD __attribute__((__warn_unused_result__))
+#else
+#define LITE_ATTR_NODISCARD
+#endif // __has_c_attribute(__warn_unused_result__)
+
+#if __has_c_attribute(__hot__) // GNU 'hot' attribute
+#define LITE_ATTR_HOT __attribute__((__hot__))
+#else
+#define LITE_ATTR_HOT
+#endif // __has_c_attribute(__hot__)
+
+#if __has_c_attribute(__pure__) // GNU 'pure' attribute
+#define LITE_ATTR_REPRODUCIBLE __attribute__((__pure__))
+#else
+#define LITE_ATTR_REPRODUCIBLE
+#endif // __has_c_attribute(__pure__)
+
+#if __has_c_attribute(__const__) // GNU 'const' attribute
+#define LITE_ATTR_UNSEQUENCED __attribute__((__const__))
+#else
+#define LITE_ATTR_UNSEQUENCED
+#endif // __has_c_attribute(__const__)
+
+#if __has_c_attribute(nothrow) // GNU 'nothrow' attribute
+#define LITE_ATTR_NOEXCEPT __attribute__((nothrow))
+#elif _MSC_VER
+#define LITE_ATTR_NOEXCEPT __declspec(nothrow) // MSVC equivalent
+#else
+#define LITE_ATTR_NOEXCEPT
+#endif // __has_c_attribute(nothrow)
+
+#endif // __STDC_VERSION__ >= 202311L
+
 
 typedef struct lite_string lite_string; ///< The \p lite_string type.
 
