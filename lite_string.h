@@ -208,6 +208,14 @@ size_t string_find_first_of(const lite_string *restrict s, char c);
 
 size_t string_find_first_not_of(const lite_string *restrict s, char c);
 
+size_t string_find_first_of_chars(const lite_string *restrict s, const char *restrict cstr);
+
+size_t string_find_first_not_of_chars(const lite_string *restrict s, const char *restrict cstr);
+
+size_t string_find_last_of_chars(const lite_string *restrict s, const char *restrict cstr);
+
+size_t string_find_last_not_of_chars(const lite_string *restrict s, const char *restrict cstr);
+
 size_t string_find_from(const lite_string *restrict s, const lite_string *restrict sub, size_t start);
 
 size_t string_find(const lite_string *restrict s, const lite_string *restrict sub);

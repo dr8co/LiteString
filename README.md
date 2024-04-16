@@ -46,7 +46,7 @@ mkdir build
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc -G Ninja
 
 # Build the library.
-cmake --build build -j 4
+cmake --build build --config Release -j 4
 ```
 
 Replace `Ninja` with `"Unix Makefiles"` or another generator if Ninja is not available.
@@ -70,7 +70,8 @@ ar rcs liblite-string.a lite_string.o
 To use the library, include the header file in your source code:
 
 ```c
-#include "lite_string.h"
+#include <lite_string.h>
+...
 ```
 
 Compile the source code and link it with the library:
@@ -103,7 +104,8 @@ with an integer value greater than 0 before including the header file.
 
 ```c
 #define LITE_STRING_NO_RESTRICT 1
-#include "lite_string.h"
+#include <lite_string.h>
+...
 ```
 
 ### Types and Constants
@@ -368,6 +370,18 @@ size_t string_find_first_of(const lite_string *const restrict s, const char c);
 
 size_t string_find_first_not_of(const lite_string *const restrict s, const char c);
 // Finds the first occurrence of a character that does not match the specified character in a string.
+
+size_t string_find_first_of_chars(const lite_string *restrict s, const char *restrict cstr);
+// Finds the first occurrence of any character in a C-string in a string.
+
+size_t string_find_first_not_of_chars(const lite_string *restrict s, const char *restrict cstr);
+// Finds the first occurrence of a character that does not match any character in a C-string in a string.
+
+size_t string_find_last_of_chars(const lite_string *restrict s, const char *restrict cstr);
+// Finds the last occurrence of any character in a C-string in a string.
+
+size_t string_find_last_not_of_chars(const lite_string *restrict s, const char *restrict cstr);
+// Finds the last occurrence of a character that does not match any character in a C-string in a string.
 ```
 
 ### Operations
@@ -423,14 +437,14 @@ while those that return pointers return `nullptr`.
 Basic usage of the library:
 
 ```c
-#include "lite_string.h"
+#include <lite_string.h>
 #include <stdio.h>
 
 int main() {
     lite_string *s = string_new();
     string_append_cstr(s, "Hello, ");
     string_append_cstr(s, "world!");
-    printf("%s\n", string_cstr(s););
+    printf("%s\n", string_cstr(s));
     string_free(s);
     return 0;
 }

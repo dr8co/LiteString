@@ -820,6 +820,115 @@ size_t string_find_first_not_of(const lite_string *const restrict s, const char 
 }
 
 /**
+ * @brief Finds the first occurrence of any character from a given C-string in a string.
+ *
+ * @param s A pointer to the string.
+ * @param cstr The C-string containing the characters to be found.
+ * @return The index of the first occurrence of any character from the C-string in the string,
+ * or \p lite_string_npos if no character was found.
+ */
+size_t string_find_first_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
+    if (s && cstr) {
+        const size_t len = strlen(cstr);
+        // Create a lookup table for the characters in the C-string
+        bool lookup[256] = {false};
+
+        // Set the corresponding index to true for each character in the C-string
+        for (size_t i = 0; i < len; ++i)
+            lookup[(unsigned char)cstr[i]] = true;
+
+        // Find the first occurrence of any character from the C-string in the string
+        for (size_t i = 0; i < s->size; ++i) {
+            if (lookup[(unsigned char)s->data[i]])
+                return i;
+        }
+    }
+    return lite_string_npos;
+}
+
+/**
+ * @brief Finds the first occurrence of any character not present in a given C-string in a string.
+ *
+ * @param s A pointer to the string.
+ * @param cstr The C-string containing the characters to be compared against.
+ * @return The index of the first occurrence of any character not present in the C-string in the string,
+ * or \p lite_string_npos if all characters match or the string is invalid.
+ */
+size_t string_find_first_not_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
+    if (s && cstr) {
+        const size_t len = strlen(cstr);
+        // Create a lookup table for the characters in the C-string
+        bool lookup[256] = {false};
+
+        // Set the corresponding index to true for each character in the C-string
+        for (size_t i = 0; i < len; ++i)
+            lookup[(unsigned char)cstr[i]] = true;
+
+        // Find the first occurrence of any character not present in the C-string in the string
+        for (size_t i = 0; i < s->size; ++i) {
+            if (!lookup[(unsigned char)s->data[i]])
+                return i;
+        }
+    }
+    return lite_string_npos;
+}
+
+/**
+ * @brief Finds the last occurrence of any character from a given C-string in a string.
+ *
+ * @param s A pointer to the string.
+ * @param cstr The C-string containing the characters to be found.
+ * @return The index of the last occurrence of any character from the C-string in the string,
+ * or \p lite_string_npos if no character was found.
+ */
+size_t string_find_last_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
+    if (s && cstr) {
+        const size_t len = strlen(cstr);
+        // Create a lookup table for the characters in the C-string
+        bool lookup[256] = {false};
+
+        // Set the corresponding index to true for each character in the C-string
+        for (size_t i = 0; i < len; ++i)
+            lookup[(unsigned char)cstr[i]] = true;
+
+        // Find the last occurrence of any character from the C-string in the string
+        for (size_t i = s->size; i > 0; --i) {
+            if (lookup[(unsigned char)s->data[i - 1]])
+                return i - 1;
+        }
+    }
+    return lite_string_npos;
+}
+
+/**
+ * @brief Finds the last occurrence of any character not present in a given C-string in a string.
+ *
+ * @param s A pointer to the string.
+ * @param cstr The C-string containing the characters to be compared against.
+ * @return The index of the last occurrence of any character not present in the C-string in the string,
+ * or \p lite_string_npos if all characters match or the string is invalid.
+ */
+size_t string_find_last_not_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
+    if (s && cstr) {
+        const size_t len = strlen(cstr);
+        // Create a lookup table for the characters in the C-string
+        bool lookup[256] = {false};
+
+        // Set the corresponding index to true for each character in the C-string
+        for (size_t i = 0; i < len; ++i)
+            lookup[(unsigned char)cstr[i]] = true;
+
+        // Find the last occurrence of any character not present in the C-string in the string
+        for (size_t i = s->size; i > 0; --i) {
+            if (!lookup[(unsigned char)s->data[i - 1]])
+                return i - 1;
+        }
+    }
+    return lite_string_npos;
+}
+
+
+/**
  * @brief Checks if a string contains a specified character.
  * @param s A pointer to the string.
  * @param c The character to be found.
