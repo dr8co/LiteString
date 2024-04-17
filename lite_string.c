@@ -1,7 +1,26 @@
 #include <stdlib.h>
 #include <string.h>
-#include "lite_string.h"
 #include <stdio.h>
+#include "lite_string.h"
+
+#ifndef __has_include
+#define __has_include(x) 0
+#endif
+
+#define HAVE_STRNCASECMP 1
+#if _GNU_SOURCE || _DEFAULT_SOURCE
+// strncasecmp is available
+#elif __has_include(<strings.h>) || _POSIX_C_SOURCE >= 200112L
+#include <strings.h> // POSIX strncasecmp is available
+#elif _MSC_VER || _WIN32 || _WIN64
+#define strncasecmp _strnicmp // Windows equivalent
+#else
+// strncasecmp is not available, use a custom implementation
+#undef HAVE_STRNCASECMP
+#define HAVE_STRNCASECMP 0
+#include <ctype.h> // For tolower()
+#endif
+
 
 #if __has_c_attribute(gnu::always_inline)
 #define LITE_ATTR_ALWAYS_INLINE [[gnu::always_inline]]
@@ -9,19 +28,13 @@
 #define LITE_ATTR_ALWAYS_INLINE
 #endif
 
-
-#ifndef __has_builtin
-#define __has_builtin(x) 0  // Compatibility with non-gnu compilers.
-#endif
-
-#if __has_builtin(__builtin_expect)
-#define likely(x)       __builtin_expect(!!(x), 1)
-#define unlikely(x)     __builtin_expect(!!(x), 0)
+#if __has_c_attribute(maybe_unused)
+#define LITE_ATTR_MAYBE_UNUSED [[__maybe_unused__]]
+#elif __has_c_attribute(gnu::unused)
+#define LITE_ATTR_MAYBE_UNUSED [[gnu::unused]]
 #else
-#define likely(x)       (x)
-#define unlikely(x)     (x)
+#define LITE_ATTR_MAYBE_UNUSED
 #endif
-
 
 /**
  * @brief A simple emulation of a C++ string in C.
@@ -680,8 +693,17 @@ bool string_compare_cstr(const lite_string *const restrict s, const char *const 
  */
 bool string_case_compare_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     if (s && cstr) {
-        if (s->size == strlen(cstr))
+        if (s->size == strlen(cstr)) {
+#if HAVE_STRNCASECMP
             return strncasecmp(s->data, cstr, s->size) == 0;
+#else
+            for (size_t i = 0; i < s->size; ++i) {
+                if (tolower((unsigned char) s->data[i]) != tolower((unsigned char) cstr[i]))
+                    return false;
+            }
+            return true;
+#endif
+        }
     }
     return false;
 }
@@ -959,6 +981,84 @@ bool string_contains_char(const lite_string *const restrict s, const char c) {
 }
 
 /**
+ * @brief Computes the Longest Proper Prefix which is also suffix (LPS) array for the pattern string.
+ *
+ * The LPS array is used to keep track of the longest suffix which is also a prefix.
+ * This is used in the KMP (Knuth Morris Pratt) pattern searching algorithm.
+ *
+ * @param pattern The pattern string for which the LPS array is to be computed.
+ * @param len The length of the pattern string.
+ * @param lps The LPS array which is to be filled.
+ */
+LITE_ATTR_MAYBE_UNUSED static void compute_lps(const char *const restrict pattern,
+                        const size_t len, size_t *const restrict lps) {
+    size_t len_lps = 0; // Length of the previous longest prefix suffix
+    lps[0] = 0; // lps[0] is always 0
+    size_t i = 1;
+
+    while (i < len) {
+        // If the characters match, increment both the index and the length of the prefix suffix
+        if (pattern[i] == pattern[len_lps]) {
+            lps[i++] = ++len_lps;
+        } else {
+            // If the characters do not match, check the previous longest prefix suffix
+            if (len_lps) {
+                len_lps = lps[len_lps - 1];
+            } else {
+                // If there is no previous longest prefix suffix, set the length to 0 and increment the index
+                lps[i++] = 0;
+            }
+        }
+    }
+}
+
+/**
+ * @brief Implements the KMP (Knuth Morris Pratt) pattern searching algorithm.
+ *
+ * The KMP algorithm searches for occurrences of a "word" W within a main "text string" S.
+ * It uses the observation that when a mismatch occurs, the word itself embodies sufficient
+ * information to determine where the next match could begin, thus bypassing re-examination
+ * of previously matched characters.
+ *
+ * @param s The main text string in which the pattern is to be searched.
+ * @param s_size The size of the main text string.
+ * @param sub The pattern string which is to be searched in the main text string.
+ * @param sub_size The size of the pattern string.
+ * @return The index of the first occurrence of the pattern string in the main text string,
+ * or \p lite_string_npos if the pattern string is not found.
+ */
+LITE_ATTR_MAYBE_UNUSED static size_t kmp_search(const char *const restrict s, const size_t s_size,
+                         const char *const restrict sub, const size_t sub_size) {
+    size_t i = 0; // Index for the string
+    size_t j = 0; // Index for the substring
+
+    // Compute the longest prefix suffix (lps) array for the substring
+    size_t lps[sub_size];
+    compute_lps(sub, sub_size, lps);
+
+    while (i < s_size) {
+        if (sub[j] == s[i]) {
+            ++i;
+            ++j;
+        }
+        // Found the substring, return the index
+        if (j == sub_size)
+            return i - j;
+
+        // Mismatch after j matches
+        if (i < s_size && sub[j] != s[i]) {
+            if (j)
+                j = lps[j - 1];
+            else
+                ++i;
+        }
+    }
+
+    return lite_string_npos; // The substring was not found
+}
+
+
+/**
  * @brief Finds the first occurrence of a substring in a string, starting from a specified index.
  *
  * @param s A pointer to the string.
@@ -976,18 +1076,9 @@ size_t string_find_from(const lite_string *const restrict s, const lite_string *
         const char *found = (const char *) memmem(s->data + start, s->size - start, sub->data, sub->size);
         if (found) return found - s->data;
 #else
-        for (size_t i = start; i < s->size - sub->size + 1; ++i) {
-            if (s->data[i] == sub->data[0]) {
-                bool found = true;
-                for (size_t j = 1; j < sub->size; ++j) {
-                    if (s->data[i + j] != sub->data[j]) {
-                        found = false;
-                        break;
-                    }
-                }
-                if (found) return i;
-            }
-        }
+        const size_t index = kmp_search(s->data + start, s->size - start, sub->data, sub->size);
+        if (index != lite_string_npos)
+            return index + start;
 #endif
     }
     return lite_string_npos;
@@ -1018,18 +1109,33 @@ size_t string_rfind(const lite_string *const restrict s, const lite_string *cons
         if (sub->size == 0) return s->size;
         if (sub->size > s->size) return lite_string_npos;
 
-        for (size_t i = s->size - sub->size; i > 0; --i) {
-            if (s->data[i] == sub->data[0]) {
-                bool found = true;
-                for (size_t j = 1; j < sub->size; ++j) {
-                    if (s->data[i + j] != sub->data[j]) {
-                        found = false;
-                        break;
-                    }
-                }
-                if (found) return i;
+        // Compute the longest prefix suffix (lps) array for the substring
+        size_t lps[sub->size];
+        compute_lps(sub->data, sub->size, lps);
+
+        size_t i = 0; // index for s
+        size_t j = 0; // index for sub
+        size_t last_match = lite_string_npos; // to keep track of the last match
+
+        while (i < s->size) {
+            if (sub->data[j] == s->data[i]) {
+                j++;
+                i++;
+            }
+
+            if (j == sub->size) {
+                // Found a match, update last_match and prepare for the next potential match
+                last_match = i - j;
+                j = lps[j - 1];
+            } else if (i < s->size && sub->data[j] != s->data[i]) {
+                // Mismatch after j matches
+                if (j != 0)
+                    j = lps[j - 1];
+                else
+                    i = i + 1;
             }
         }
+        return last_match;
     }
     return lite_string_npos;
 }
@@ -1060,18 +1166,9 @@ size_t string_find_cstr_from(const lite_string *const restrict s, const char *co
             if (found) return found - s->data;
 #else
             // Search for the C-string in the string
-            for (size_t i = start; i < s->size - len + 1; ++i) {
-                if (s->data[i] == cstr[0]) {
-                    bool found = true;
-                    for (size_t j = 1; j < len; ++j) {
-                        if (s->data[i + j] != cstr[j]) {
-                            found = false;
-                            break;
-                        }
-                    }
-                    if (found) return i;
-                }
-            }
+            const size_t index = kmp_search(s->data + start, s->size - start, cstr, len);
+            if (index != lite_string_npos)
+                return index + start;
 #endif
         }
     }
@@ -1093,18 +1190,32 @@ size_t string_rfind_cstr(const lite_string *const restrict s, const char *const 
         if (len == 0) return s->size;
         if (len > s->size) return lite_string_npos;
 
-        for (size_t i = s->size - len; i > 0; --i) {
-            if (s->data[i] == cstr[0]) {
-                bool found = true;
-                for (size_t j = 1; j < len; ++j) {
-                    if (s->data[i + j] != cstr[j]) {
-                        found = false;
-                        break;
-                    }
-                }
-                if (found) return i;
+        // Compute the longest prefix suffix (lps) array for the substring
+        size_t lps[len];
+        compute_lps(cstr, len, lps);
+
+        size_t i = 0; // index for s
+        size_t j = 0; // index for sub
+        size_t last_match = lite_string_npos; // to keep track of the last match
+
+        while (i < s->size) {
+            if (cstr[j] == s->data[i]) {
+                j++;
+                i++;
+            }
+            if (j == len) {
+                // Found a match, update last_match and prepare for the next potential match
+                last_match = i - j;
+                j = lps[j - 1];
+            } else if (i < s->size && cstr[j] != s->data[i]) {
+                // Mismatch after j matches
+                if (j != 0)
+                    j = lps[j - 1];
+                else
+                    i = i + 1;
             }
         }
+        return last_match;
     }
     return lite_string_npos;
 }
