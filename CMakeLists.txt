@@ -6,7 +6,12 @@ project(LiteString
         HOMEPAGE_URL "https://github.com/dr8co/LiteString"
         LANGUAGES C CXX)
 
-set(CMAKE_C_STANDARD 23)
+if (MSVC)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:clatest")
+else ()
+    set(CMAKE_C_STANDARD 23)
+endif ()
+
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # Google Test requires at least C++14
@@ -34,6 +39,8 @@ if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
 endif ()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+option(BUILD_STATIC_LIBS "Build shared libraries" ON)
 
 add_library(lite-string lite_string.c lite_string.h)
 add_library(LiteString::lite-string ALIAS lite-string)
