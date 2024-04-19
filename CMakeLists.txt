@@ -6,9 +6,8 @@ project(LiteString
         HOMEPAGE_URL "https://github.com/dr8co/LiteString"
         LANGUAGES C CXX)
 
-if (MSVC)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /std:clatest")
-else ()
+# C23 is not supported by MSVC, as of cl 19.37.32824
+if (NOT MSVC)
     set(CMAKE_C_STANDARD 23)
 endif ()
 

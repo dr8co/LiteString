@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef LITE_STRING_NO_RESTRICT
+#define LITE_STRING_NO_RESTRICT 0
+#endif // LITE_STRING_NO_RESTRICT
+
 #if LITE_STRING_NO_RESTRICT
 
 // Ignore the warning for redefining the 'restrict' keyword
@@ -16,7 +20,7 @@
 #endif // __clang__
 #endif // LITE_STRING_NO_RESTRICT
 
-#if __cplusplus
+#if defined(__cplusplus) && __cplusplus
 #if !LITE_STRING_NO_RESTRICT // The keyword has not been redefined
 #if __GNUC__ || __clang__ || _MSC_VER // Support for '__restrict' in C++
 
@@ -89,7 +93,13 @@ extern "C" {
 #endif // __has_c_attribute(gnu::nothrow)
 
 #else // C23 is not supported
+#ifndef __cplusplus
+#if _MSC_VER
 #include <stdbool.h>
+#define nullptr ((void *) 0)
+#endif
+#endif
+
 
 #if __has_c_attribute(__warn_unused_result__) // GNU 'warn_unused_result' attribute, pre-C23 syntax
 #define LITE_ATTR_NODISCARD __attribute__((__warn_unused_result__))
@@ -128,7 +138,7 @@ extern "C" {
 
 typedef struct lite_string lite_string; ///< The \p lite_string type.
 
-LITE_ATTR_NODISCARD LITE_ATTR_HOT lite_string *string_new();
+LITE_ATTR_NODISCARD LITE_ATTR_HOT lite_string *string_new(void);
 
 LITE_ATTR_HOT void string_free(lite_string *restrict s);
 
@@ -304,6 +314,6 @@ LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_float(float v
 
 LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ldouble(long double value);
 
-#if __cplusplus
+#if defined(__cplusplus) && __cplusplus
 }
 #endif

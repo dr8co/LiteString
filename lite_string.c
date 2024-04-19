@@ -8,7 +8,7 @@
 #endif
 
 #define HAVE_STRNCASECMP 1
-#if _MSC_VER || _WIN32 || _WIN64
+#if _MSC_VER || _WIN32 || _WIN64 || WIN32
 #define strncasecmp _strnicmp // Windows equivalent
 #elif _GNU_SOURCE || _DEFAULT_SOURCE
 // strncasecmp is available
