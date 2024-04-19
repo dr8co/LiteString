@@ -8,12 +8,12 @@
 #endif
 
 #define HAVE_STRNCASECMP 1
-#if _GNU_SOURCE || _DEFAULT_SOURCE
+#if _MSC_VER || _WIN32 || _WIN64
+#define strncasecmp _strnicmp // Windows equivalent
+#elif _GNU_SOURCE || _DEFAULT_SOURCE
 // strncasecmp is available
 #elif __has_include(<strings.h>) || _POSIX_C_SOURCE >= 200112L
 #include <strings.h> // POSIX strncasecmp is available
-#elif _MSC_VER || _WIN32 || _WIN64
-#define strncasecmp _strnicmp // Windows equivalent
 #else
 // strncasecmp is not available, use a custom implementation
 #undef HAVE_STRNCASECMP
@@ -21,7 +21,7 @@
 #include <ctype.h> // For tolower()
 #endif
 
-
+#if __STDC_VERSION__ >= 202311L
 #if __has_c_attribute(gnu::always_inline)
 #define LITE_ATTR_ALWAYS_INLINE [[gnu::always_inline]]
 #else
@@ -34,6 +34,20 @@
 #define LITE_ATTR_MAYBE_UNUSED [[gnu::unused]]
 #else
 #define LITE_ATTR_MAYBE_UNUSED
+#endif
+
+#else
+#if __has_c_attribute(__always_inline__)
+#define LITE_ATTR_ALWAYS_INLINE __attribute__((__always_inline__))
+#else
+#define LITE_ATTR_ALWAYS_INLINE
+#endif
+
+#if __has_c_attribute(__unused__)
+#define LITE_ATTR_MAYBE_UNUSED __attribute__((__unused__))
+#else
+#define LITE_ATTR_MAYBE_UNUSED
+#endif
 #endif
 
 /**
@@ -55,7 +69,7 @@ struct lite_string {
  * @return A pointer to the newly created string, or nullptr if memory allocation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
-LITE_ATTR_NODISCARD LITE_ATTR_HOT lite_string *string_new() {
+LITE_ATTR_NODISCARD LITE_ATTR_HOT lite_string *string_new(void) {
     lite_string *s = (lite_string *) malloc(sizeof(lite_string));
     if (s) {
         if ((s->data = (char *) calloc(16, sizeof(char)))) {
@@ -305,9 +319,9 @@ char string_front(const lite_string *const restrict s) {
 bool string_erase_range(lite_string *const restrict s, const size_t start, const size_t count) {
     if (s && start < s->size) {
         if (count == 0) return true;
-#if __has_builtin(__builtin_uaddl_overflow)
+#if __has_builtin(__builtin_uaddll_overflow)
         size_t end;
-        if (!__builtin_uaddl_overflow(start, count, &end) && end <= s->size)
+        if (!__builtin_uaddll_overflow(start, count, &end) && end <= s->size)
 #else
         if (count < s->size && start + count <= s->size)
 #endif
@@ -775,7 +789,7 @@ bool string_swap(lite_string *const restrict s1, lite_string *const restrict s2)
  */
 size_t string_find_last_of(const lite_string *const restrict s, const char c) {
     if (s && s->size && c != '\0') {
-#ifdef _GNU_SOURCE
+#if defined(_GNU_SOURCE) && !defined(WIN32)
         const char *found = (const char *) memrchr(s->data, c, s->size);
         if (found) return found - s->data;
 #else
@@ -1033,7 +1047,12 @@ LITE_ATTR_MAYBE_UNUSED static size_t kmp_search(const char *const restrict s, co
     size_t j = 0; // Index for the substring
 
     // Compute the longest prefix suffix (lps) array for the substring
+#if _MSC_VER
+    size_t *lps = (size_t *) malloc(sub_size * sizeof(size_t));
+    if (lps == nullptr) return lite_string_npos;
+#else
     size_t lps[sub_size];
+#endif
     compute_lps(sub, sub_size, lps);
 
     while (i < s_size) {
@@ -1042,8 +1061,12 @@ LITE_ATTR_MAYBE_UNUSED static size_t kmp_search(const char *const restrict s, co
             ++j;
         }
         // Found the substring, return the index
-        if (j == sub_size)
+        if (j == sub_size) {
+#if _MSC_VER
+            free(lps);
+#endif
             return i - j;
+        }
 
         // Mismatch after j matches
         if (i < s_size && sub[j] != s[i]) {
@@ -1053,6 +1076,9 @@ LITE_ATTR_MAYBE_UNUSED static size_t kmp_search(const char *const restrict s, co
                 ++i;
         }
     }
+#if _MSC_VER
+    free(lps);
+#endif
 
     return lite_string_npos; // The substring was not found
 }
@@ -1072,7 +1098,7 @@ size_t string_find_from(const lite_string *const restrict s, const lite_string *
     if (s && sub && start < s->size) {
         if (sub->size == 0) return start;
         if (sub->size > s->size) return lite_string_npos;
-#ifdef _GNU_SOURCE
+#if defined(_GNU_SOURCE) && !defined(WIN32)
         const char *found = (const char *) memmem(s->data + start, s->size - start, sub->data, sub->size);
         if (found) return found - s->data;
 #else
@@ -1110,7 +1136,12 @@ size_t string_rfind(const lite_string *const restrict s, const lite_string *cons
         if (sub->size > s->size) return lite_string_npos;
 
         // Compute the longest prefix suffix (lps) array for the substring
+#if _MSC_VER
+        size_t *lps = (size_t *) malloc(sub->size * sizeof(size_t));
+        if (lps == nullptr) return lite_string_npos;
+#else
         size_t lps[sub->size];
+#endif
         compute_lps(sub->data, sub->size, lps);
 
         size_t i = 0; // index for s
@@ -1135,6 +1166,9 @@ size_t string_rfind(const lite_string *const restrict s, const lite_string *cons
                     i = i + 1;
             }
         }
+#if _MSC_VER
+        free(lps);
+#endif
         return last_match;
     }
     return lite_string_npos;
@@ -1161,7 +1195,7 @@ size_t string_find_cstr_from(const lite_string *const restrict s, const char *co
 
         // The search must start from a valid index
         if (start < s->size) {
-#ifdef _GNU_SOURCE
+#if defined(_GNU_SOURCE) && !(defined(WIN32) || defined(WIN64))
             const char *found = (const char *) memmem(s->data + start, s->size - start, cstr, len);
             if (found) return found - s->data;
 #else
@@ -1191,7 +1225,12 @@ size_t string_rfind_cstr(const lite_string *const restrict s, const char *const 
         if (len > s->size) return lite_string_npos;
 
         // Compute the longest prefix suffix (lps) array for the substring
+#if _MSC_VER
+        size_t *lps = (size_t *) malloc(len * sizeof(size_t));
+        if (lps == nullptr) return lite_string_npos;
+#else
         size_t lps[len];
+#endif
         compute_lps(cstr, len, lps);
 
         size_t i = 0; // index for s
@@ -1215,6 +1254,9 @@ size_t string_rfind_cstr(const lite_string *const restrict s, const char *const 
                     i = i + 1;
             }
         }
+#if _MSC_VER
+        free(lps);
+#endif
         return last_match;
     }
     return lite_string_npos;
