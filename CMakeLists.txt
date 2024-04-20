@@ -39,20 +39,23 @@ endif ()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-option(BUILD_STATIC_LIBS "Build shared libraries" ON)
+#option(BUILD_STATIC_LIBS "Build shared libraries" ON)
 
-add_library(lite-string lite_string.c lite_string.h)
+add_library(lite-string)
+target_sources(lite-string PRIVATE lite_string.c)
 add_library(LiteString::lite-string ALIAS lite-string)
 
 # Set the include directory for the library
 target_include_directories(lite-string PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
 
 set_target_properties(lite-string PROPERTIES
         VERSION ${PROJECT_VERSION}
         SOVERSION 1
-        PUBLIC_HEADER lite_string.h)
+        PUBLIC_HEADER lite_string.h
+)
 
 # Additional definitions for the library
 if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
@@ -63,16 +66,18 @@ include(GNUInstallDirs)
 
 install(TARGETS lite-string
         EXPORT LiteStringTargets
-        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-        RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+        LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT libraries
+        ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}" COMPONENT libraries
+        RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}" COMPONENT libraries
+        PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}" COMPONENT headers
 )
 
 install(EXPORT LiteStringTargets
         FILE LiteStringTargets.cmake
         NAMESPACE LiteString::
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/LiteString")
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/LiteString"
+        COMPONENT CMakeConfig
+)
 
 include(CMakePackageConfigHelpers)
 
@@ -88,12 +93,16 @@ write_basic_package_version_file(
 install(FILES
         "${CMAKE_CURRENT_BINARY_DIR}/LiteStringConfig.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/LiteStringConfigVersion.cmake"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/LiteString")
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/LiteString"
+        COMPONENT CMakeConfig
+)
 
 configure_file(liblite-string.pc.in liblite-string.pc @ONLY)
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblite-string.pc"
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblite-string.pc"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
+        COMPONENT pkgconfig
+)
 
 # Examples
 add_subdirectory(examples)
