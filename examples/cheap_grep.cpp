@@ -4,7 +4,7 @@
 #include <memory>
 #include "../lite_string.h"
 
-/// A lambda function to clean up a lite_string object.
+/// A lambda function to free a lite_string object.
 auto string_deleter = [](lite_string *ls) -> void { string_free(ls); };
 
 /**

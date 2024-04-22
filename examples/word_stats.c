@@ -3,18 +3,21 @@
 #include <ctype.h>
 #include "../lite_string.h"
 
+#ifndef S_ISREG // Not defined in Windows
+#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+#endif
+
 // A simple program that reads a file and prints the number of words and characters in the file.
 int main(const int argc, char *argv[]) {
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
         return 1;
     }
-
-    lite_string *s = string_new();
-    string_append_cstr(s, argv[1]);
+    // Store the filename in a new lite_string object.
+    lite_string *s = string_new_cstr(argv[1]);
 
     // Get the file properties.
-    struct stat st = {};
+    struct stat st = {0};
     if (stat(string_cstr(s), &st) != 0) {
         perror("stat");
         string_free(s);
@@ -40,14 +43,28 @@ int main(const int argc, char *argv[]) {
         return 1;
     }
     // Open the file
-    FILE *file = fopen(string_cstr(s), "r");
+#if _MSC_VER
+    // MSVC deprecates fopen, use fopen_s instead.
+    FILE *file;
+    errno_t err = fopen_s(&file, string_cstr(s), "rb");
+    if (err != 0 || file == nullptr) {
+#else
+    FILE *file = fopen(string_cstr(s), "rb");
     if (file == nullptr) {
+#endif
         perror("Could not open file");
         string_free(s);
         return 1;
     }
     // Read the file into a buffer.
+#if _MSC_VER
+    // MSVC does not support variable length arrays.
+
+#include <stdlib.h>
+    char *buffer = (char *) malloc(file_size + 1);
+#else
     char buffer[file_size + 1];
+#endif
     if (fread(buffer, sizeof(char), file_size, file) != file_size) {
         fputs("Failed to read the file.\n", stderr);
         return 1;
@@ -59,6 +76,10 @@ int main(const int argc, char *argv[]) {
     // Reuse the string to store the file contents.
     string_clear(s);
     string_append_cstr(s, buffer);
+
+#if _MSC_VER
+    free(buffer);
+#endif
 
     // Initializations
     size_t word_count = 0;
@@ -78,6 +99,7 @@ int main(const int argc, char *argv[]) {
         }
     }
 
+    // Print the statistics.
     if (word_count && char_count) {
         printf("Word count: %zu\n", word_count);
         printf("Character count: %zu\n", char_count);
