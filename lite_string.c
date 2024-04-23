@@ -7,6 +7,10 @@
 #define __has_include(x) 0
 #endif
 
+#ifndef __has_builtin
+#define __has_builtin(x) 0 // For compilers that do not support __has_builtin
+#endif
+
 #define HAVE_STRNCASECMP 1
 #if _MSC_VER || _WIN32 || _WIN64 || WIN32
 #define strncasecmp _strnicmp // Windows equivalent
@@ -319,6 +323,7 @@ char string_front(const lite_string *const restrict s) {
 bool string_erase_range(lite_string *const restrict s, const size_t start, const size_t count) {
     if (s && start < s->size) {
         if (count == 0) return true;
+        // Check if the range is within the bounds of the string
 #if __has_builtin(__builtin_uaddll_overflow)
         size_t end;
         if (!__builtin_uaddll_overflow(start, count, &end) && end <= s->size)
@@ -789,7 +794,7 @@ bool string_swap(lite_string *const restrict s1, lite_string *const restrict s2)
  */
 size_t string_find_last_of(const lite_string *const restrict s, const char c) {
     if (s && s->size && c != '\0') {
-#if defined(_GNU_SOURCE) && !defined(WIN32)
+#if defined(_GNU_SOURCE) && !(defined(_WIN32) || defined(WIN32) || _MSC_VER)
         const char *found = (const char *) memrchr(s->data, c, s->size);
         if (found) return found - s->data;
 #else
@@ -1098,7 +1103,7 @@ size_t string_find_from(const lite_string *const restrict s, const lite_string *
     if (s && sub && start < s->size) {
         if (sub->size == 0) return start;
         if (sub->size > s->size) return lite_string_npos;
-#if defined(_GNU_SOURCE) && !defined(WIN32)
+#if defined(_GNU_SOURCE) && !(defined(_WIN32) || defined(WIN32) || _MSC_VER)
         const char *found = (const char *) memmem(s->data + start, s->size - start, sub->data, sub->size);
         if (found) return found - s->data;
 #else
@@ -1195,7 +1200,7 @@ size_t string_find_cstr_from(const lite_string *const restrict s, const char *co
 
         // The search must start from a valid index
         if (start < s->size) {
-#if defined(_GNU_SOURCE) && !(defined(WIN32) || defined(WIN64))
+#if defined(_GNU_SOURCE) && !(defined(_WIN32) || defined(WIN32) || _MSC_VER)
             const char *found = (const char *) memmem(s->data + start, s->size - start, cstr, len);
             if (found) return found - s->data;
 #else

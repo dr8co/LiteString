@@ -1,5 +1,28 @@
 #pragma once
 
+// Library version
+#define _lite_string_major 0L ///< LiteString major version.
+#define _lite_string_minor 1L ///< LiteString minor version.
+#define _lite_string_patch 0L ///< LiteString patch version.
+
+/// The LiteString version as a single integer.
+#define _lite_string_version (_lite_string_major * 10000L + _lite_string_minor * 100L + _lite_string_patch)
+
+// Check version compatibility requirements
+#ifdef LITE_STRING_REQUIRE_MIN_VERSION
+#if (LITE_STRING_REQUIRE_MIN_VERSION + 0) == 0
+#if _MSC_VER && !defined(__clang__)
+#pragma message ("WARNING: Lite String version requirement is enabled, but the version is not specified!")
+#else
+#warning "Lite String version requirement is enabled, but the version is not specified!"
+#endif // _MSC_VER && !defined(__clang__)
+#else
+#if _lite_string_version < LITE_STRING_REQUIRE_MIN_VERSION
+#error "Lite String version is lower than required!"
+#endif // _lite_string_version < LITE_STRING_REQUIRE_MIN_VERSION
+#endif // (LITE_STRING_REQUIRE_MIN_VERSION + 0) == 0
+#endif // LITE_STRING_REQUIRE_MIN_VERSION
+
 #ifndef LITE_STRING_NO_RESTRICT
 #define LITE_STRING_NO_RESTRICT 0
 #endif // LITE_STRING_NO_RESTRICT
@@ -49,8 +72,12 @@ extern "C" {
 
 #define lite_string_npos ((size_t) -1)
 
-#ifndef __has_c_attribute
+#if !defined(__has_c_attribute)
+#if defined(__has_attribute)
+#define __has_c_attribute __has_attribute
+#else
 #define __has_c_attribute(x) 0  // Compatibility with non-gnu compilers
+#endif
 #endif
 
 #if __STDC_VERSION__ >= 202311L // C23 is supported
@@ -95,10 +122,12 @@ extern "C" {
 #else // C23 is not supported
 #ifndef __cplusplus
 #if _MSC_VER
+
 #include <stdbool.h>
+
 #define nullptr ((void *) 0)
-#endif
-#endif
+#endif // _MSC_VER
+#endif // __cplusplus
 
 
 #if __has_c_attribute(__warn_unused_result__) // GNU 'warn_unused_result' attribute, pre-C23 syntax

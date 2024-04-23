@@ -59,7 +59,6 @@ int main(const int argc, char *argv[]) {
     // Read the file into a buffer.
 #if _MSC_VER
     // MSVC does not support variable length arrays.
-
 #include <stdlib.h>
     char *buffer = (char *) malloc(file_size + 1);
 #else
@@ -103,7 +102,7 @@ int main(const int argc, char *argv[]) {
     if (word_count && char_count) {
         printf("Word count: %zu\n", word_count);
         printf("Character count: %zu\n", char_count);
-        printf("Average word length: %.2f\n", (double) char_count / word_count);
+        printf("Average word length: %.2f\n", (double) char_count / (double) word_count);
     } else fputs("The file contains binary data.\n", stderr);
 
     string_free(s);
