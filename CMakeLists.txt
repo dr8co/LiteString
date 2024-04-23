@@ -17,6 +17,11 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Options
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+option(BUILD_EXAMPLES "Build examples" ON)
+option(BUILD_TESTS "Build tests" ON)
+
 # Additional options for the Debug build
 if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_C_COMPILER_ID} STREQUAL "AppleClang" OR ${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -Wpedantic -g")
@@ -38,8 +43,6 @@ if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
 endif ()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-#option(BUILD_STATIC_LIBS "Build shared libraries" ON)
 
 add_library(lite-string)
 target_sources(lite-string PRIVATE lite_string.c)
@@ -104,8 +107,32 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblite-string.pc"
         COMPONENT pkgconfig
 )
 
+# Notify about MinGW builds in the version_info.txt file
+if (MINGW)
+    set(C_COMPILER_EXTRA_INFO "(For MinGW)")
+endif ()
+
+# Get the current date and time in UTC
+string(TIMESTAMP CURRENT_DATE "%Y-%m-%d %H:%M:%S" UTC)
+
+# Get the build flags
+set(FLAGS_VAR "CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE}")
+string(TOUPPER "${FLAGS_VAR}" FLAGS_VAR)
+string(CONFIGURE "@${FLAGS_VAR}@" BUILD_FLAGS)
+
+# Configure the version_info.txt file
+configure_file(version_info.txt.in "${CMAKE_CURRENT_BINARY_DIR}/version_info.txt" @ONLY)
+
+# Install the version_info.txt file
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/version_info.txt"
+        DESTINATION "${CMAKE_INSTALL_DATADIR}/LiteString"
+        COMPONENT data
+)
+
 # Examples
-add_subdirectory(examples)
+if (BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif ()
 
 # Google Test
 include(FetchContent)
@@ -125,6 +152,8 @@ endif ()
 enable_testing()
 
 # Tests
-add_subdirectory(tests)
+if (BUILD_TESTS)
+    add_subdirectory(tests)
+endif ()
 
 include(Packing)
