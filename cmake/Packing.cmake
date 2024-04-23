@@ -11,12 +11,7 @@ set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/dr8co/LiteString")
 set(CPACK_OUTPUT_FILE_PREFIX "${CMAKE_BINARY_DIR}/Packages")
 
 # Set the package icon
-if (WIN32)
-    # Windows graphical installers take BMP files (Inno Setup and NSIS)
-    set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/assets/logo/logo1.bmp")
-else ()
-    set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/assets/logo/logo-symbol.ico")
-endif ()
+set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/assets/logo/logo1-rounded.ico")
 
 # Source package Generator variables
 set(CPACK_SOURCE_GENERATOR "TGZ;ZIP")
@@ -139,8 +134,8 @@ set(CPACK_INNOSETUP_USE_MODERN_WIZARD ON)
 set(CPACK_INNOSETUP_MENU_LINKS "Help" "${CPACK_PACKAGE_HOMEPAGE}" "Home Page")
 
 # Extend the setup section
-set(CPACK_INNOSETUP_SETUP_SetupIconFile "${CMAKE_CURRENT_SOURCE_DIR}/assets/logo/logo1.ico")
-set(CPACK_INNOSETUP_SETUP_UninstallDisplayIcon "${CMAKE_CURRENT_SOURCE_DIR}/assets/logo/logo1.ico")
+set(CPACK_INNOSETUP_SETUP_SetupIconFile "${CMAKE_CURRENT_SOURCE_DIR}/assets/logo/logo1-rounded.ico")
+set(CPACK_INNOSETUP_SETUP_UninstallDisplayIcon "${CMAKE_CURRENT_SOURCE_DIR}/assets/logo/logo1-rounded.ico")
 set(CPACK_INNOSETUP_SETUP_ShowLanguageDialog ON)
 set(CPACK_INNOSETUP_SETUP_WizardImageFile "${CMAKE_CURRENT_SOURCE_DIR}/assets/wizardImage/wzImg3@0.75x.bmp")
 set(CPACK_INNOSETUP_SETUP_WizardSmallImageFile "${CMAKE_CURRENT_SOURCE_DIR}/assets/wizardSmallImage/wzSmall1@0.25x.bmp")
