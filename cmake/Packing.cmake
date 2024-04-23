@@ -13,7 +13,7 @@ set(CPACK_OUTPUT_FILE_PREFIX "${CMAKE_BINARY_DIR}/Packages")
 # Set the package icon
 if (WIN32)
     # Windows graphical installers take BMP files (Inno Setup and NSIS)
-    set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}\\assets\\logo\\logo1.bmp")
+    set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/assets/logo/logo1.bmp")
 else ()
     set(CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/assets/logo/logo-symbol.ico")
 endif ()
@@ -43,7 +43,7 @@ set(CPACK_SOURCE_IGNORE_FILES
         /CPack
 )
 # Component settings
-set(CPACK_COMPONENTS_ALL libraries headers CMakeConfig pkgconfig)
+set(CPACK_COMPONENTS_ALL libraries headers CMakeConfig pkgconfig data)
 
 set(CPACK_COMPONENT_LIBRARIES_DISPLAY_NAME "Libraries")
 set(CPACK_COMPONENT_LIBRARIES_DESCRIPTION "The LiteString libraries.")
@@ -58,6 +58,9 @@ set(CPACK_COMPONENT_PKGCONFIG_DESCRIPTION "The LiteString library pkgconfig file
 set(CPACK_COMPONENT_HEADERS_DISPLAY_NAME "Headers")
 set(CPACK_COMPONENT_HEADERS_DESCRIPTION "Header files for LiteString.")
 set(CPACK_COMPONENT_HEADERS_REQUIRED ON)
+
+set(CPACK_COMPONENT_DATA_DISPLAY_NAME "Data")
+set(CPACK_COMPONENT_DATA_DESCRIPTION "Information about this build of LiteString.")
 
 # Resource files
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
@@ -110,7 +113,7 @@ set(CPACK_NSIS_PACKAGE_NAME "${CPACK_PACKAGE_NAME}")
 set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_NAME}")
 set(CPACK_NSIS_MODIFY_PATH ON)
 
-set(CPACK_NSIS_INSTALL_ROOT "C:\\Program Files\\${CPACK_PACKAGE_NAME}")
+set(CPACK_NSIS_INSTALL_ROOT "C:/Program Files/${CPACK_PACKAGE_NAME}")
 set(CPACK_NSIS_CONTACT "${CPACK_PACKAGE_CONTACT}")
 
 set(CPACK_NSIS_URL_INFO_ABOUT "${CPACK_PACKAGE_HOMEPAGE}")
@@ -122,7 +125,7 @@ set(CPACK_NSIS_MENU_LINKS "Help" "${CPACK_PACKAGE_HOMEPAGE}" "Home Page")
 
 # Inno setup specific settings
 set(CPACK_INNOSETUP_USE_CMAKE_BOOL_FORMAT ON)
-set(CPACK_INNOSETUP_INSTALL_ROOT "${CPACK_NSIS_INSTALL_ROOT}")
+set(CPACK_INNOSETUP_INSTALL_ROOT "C:/Program Files")
 
 set(CPACK_INNOSETUP_ALLOW_CUSTOM_DIRECTORY ON)
 set(CPACK_INNOSETUP_PROGRAM_MENU_FOLDER "${CPACK_PACKAGE_NAME}")
@@ -136,11 +139,11 @@ set(CPACK_INNOSETUP_USE_MODERN_WIZARD ON)
 set(CPACK_INNOSETUP_MENU_LINKS "Help" "${CPACK_PACKAGE_HOMEPAGE}" "Home Page")
 
 # Extend the setup section
-set(CPACK_INNOSETUP_SETUP_SetupIconFile "${CMAKE_CURRENT_SOURCE_DIR}\\assets\\logo\\logo1.ico")
-set(CPACK_INNOSETUP_SETUP_UninstallDisplayIcon "${CMAKE_CURRENT_SOURCE_DIR}\\assets\\logo\\logo1.ico")
+set(CPACK_INNOSETUP_SETUP_SetupIconFile "${CMAKE_CURRENT_SOURCE_DIR}/assets/logo/logo1.ico")
+set(CPACK_INNOSETUP_SETUP_UninstallDisplayIcon "${CMAKE_CURRENT_SOURCE_DIR}/assets/logo/logo1.ico")
 set(CPACK_INNOSETUP_SETUP_ShowLanguageDialog ON)
-set(CPACK_INNOSETUP_SETUP_WizardImageFile "${CMAKE_CURRENT_SOURCE_DIR}\\assets\\wizardImage\\wzImg3@0.75x.bmp")
-set(CPACK_INNOSETUP_SETUP_WizardSmallImageFile "${CMAKE_CURRENT_SOURCE_DIR}\\assets\\wizardSmallImage\\wzSmall1@0.25x.bmp")
+set(CPACK_INNOSETUP_SETUP_WizardImageFile "${CMAKE_CURRENT_SOURCE_DIR}/assets/wizardImage/wzImg3@0.75x.bmp")
+set(CPACK_INNOSETUP_SETUP_WizardSmallImageFile "${CMAKE_CURRENT_SOURCE_DIR}/assets/wizardSmallImage/wzSmall1@0.25x.bmp")
 set(CPACK_INNOSETUP_SETUP_WizardStyle "modern")
 set(CPACK_INNOSETUP_SETUP_DisableWelcomePage OFF)
 set(CPACK_INNOSETUP_SETUP_AppCopyright "Copyright (C) 2024 Ian Duncan")
