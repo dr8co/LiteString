@@ -1,58 +1,58 @@
+#include "lite_string.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "lite_string.h"
 
 #ifndef __has_include
-#define __has_include(x) 0
-#endif
+#define __has_include(x) 0 // Compatibility with non-GNU compilers
+#endif // !__has_include
 
 #ifndef __has_builtin
 #define __has_builtin(x) 0 // For compilers that do not support __has_builtin
-#endif
+#endif // !__has_builtin
 
-#define HAVE_STRNCASECMP 1
+#define HAS_STRNCASECMP 1
 #if _MSC_VER || _WIN32 || _WIN64 || WIN32
 #define strncasecmp _strnicmp // Windows equivalent
 #elif _GNU_SOURCE || _DEFAULT_SOURCE
-// strncasecmp is available
+// strncasecmp is available as a GNU extension
 #elif __has_include(<strings.h>) || _POSIX_C_SOURCE >= 200112L
 #include <strings.h> // POSIX strncasecmp is available
 #else
 // strncasecmp is not available, use a custom implementation
-#undef HAVE_STRNCASECMP
-#define HAVE_STRNCASECMP 0
+#undef HAS_STRNCASECMP
+#define HAS_STRNCASECMP 0
 #include <ctype.h> // For tolower()
-#endif
+#endif // _MSC_VER || _WIN32 || _WIN64 || WIN32
 
-#if __STDC_VERSION__ >= 202311L
-#if __has_c_attribute(gnu::always_inline)
+#if __STDC_VERSION__ >= 202311L // C23 or later, use the new attributes if available
+#if HAS_ATTRIBUTE(always_inline)
 #define LITE_ATTR_ALWAYS_INLINE [[gnu::always_inline]]
 #else
 #define LITE_ATTR_ALWAYS_INLINE
-#endif
+#endif // HAS_ATTRIBUTE(gnu::always_inline)
 
-#if __has_c_attribute(maybe_unused)
+#if HAS_C_ATTRIBUTE(maybe_unused)
 #define LITE_ATTR_MAYBE_UNUSED [[__maybe_unused__]]
-#elif __has_c_attribute(gnu::unused)
+#elif HAS_ATTRIBUTE(unused)
 #define LITE_ATTR_MAYBE_UNUSED [[gnu::unused]]
 #else
 #define LITE_ATTR_MAYBE_UNUSED
-#endif
+#endif // HAS_C_ATTRIBUTE(maybe_unused)
 
 #else
-#if __has_c_attribute(__always_inline__)
+#if HAS_ATTRIBUTE(__always_inline__)
 #define LITE_ATTR_ALWAYS_INLINE __attribute__((__always_inline__))
 #else
 #define LITE_ATTR_ALWAYS_INLINE
-#endif
+#endif // HAS_ATTRIBUTE(__always_inline__)
 
-#if __has_c_attribute(__unused__)
+#if HAS_ATTRIBUTE(__unused__)
 #define LITE_ATTR_MAYBE_UNUSED __attribute__((__unused__))
 #else
 #define LITE_ATTR_MAYBE_UNUSED
-#endif
-#endif
+#endif // HAS_ATTRIBUTE(__unused__)
+#endif // __STDC_VERSION__ >= 202311L
 
 /**
  * @brief A simple emulation of a C++ string in C.
@@ -324,9 +324,9 @@ bool string_erase_range(lite_string *const restrict s, const size_t start, const
     if (s && start < s->size) {
         if (count == 0) return true;
         // Check if the range is within the bounds of the string
-#if __has_builtin(__builtin_uaddll_overflow)
+#if __has_builtin(__builtin_add_overflow)
         size_t end;
-        if (!__builtin_uaddll_overflow(start, count, &end) && end <= s->size)
+        if (!__builtin_add_overflow(start, count, &end) && end <= s->size)
 #else
         if (count < s->size && start + count <= s->size)
 #endif
@@ -713,7 +713,7 @@ bool string_compare_cstr(const lite_string *const restrict s, const char *const 
 bool string_case_compare_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     if (s && cstr) {
         if (s->size == strlen(cstr)) {
-#if HAVE_STRNCASECMP
+#if HAS_STRNCASECMP
             return strncasecmp(s->data, cstr, s->size) == 0;
 #else
             for (size_t i = 0; i < s->size; ++i) {
@@ -1072,7 +1072,6 @@ LITE_ATTR_MAYBE_UNUSED static size_t kmp_search(const char *const restrict s, co
 #endif
             return i - j;
         }
-
         // Mismatch after j matches
         if (i < s_size && sub[j] != s[i]) {
             if (j)
@@ -1394,7 +1393,7 @@ void string_to_lower(const lite_string *const restrict s) {
     if (s) {
         for (size_t i = 0; i < s->size; ++i) {
             if (s->data[i] >= 'A' && s->data[i] <= 'Z')
-                s->data[i] |= 32;
+                s->data[i] += 32;
         }
     }
 }
@@ -1408,7 +1407,7 @@ void string_to_upper(const lite_string *const restrict s) {
     if (s) {
         for (size_t i = 0; i < s->size; ++i) {
             if (s->data[i] >= 'a' && s->data[i] <= 'z')
-                s->data[i] &= ~32;
+                s->data[i] -= 32;
         }
     }
 }
@@ -1421,12 +1420,12 @@ void string_to_upper(const lite_string *const restrict s) {
 void string_to_title(const lite_string *const restrict s) {
     if (s) {
         if (s->data[0] >= 'a' && s->data[0] <= 'z')
-            s->data[0] &= ~32;
+            s->data[0] -= 32;
 
         // Iterate over the rest of the string
         for (size_t i = 1; i < s->size; ++i) {
             if (s->data[i] == ' ' && s->data[i + 1] >= 'a' && s->data[i + 1] <= 'z')
-                s->data[i + 1] &= ~32;
+                s->data[i + 1] -= 32;
         }
     }
 }

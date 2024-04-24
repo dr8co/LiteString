@@ -11,7 +11,7 @@
 // Check version compatibility requirements
 #ifdef LITE_STRING_REQUIRE_MIN_VERSION
 #if (LITE_STRING_REQUIRE_MIN_VERSION + 0) == 0
-#if _MSC_VER && !defined(__clang__)
+#if _MSC_VER && !defined(__clang__) // MSVC does not have '#warning', but clang-cl does
 #pragma message ("WARNING: Lite String version requirement is enabled, but the version is not specified!")
 #else
 #warning "Lite String version requirement is enabled, but the version is not specified!"
@@ -54,7 +54,7 @@
 #endif // __clang__
 
 #define restrict __restrict // Use '__restrict' in C++ for GCC, Clang, and MSVC
-#else // Support for '__restrict' in C++ is unknown
+#else // Support for C++ '__restrict' is unknown on this compiler
 #define restrict
 #endif // __GNUC__ || __clang__ || _MSC_VER
 
@@ -72,52 +72,56 @@ extern "C" {
 
 #define lite_string_npos ((size_t) -1)
 
-#if !defined(__has_c_attribute)
-#if defined(__has_attribute)
-#define __has_c_attribute __has_attribute
+#ifdef __has_attribute
+#define HAS_ATTRIBUTE(x) __has_attribute(x)
 #else
-#define __has_c_attribute(x) 0  // Compatibility with non-gnu compilers
-#endif
-#endif
+#define HAS_ATTRIBUTE(x) 0
+#endif // __has_attribute
+
+#ifdef __has_c_attribute
+#define HAS_C_ATTRIBUTE(x) __has_c_attribute(x)
+#else
+#define HAS_C_ATTRIBUTE(x) HAS_ATTRIBUTE(x)
+#endif // __has_c_attribute
 
 #if __STDC_VERSION__ >= 202311L // C23 is supported
-#if __has_c_attribute(nodiscard) // C23 'nodiscard' attribute
+#if HAS_C_ATTRIBUTE(nodiscard) // C23 'nodiscard' attribute
 #define LITE_ATTR_NODISCARD [[__nodiscard__]]
-#elif __has_c_attribute(gnu::warn_unused_result) // GNU 'warn_unused_result' attribute
+#elif HAS_ATTRIBUTE(warn_unused_result) // GNU 'warn_unused_result' attribute
 #define LITE_ATTR_NODISCARD [[gnu::warn_unused_result]]
 #else
 #define LITE_ATTR_NODISCARD
-#endif // __has_c_attribute(nodiscard)
+#endif // HAS_C_ATTRIBUTE(nodiscard)
 
-#if __has_c_attribute(gnu::hot) // GNU 'hot' attribute
+#if HAS_ATTRIBUTE(hot) // GNU 'hot' attribute
 #define LITE_ATTR_HOT [[gnu::hot]]
 #else
 #define LITE_ATTR_HOT
-#endif // __has_c_attribute(gnu::hot)
+#endif // HAS_ATTRIBUTE(hot)
 
-#if __has_c_attribute(reproducible) // C23 'reproducible' attribute
+#if HAS_C_ATTRIBUTE(reproducible) // C23 'reproducible' attribute
 #define LITE_ATTR_REPRODUCIBLE [[__reproducible__]]
-#elif __has_c_attribute(gnu::pure) // GNU 'pure' attribute as a substitute
+#elif HAS_ATTRIBUTE(pure) // GNU 'pure' attribute as a substitute
 #define LITE_ATTR_REPRODUCIBLE [[gnu::pure]]
 #else
 #define LITE_ATTR_REPRODUCIBLE
-#endif // __has_c_attribute(reproducible)
+#endif // HAS_C_ATTRIBUTE(reproducible)
 
-#if __has_c_attribute(unsequenced) // C23 'unsequenced' attribute
+#if HAS_C_ATTRIBUTE(unsequenced) // C23 'unsequenced' attribute
 #define LITE_ATTR_UNSEQUENCED [[__unsequenced__]]
-#elif __has_c_attribute(gnu::const) // GNU 'const' attribute as a substitute
+#elif HAS_ATTRIBUTE(__const__)  // GNU 'const' attribute as a substitute
 #define LITE_ATTR_UNSEQUENCED [[gnu::const]]
 #else
 #define LITE_ATTR_UNSEQUENCED
-#endif // __has_c_attribute(unsequenced)
+#endif // HAS_C_ATTRIBUTE(unsequenced)
 
-#if __has_c_attribute(gnu::nothrow) // GNU 'nothrow' attribute
+#if HAS_ATTRIBUTE(nothrow) // GNU 'nothrow' attribute
 #define LITE_ATTR_NOEXCEPT [[gnu::nothrow]]
 #elif _MSC_VER
 #define LITE_ATTR_NOEXCEPT __declspec(nothrow) // MSVC equivalent
 #else
 #define LITE_ATTR_NOEXCEPT
-#endif // __has_c_attribute(gnu::nothrow)
+#endif // HAS_ATTRIBUTE(nothrow)
 
 #else // C23 is not supported
 #ifndef __cplusplus
@@ -129,38 +133,37 @@ extern "C" {
 #endif // _MSC_VER
 #endif // __cplusplus
 
-
-#if __has_c_attribute(__warn_unused_result__) // GNU 'warn_unused_result' attribute, pre-C23 syntax
+#if HAS_ATTRIBUTE(__warn_unused_result__) // GNU 'warn_unused_result' attribute, pre-C23 syntax
 #define LITE_ATTR_NODISCARD __attribute__((__warn_unused_result__))
 #else
 #define LITE_ATTR_NODISCARD
-#endif // __has_c_attribute(__warn_unused_result__)
+#endif // HAS_ATTRIBUTE(__warn_unused_result__)
 
-#if __has_c_attribute(__hot__) // GNU 'hot' attribute
+#if HAS_ATTRIBUTE(__hot__) // GNU 'hot' attribute
 #define LITE_ATTR_HOT __attribute__((__hot__))
 #else
 #define LITE_ATTR_HOT
-#endif // __has_c_attribute(__hot__)
+#endif // HAS_ATTRIBUTE(__hot__)
 
-#if __has_c_attribute(__pure__) // GNU 'pure' attribute
+#if HAS_ATTRIBUTE(__pure__) // GNU 'pure' attribute
 #define LITE_ATTR_REPRODUCIBLE __attribute__((__pure__))
 #else
 #define LITE_ATTR_REPRODUCIBLE
-#endif // __has_c_attribute(__pure__)
+#endif // HAS_ATTRIBUTE(__pure__)
 
-#if __has_c_attribute(__const__) // GNU 'const' attribute
+#if HAS_ATTRIBUTE(__const__) // GNU 'const' attribute
 #define LITE_ATTR_UNSEQUENCED __attribute__((__const__))
 #else
 #define LITE_ATTR_UNSEQUENCED
-#endif // __has_c_attribute(__const__)
+#endif // HAS_ATTRIBUTE(__const__)
 
-#if __has_c_attribute(nothrow) // GNU 'nothrow' attribute
-#define LITE_ATTR_NOEXCEPT __attribute__((nothrow))
+#if HAS_ATTRIBUTE(__nothrow__) // GNU 'nothrow' attribute
+#define LITE_ATTR_NOEXCEPT __attribute__((__nothrow__))
 #elif _MSC_VER
 #define LITE_ATTR_NOEXCEPT __declspec(nothrow) // MSVC equivalent
 #else
 #define LITE_ATTR_NOEXCEPT
-#endif // __has_c_attribute(nothrow)
+#endif // HAS_ATTRIBUTE(nothrow)
 
 #endif // __STDC_VERSION__ >= 202311L
 
