@@ -4,7 +4,8 @@ This directory contains examples of using the LiteString library.
 
 Before building the examples, make sure that the LiteString library is built or installed.
 
-For building the LiteString library, refer to the [README](../README.md) file in the root directory.
+For building the LiteString library, refer to the
+[README](../README.md#building-the-library) file in the root directory.
 
 ## C API
 
@@ -14,10 +15,14 @@ The text file should not be bigger than 1MB.
 
 ```bash
 # Compile and link the example
-gcc -o word_stats word_stats.c /path/to/liblite-string.a -std=c2x
+gcc -std=c2x -o word_stats word_stats.c -L /path/to/built/lite-string/library -llite-string
 
 # Run the example
 ./word_stats blindtext.txt
+# Expected output:
+Word count: 5800
+Character count: 33355
+Average word length: 5.75
 ```
 
 ## C++ API
@@ -26,7 +31,7 @@ gcc -o word_stats word_stats.c /path/to/liblite-string.a -std=c2x
 
 ```bash
 # Compile and link the example
-g++ -o cheap_grep cheap_grep.cpp /path/to/liblite-string.a -std=c++20
+g++ -std=c++20 -o cheap_grep cheap_grep.cpp -L /path/to/built/lite-string/library -llite-string
 
 # Run the example
 ./cheap_grep -i "ipsum dolor" blindtext.txt
@@ -44,7 +49,7 @@ The [CMakeLists.txt](./CMakeLists.txt) file in this directory can be used to bui
 # From this directory (examples), run:
 mkdir build
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G Ninja
-cmake --build build -j 4
+cmake --build build --config Release -j 4
 ```
 
 The examples can be found in the `build` directory.

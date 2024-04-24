@@ -1,10 +1,15 @@
-# LiteString
+<h1 align="center">LiteString</h1>
+<h2 align="center">A simple byte string library for C (and C++)</h2>
+
+<p align="center">
+<img alt="A simple byte string library for C" height="512" src="./assets/logo/logo2-rounded@0.5x.png" title="LiteString" width="512"/>
+</p>
 
 ## About
 
-A simple byte string library for C (and C++).
+LiteString is a simple, lightweight, and fast string library for C and C++.
 
-LiteString provides an extended set of functions for working with strings.
+It provides an extended set of functions for working with strings.
 It is intended to be a lightweight emulation of the C++ `std::string` class,
 with a focus on simplicity, performance, and ease of use.
 
@@ -17,7 +22,7 @@ LiteString is written in C and can be used in both C and C++ projects.
 - Compatible with C and C++
 - No dependencies, just the standard library
 
-## Building
+## Building the Library
 
 ### Prerequisites
 
@@ -42,7 +47,7 @@ git checkout main
 # Create a build directory.
 mkdir build
 
-# Configure the project.
+# Configure the project. To build a shared library, add -DBUILD_SHARED_LIBS=ON. The default build is static.
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc -G Ninja
 
 # Build the library.
@@ -52,18 +57,131 @@ cmake --build build --config Release -j 4
 Replace `Ninja` with `"Unix Makefiles"` or another generator if Ninja is not available.
 The `-G` option can be omitted to use the default generator.
 
-The library will be built as a static library named `liblite-string.a`, in the `build` directory.
+To skip building tests and examples, add `-DBUILD_TESTS=OFF` and `-DBUILD_EXAMPLES=OFF`
+to the Configuration step:
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -G Ninja
+```
+
+The library will be built in the `build` directory.
 
 ### Building Manually
 
-To build the library, run the following commands:
+#### Static Library
+
+##### UNIX (Linux, macOS, etc.)
 
 ```bash
-gcc -c -O3 -std=c23 -o lite_string.o lite_string.c
+# Compile the source code to an object file. Use Clang instead of GCC if desired.
+gcc -c -O3 -std=c2x -o lite_string.o lite_string.c
+
+# Create a static library from the object file.
 ar rcs liblite-string.a lite_string.o
 ```
 
-`clang` can be used instead of `gcc` to compile the source code with Clang.
+##### Windows
+
+If using [MinGW](https://sourceforge.net/projects/mingw/ "MinGW"),
+[MinGW-w64](https://www.mingw-w64.org/ "MinGW-w64"), [Cygwin](https://www.cygwin.com/ "Cygwin"),
+or [MSYS2](https://www.msys2.org/ "MSYS2"), follow the [UNIX instructions](#unix-linux-macos-etc)
+
+Make sure the MinGW bin directory is in the system PATH,
+or use the full path to the MinGW `gcc` and `ar` executables.
+
+For Visual Studio, use the Developer Command Prompt or Powershell:
+
+```cmd
+cl /c /O2 /std:clatest lite_string.c
+lib /OUT:liblite-string.lib lite_string.obj
+```
+
+`clang-cl` can be used instead of `cl` if available.
+
+#### Shared Library
+
+##### UNIX (Linux, macOS, BSD, etc.)
+
+```bash
+# Compile the source code to an object file.
+gcc -c -O3 -std=c2x -fPIC -o lite_string.o lite_string.c
+
+# Create a shared library from the object file.
+gcc -shared -o liblite-string.so lite_string.o
+```
+
+##### Windows
+
+If using [MinGW](https://sourceforge.net/projects/mingw/ "MinGW"),
+[MinGW-w64](https://www.mingw-w64.org/ "MinGW-w64"), [Cygwin](https://www.cygwin.com/ "Cygwin"),
+or [MSYS2](https://www.msys2.org/ "MSYS2"), follow the [UNIX instructions](#unix-linux-macos-bsd-etc)
+
+For Visual Studio, use the Developer Command Prompt or Powershell:
+
+```cmd
+cl /c /O2 /std:clatest /LD lite_string.c
+link /DLL /OUT:lite-string.dll lite_string.obj
+```
+
+## Installation and Uninstallation
+
+### Installation
+
+Pre-built binaries are available for Windows, Linux, and macOS are available on the
+[Releases](https://github.com/dr8co/LiteString/releases "LiteString Releases") page.
+
+The following packages are available:
+
+| Package suffix |        Platform         | Installation method                   |
+|:--------------:|:-----------------------:|---------------------------------------|
+|   win64.exe    |     Windows 64-bit      | Self installing executable            |
+|   win64.zip    |     Windows 64-bit      | Extraction to appropriate directories |
+|   x86_64.rpm   | RPM-based Linux 64-bit  | rpm installers, such as apt and dpkg  |
+|   amd64.deb    | DEB-based Linux 64-bit  | deb installers, such as yum and dnf   |
+|  Linux.tar.gz  |      Linux 64-bit       | Extraction to appropriate directories |
+|   Darwin.dmg   |      macOS 64-bit       | Drag and Drop                         |
+| Darwin.tar.gz  |      macOS 64-bit       | Extraction to appropriate directories |
+
+SHA-256 checksums are provided for each package to verify the integrity of the files.
+
+Alternatively, you can install the library directly after
+[building with CMake](#building-with-cmake-recommended):
+
+```bash
+# Install from the build directory.
+cmake --install build --config Release
+```
+
+Escalation of privileges may be required to install the library system-wide.
+Use `sudo` on UNIX or run the command prompt (or powershell) as an administrator on Windows.
+
+### Uninstallation
+
+If the installation was done with pre-built packages, use the appropriate package manager to remove the library.
+For Windows, use the Control Panel or the `Add/Remove Programs` utility.
+
+To uninstall the cmake-installed library, remove every file listed in the `install_manifest.txt` file,
+which is generated in the build directory during installation.\
+For UNIX, use the following command:
+
+```bash
+# In the build directory, run:
+xargs rm -f < install_manifest.txt # May require sudo
+```
+
+For Windows, use the following command in the build directory:
+
+```cmd
+for /f %i in (install_manifest.txt) do del %i
+```
+
+Or, if PowerShell is available:
+
+```powershell
+Get-Content install_manifest.txt | ForEach-Object { Remove-Item $_ }
+```
+
+Remember to run the command prompt or PowerShell as an administrator.
 
 ## Usage
 
@@ -71,42 +189,117 @@ To use the library, include the header file in your source code:
 
 ```c
 #include <lite_string.h>
+// or:
+#include "lite_string.h"
+// Depending on whether the library was installed or not.
 ...
 ```
 
-Compile the source code and link it with the library:
+Compile the source code and link it with the library.
 
-```bash
-# C
-gcc -std=c2x -O3 -o example example.c /path/to/liblite-string.a
-# C++
-g++ -std=c++20 -O3 -o example example.cpp /path/to/liblite-string.a
-```
+### Compilation and Linking using CMake
 
-Projects using CMake can link the library through the `target_link_libraries` command:
+To link the library with a CMake project, include the following lines in the `CMakeLists.txt` file:
 
 ```cmake
-target_link_libraries(example /path/to/libLiteString.a)
+########### If the library was installed: ###########
+# Locate the required files.
+find_package(LiteString REQUIRED)
+
+# Link the library to the target.
+target_link_libraries(yourTarget LiteString::lite-string)
+
+######## If the library was built manually, or is not installed: ########
+# Add the library to the project.
+add_library(LiteString STATIC IMPORTED)
+set_target_properties(LiteString PROPERTIES IMPORTED_LOCATION /path/to/libLiteString.a)
+
+# Link the library to the target.
+target_link_libraries(yourTarget LiteString)
+```
+
+The other option is to link your target with the library directly:
+
+```cmake
+# Link the library to the target.
+target_link_libraries(yourTarget /path/to/libLiteString.a)
 ```
 
 See the [CMakeLists.txt](./examples/CMakeLists.txt) file in the `examples` directory for an example.
 
+### Manual Compilation and Linking
+
+To manually link on UNIX:
+
+```bash
+# C
+gcc -O3 -o example example.c -L /path/to/built/library -llite-string
+# C++
+g++ -std=c++20 -O3 -o example example.cpp -L /path/to/built/library -llite-string
+```
+
+If the library was installed system-wide, the `-L` option can be omitted.
+
+On Windows:
+
+```powershell
+# C
+cl /O2 /std:clatest example.c /OUT:example.exe /link /LIBPATH:"C:\path\to\built\library" liblite-string.lib
+
+# C++
+cl /O2 /std:c++20 example.cpp /OUT:example.exe /link /LIBPATH:"C:\path\to\built\library" liblite-string.lib
+```
+
 ## API
 
 The API is designed to be as similar as possible to the C++ std::string class.
+
+### Library Behavior
+
+#### Versioning
+
+The library follows [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
+Library version compatibility is guaranteed for the same major version number.
+
+The following macros are defined in the header file to indicate the version:
+
+- `_lite_string_major` - The major version number.
+- `_lite_string_minor` - The minor version number.
+- `_lite_string_patch` - The patch version number.
+- `_lite_string_version` - The full version number, calculated as `major * 10000 + minor * 100 + patch`.
+
+The `LITE_STRING_REQUIRE_MIN_VERSION` macro can be defined with an integer value with an `L` suffix
+before including the header file to require a minimum version of the library.\
+The integer value should be calculated as `major * 10000 + minor * 100 + patch`.
+
+For example, to require version 1.2.3 or later:
+
+```c
+#define LITE_STRING_REQUIRE_MIN_VERSION 10203L
+#include <lite_string.h>
+...
+```
+
+#### Pointer Aliasing
 
 Pointer parameters are restrict-qualified by default to indicate that the pointer
 does not alias with any other pointer in the same function.
 This can help the compiler generate more efficient code.
 
 If pointer aliasing is desired, define the `LITE_STRING_NO_RESTRICT` macro
-with an integer value greater than 0 before including the header file.
+with an integer value greater than 0 before including the header file,
+if you're compiling the library from source:
 
 ```c
 #define LITE_STRING_NO_RESTRICT 1
 #include <lite_string.h>
 ...
 ```
+
+**Note:** This has effect only during the initial compilation of the library.
+The precompiled packages are built with pointer aliasing disabled.
+
+**Defining the macro after library compilation has no effect.**
 
 ### Types and Constants
 
@@ -127,7 +320,6 @@ The `lite_string_npos` constant is used to indicate an invalid index:
 
 ```c
 #define lite_string_npos ((size_t) -1)
-// The maximum value of the size_t type.
 ```
 
 `lite_string_npos` is also used as the return value on failure
@@ -451,6 +643,14 @@ int main() {
 ```
 
 More examples can be found in the [examples'](./examples) directory.
+
+## Authors
+
+- [Ian Duncan](https://github.com/dr8co "Ian Duncan") - Initial work
+
+## Contributing
+
+Contributions are welcome. Please read the [CONTRIBUTING.md](./CONTRIBUTING.md) file for more information.
 
 ## License
 
