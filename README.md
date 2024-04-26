@@ -2,7 +2,7 @@
 <h2 align="center">A simple byte string library for C (and C++)</h2>
 
 <p align="center">
-<img alt="A simple byte string library for C" height="512" src="./assets/logo/logo2-rounded@0.5x.png" title="LiteString" width="512"/>
+<img alt="A simple byte string library for C" height="512" src="./assets/logo/logo2-sm@0.5x.png" title="LiteString" width="512"/>
 </p>
 
 ## About
