@@ -15,6 +15,44 @@ with a focus on simplicity, performance, and ease of use.
 
 LiteString is written in C and can be used in both C and C++ projects.
 
+<!-- TOC -->
+  * [About](#about)
+  * [Features](#features)
+  * [Building the Library](#building-the-library)
+    * [Prerequisites](#prerequisites)
+    * [Building with CMake (Recommended)](#building-with-cmake-recommended)
+    * [Building Manually](#building-manually)
+      * [Static Library](#static-library)
+        * [UNIX (Linux, macOS, etc.)](#unix-linux-macos-etc)
+        * [Windows](#windows)
+      * [Shared Library](#shared-library)
+        * [UNIX (Linux, macOS, BSD, etc.)](#unix-linux-macos-bsd-etc)
+        * [Windows](#windows-1)
+  * [Installation and Uninstallation](#installation-and-uninstallation)
+    * [Installation](#installation)
+    * [Uninstallation](#uninstallation)
+  * [Usage](#usage)
+    * [Compilation and Linking using CMake](#compilation-and-linking-using-cmake)
+    * [Manual Compilation and Linking](#manual-compilation-and-linking)
+  * [API](#api)
+    * [Library Behavior](#library-behavior)
+      * [Versioning](#versioning)
+      * [Pointer Aliasing](#pointer-aliasing)
+    * [Types and Constants](#types-and-constants)
+    * [Creation and Destruction](#creation-and-destruction)
+    * [Element access](#element-access)
+    * [Capacity](#capacity)
+    * [Modifiers](#modifiers)
+    * [Conversion](#conversion)
+    * [Search](#search)
+    * [Operations](#operations)
+    * [Error Handling](#error-handling)
+  * [Examples](#examples)
+  * [Authors](#authors)
+  * [Contributing](#contributing)
+  * [License](#license)
+<!-- TOC -->
+
 ## Features
 
 - Simple and easy to use
