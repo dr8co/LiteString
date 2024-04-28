@@ -1,0 +1,9 @@
+Welcome to the installation of LiteString!
+
+This wizard will guide you through the installation process.
+
+Please ensure that you have read the documentation before proceeding.
+
+For more information, please visit https://github.com/dr8co/LiteString
+
+Click "Next" to continue.
