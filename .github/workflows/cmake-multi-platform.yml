@@ -16,14 +16,14 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         build_type: [Debug, Release]
-        c_compiler: [gcc, clang, cl]
+        c_compiler: [gcc-13, clang, cl]
         include:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
           - os: ubuntu-latest
-            c_compiler: gcc
-            cpp_compiler: g++
+            c_compiler: gcc-13
+            cpp_compiler: g++-13
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
@@ -32,7 +32,7 @@ jobs:
             cpp_compiler: clang++
         exclude:
           - os: windows-latest
-            c_compiler: gcc
+            c_compiler: gcc-13
           - os: windows-latest
             c_compiler: clang
           - os: ubuntu-latest
@@ -40,7 +40,7 @@ jobs:
           - os: macos-latest
             c_compiler: cl
           - os: macos-latest
-            c_compiler: gcc
+            c_compiler: gcc-13
 
     steps:
     - name: Install Ninja
@@ -56,7 +56,11 @@ jobs:
       id: strings
       shell: bash
       run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        if [[ "${{ runner.os }}" == "Windows" ]]; then
+          echo "build-output-dir=${{ github.workspace }}\build" >> "$GITHUB_OUTPUT"
+        else
+          echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        fi
 
     - name: Set the generator
       id: set-generator
@@ -79,7 +83,7 @@ jobs:
         -S ${{ github.workspace }} -G ${{ steps.set-generator.outputs.generator }}
 
     - name: Build
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --target all -j 4
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} -j 4
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
