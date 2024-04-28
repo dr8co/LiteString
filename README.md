@@ -18,8 +18,11 @@ with a focus on simplicity, performance, and ease of use.
 
 LiteString is written in C and can be used in both C and C++ projects.
 
+## Table of Contents
+
 <!-- TOC -->
   * [About](#about)
+  * [Table of Contents](#table-of-contents)
   * [Features](#features)
   * [Building the Library](#building-the-library)
     * [Prerequisites](#prerequisites)
