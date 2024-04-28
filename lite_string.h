@@ -126,9 +126,7 @@ extern "C" {
 #else // C23 is not supported
 #ifndef __cplusplus
 #include <stdbool.h>
-#if _MSC_VER
 #define nullptr ((void *) 0)
-#endif // _MSC_VER
 #endif // __cplusplus
 
 #if HAS_ATTRIBUTE(__warn_unused_result__) // GNU 'warn_unused_result' attribute, pre-C23 syntax
