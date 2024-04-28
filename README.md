@@ -171,7 +171,7 @@ link /DLL /OUT:lite-string.dll lite_string.obj
 
 ### Installation
 
-Pre-built binaries are available for Windows, Linux, and macOS are available on the
+Pre-built binaries for Windows, Linux, and macOS are available on the
 [Releases](https://github.com/dr8co/LiteString/releases "LiteString Releases") page.
 
 The following packages are available:
