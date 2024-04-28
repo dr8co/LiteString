@@ -5,6 +5,9 @@
 <img alt="A simple byte string library for C" height="512" src="./assets/logo/logo2-sm@0.5x.png" title="LiteString" width="512"/>
 </p>
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![CMake Builds](https://github.com/dr8co/LiteString/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/dr8co/LiteString/actions/workflows/cmake-multi-platform.yml)
+
 ## About
 
 LiteString is a simple, lightweight, and fast string library for C and C++.
@@ -692,4 +695,4 @@ Contributions are welcome. Please read the [CONTRIBUTING.md](./CONTRIBUTING.md) 
 
 ## License
 
-LiteString is released under the MIT License. See `LICENSE` for more information.
+LiteString is released under the MIT License. See [LICENSE](./LICENSE) for more information.
