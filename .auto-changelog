@@ -1,6 +1,5 @@
 {
   "output": "CHANGELOG.md",
   "template": "keepachangelog",
-  "commitLimit": false,
-  "remote": "https://github.com/dr8co/LiteString.git"
+  "commitLimit": false
 }
