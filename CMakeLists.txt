@@ -22,24 +22,42 @@ option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(BUILD_EXAMPLES "Build examples" ON)
 option(BUILD_TESTS "Build tests" ON)
 
-# Additional options for the Debug build
-if ((NOT MSVC AND ${CMAKE_C_COMPILER_ID} STREQUAL "Clang") OR ${CMAKE_C_COMPILER_ID} STREQUAL "AppleClang" OR ${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -Wpedantic -g")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wpedantic -g")
+# Additional compile options for the Debug build
+if (NOT MSVC AND CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        add_compile_options(
+                -Wall
+                -Wextra
+                -Werror
+                -Wpedantic
+                -g
+        )
+    endif ()
 endif ()
 
 # Sanitizers for debugging and testing
 # GCC does not support all sanitizers, so Clang is recommended for this purpose. Requires llvm-symbolizer.
 # The build type should be RelWithDebInfo (or Debug, adjust the variables appropriately) for sanitizers to work properly.
 if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
+    # Common flags for all sanitizers
+    set(sanitizer_common_flags "-fno-omit-frame-pointer -g -O1")
+
     # Address, leak, undefined, integer, nullability sanitizers
-    set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS} -fsanitize=address,leak,undefined,integer,nullability -fno-omit-frame-pointer -g")
+    set(address_sanitizer_flags "-fsanitize=address,leak,undefined,integer,nullability")
 
     # Thread sanitizer, cannot be used with address sanitizer
-    #  set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS} -fsanitize=thread -fPIE -fno-omit-frame-pointer -g -O1")
+    set(thread_sanitizer_flags "-fsanitize=thread -fPIE")
 
     # Memory sanitizer, cannot be used with address sanitizer.
-    # set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS} -fsanitize=memory -fPIE -fno-optimize-sibling-calls -fno-omit-frame-pointer -g -O1")
+    set(memory_sanitizer_flags "-fsanitize=memory -fPIE -fno-optimize-sibling-calls")
+
+    # Add flags for Release with Debug Info build
+    if (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+        add_compile_options(
+                ${sanitizer_common_flags}
+                ${address_sanitizer_flags}
+        )
+    endif ()
 endif ()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -134,25 +152,23 @@ if (BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif ()
 
-# Google Test
-include(FetchContent)
-FetchContent_Declare(
-        googletest
-        URL https://github.com/google/googletest/archive/f10e11fb27301fba21caa71030bb5024e67aa135.zip)
-
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-FetchContent_GetProperties(googletest)
-if (NOT googletest_POPULATED)
-    FetchContent_Populate(googletest)
-    add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif ()
-
-enable_testing()
-
-# Tests
+# Testing
 if (BUILD_TESTS)
+    include(FetchContent)
+    FetchContent_Declare(
+            googletest
+            URL https://github.com/google/googletest/archive/f10e11fb27301fba21caa71030bb5024e67aa135.zip)
+
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+    FetchContent_GetProperties(googletest)
+    if (NOT googletest_POPULATED)
+        FetchContent_Populate(googletest)
+        add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
+    endif ()
+
+    enable_testing()
     add_subdirectory(tests)
 endif ()
 
