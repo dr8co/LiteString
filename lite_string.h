@@ -125,10 +125,8 @@ extern "C" {
 
 #else // C23 is not supported
 #ifndef __cplusplus
-#if _MSC_VER
-
 #include <stdbool.h>
-
+#if _MSC_VER
 #define nullptr ((void *) 0)
 #endif // _MSC_VER
 #endif // __cplusplus
