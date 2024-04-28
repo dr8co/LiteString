@@ -30,6 +30,9 @@ jobs:
           - os: macos-latest
             c_compiler: clang
             cpp_compiler: clang++
+          - os: macos-latest
+            c_compiler: gcc-13
+            cpp_compiler: g++-13
         exclude:
           - os: windows-latest
             c_compiler: gcc-13
@@ -39,8 +42,6 @@ jobs:
             c_compiler: cl
           - os: macos-latest
             c_compiler: cl
-          - os: macos-latest
-            c_compiler: gcc-13
 
     steps:
     - name: Install Ninja
