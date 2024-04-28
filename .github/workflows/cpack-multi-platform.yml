@@ -81,6 +81,7 @@ jobs:
         run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} -j 4
 
       - name: Configure CMake for Shared Build
+        if: matrix.os != 'windows-latest'
         run: >
           cmake -B ${{ steps.strings.outputs.build-output-dir }}
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
@@ -90,6 +91,7 @@ jobs:
           -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
 
       - name: Build Shared Library
+        if: matrix.os != 'windows-latest'
         run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} -j 4
 
       - name: Package
