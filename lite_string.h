@@ -194,25 +194,25 @@ LITE_ATTR_HOT bool string_reserve(lite_string *restrict s, size_t size);
 
 bool string_push_back(lite_string *restrict s, char c);
 
-char string_at(const lite_string *restrict s, size_t index);
+LITE_ATTR_REPRODUCIBLE char string_at(const lite_string *restrict s, size_t index);
 
 void string_pop_back(lite_string *restrict s);
 
-bool string_empty(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE bool string_empty(const lite_string *restrict s);
 
 bool string_erase(lite_string *restrict s, size_t index);
 
-char string_back(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE char string_back(const lite_string *restrict s);
 
-char string_front(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE char string_front(const lite_string *restrict s);
 
-bool string_compare(const lite_string *restrict s1, const lite_string *restrict s2);
+LITE_ATTR_REPRODUCIBLE bool string_compare(const lite_string *restrict s1, const lite_string *restrict s2);
 
-LITE_ATTR_HOT size_t string_length(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE LITE_ATTR_HOT size_t string_length(const lite_string *restrict s);
 
-LITE_ATTR_HOT size_t string_size(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE LITE_ATTR_HOT size_t string_size(const lite_string *restrict s);
 
-size_t string_capacity(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE size_t string_capacity(const lite_string *restrict s);
 
 void string_clear(lite_string *restrict s);
 
@@ -232,9 +232,9 @@ bool string_append_cstr(lite_string *restrict s, const char *restrict cstr);
 
 LITE_ATTR_HOT char *string_cstr(const lite_string *restrict s);
 
-LITE_ATTR_HOT char *string_data(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE LITE_ATTR_HOT char *string_data(const lite_string *restrict s);
 
-bool string_compare_cstr(const lite_string *restrict s, const char *restrict cstr);
+LITE_ATTR_REPRODUCIBLE bool string_compare_cstr(const lite_string *restrict s, const char *restrict cstr);
 
 bool string_insert_cstr(lite_string *restrict s, const char *restrict cstr, size_t index);
 
@@ -244,9 +244,9 @@ bool string_copy_buffer(const lite_string *restrict s, char *buf);
 
 bool string_copy(const lite_string *restrict src, lite_string *restrict dest);
 
-bool string_case_compare(const lite_string *restrict s1, const lite_string *restrict s2);
+LITE_ATTR_REPRODUCIBLE bool string_case_compare(const lite_string *restrict s1, const lite_string *restrict s2);
 
-bool string_case_compare_cstr(const lite_string *restrict s, const char *restrict cstr);
+LITE_ATTR_REPRODUCIBLE bool string_case_compare_cstr(const lite_string *restrict s, const char *restrict cstr);
 
 bool string_swap(lite_string *restrict s1, lite_string *restrict s2);
 
@@ -256,49 +256,49 @@ bool string_insert_range(lite_string *restrict s, const lite_string *restrict su
 
 bool string_insert_string(lite_string *restrict s, const lite_string *restrict sub, size_t index);
 
-size_t string_find_last_of(const lite_string *restrict s, char c);
+LITE_ATTR_REPRODUCIBLE size_t string_find_last_of(const lite_string *restrict s, char c);
 
-size_t string_find_last_not_of(const lite_string *restrict s, char c);
+LITE_ATTR_REPRODUCIBLE size_t string_find_last_not_of(const lite_string *restrict s, char c);
 
-size_t string_find_first_from(const lite_string *restrict s, char c, size_t start);
+LITE_ATTR_REPRODUCIBLE size_t string_find_first_from(const lite_string *restrict s, char c, size_t start);
 
-size_t string_find_first_of(const lite_string *restrict s, char c);
+LITE_ATTR_REPRODUCIBLE size_t string_find_first_of(const lite_string *restrict s, char c);
 
-size_t string_find_first_not_of(const lite_string *restrict s, char c);
+LITE_ATTR_REPRODUCIBLE size_t string_find_first_not_of(const lite_string *restrict s, char c);
 
-size_t string_find_first_of_chars(const lite_string *restrict s, const char *restrict cstr);
+LITE_ATTR_REPRODUCIBLE size_t string_find_first_of_chars(const lite_string *restrict s, const char *restrict cstr);
 
-size_t string_find_first_not_of_chars(const lite_string *restrict s, const char *restrict cstr);
+LITE_ATTR_REPRODUCIBLE size_t string_find_first_not_of_chars(const lite_string *restrict s, const char *restrict cstr);
 
-size_t string_find_last_of_chars(const lite_string *restrict s, const char *restrict cstr);
+LITE_ATTR_REPRODUCIBLE size_t string_find_last_of_chars(const lite_string *restrict s, const char *restrict cstr);
 
-size_t string_find_last_not_of_chars(const lite_string *restrict s, const char *restrict cstr);
+LITE_ATTR_REPRODUCIBLE size_t string_find_last_not_of_chars(const lite_string *restrict s, const char *restrict cstr);
 
-size_t string_find_from(const lite_string *restrict s, const lite_string *restrict sub, size_t start);
+LITE_ATTR_REPRODUCIBLE size_t string_find_from(const lite_string *restrict s, const lite_string *restrict sub, size_t start);
 
-size_t string_find(const lite_string *restrict s, const lite_string *restrict sub);
+LITE_ATTR_REPRODUCIBLE size_t string_find(const lite_string *restrict s, const lite_string *restrict sub);
 
-size_t string_rfind(const lite_string *restrict s, const lite_string *restrict sub);
+LITE_ATTR_REPRODUCIBLE size_t string_rfind(const lite_string *restrict s, const lite_string *restrict sub);
 
-size_t string_find_cstr_from(const lite_string *restrict s, const char *restrict cstr, size_t start);
+LITE_ATTR_REPRODUCIBLE size_t string_find_cstr_from(const lite_string *restrict s, const char *restrict cstr, size_t start);
 
-size_t string_rfind_cstr(const lite_string *restrict s, const char *restrict cstr);
+LITE_ATTR_REPRODUCIBLE size_t string_rfind_cstr(const lite_string *restrict s, const char *restrict cstr);
 
-size_t string_find_cstr(const lite_string *restrict s, const char *restrict cstr);
+LITE_ATTR_REPRODUCIBLE size_t string_find_cstr(const lite_string *restrict s, const char *restrict cstr);
 
-bool string_contains_char(const lite_string *restrict s, char c);
+LITE_ATTR_REPRODUCIBLE bool string_contains_char(const lite_string *restrict s, char c);
 
-bool string_contains(const lite_string *restrict s, const lite_string *restrict sub);
+LITE_ATTR_REPRODUCIBLE bool string_contains(const lite_string *restrict s, const lite_string *restrict sub);
 
-bool string_contains_cstr(const lite_string *restrict s, const char *restrict cstr);
+LITE_ATTR_REPRODUCIBLE bool string_contains_cstr(const lite_string *restrict s, const char *restrict cstr);
 
-bool string_starts_with(const lite_string *restrict s, const lite_string *restrict sub);
+LITE_ATTR_REPRODUCIBLE bool string_starts_with(const lite_string *restrict s, const lite_string *restrict sub);
 
-bool string_starts_with_cstr(const lite_string *restrict s, const char *restrict cstr);
+LITE_ATTR_REPRODUCIBLE bool string_starts_with_cstr(const lite_string *restrict s, const char *restrict cstr);
 
-bool string_ends_with(const lite_string *restrict s, const lite_string *restrict sub);
+LITE_ATTR_REPRODUCIBLE bool string_ends_with(const lite_string *restrict s, const lite_string *restrict sub);
 
-bool string_ends_with_cstr(const lite_string *restrict s, const char *restrict cstr);
+LITE_ATTR_REPRODUCIBLE bool string_ends_with_cstr(const lite_string *restrict s, const char *restrict cstr);
 
 bool string_shrink(lite_string *restrict s, size_t size);
 
@@ -326,23 +326,23 @@ LITE_ATTR_NODISCARD lite_string *string_duplicate(const lite_string *restrict s)
 
 void string_reverse(const lite_string *restrict s);
 
-long long string_to_ll(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE long long string_to_ll(const lite_string *restrict s);
 
-unsigned long long string_to_ull(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE unsigned long long string_to_ull(const lite_string *restrict s);
 
-long string_to_l(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE long string_to_l(const lite_string *restrict s);
 
-unsigned long string_to_ul(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE unsigned long string_to_ul(const lite_string *restrict s);
 
-int string_to_int(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE int string_to_int(const lite_string *restrict s);
 
-unsigned int string_to_uint(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE unsigned int string_to_uint(const lite_string *restrict s);
 
-double string_to_double(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE double string_to_double(const lite_string *restrict s);
 
-float string_to_float(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE float string_to_float(const lite_string *restrict s);
 
-long double string_to_ldouble(const lite_string *restrict s);
+LITE_ATTR_REPRODUCIBLE long double string_to_ldouble(const lite_string *restrict s);
 
 LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_l(long value);
 
