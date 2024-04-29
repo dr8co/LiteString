@@ -20,7 +20,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Options
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(BUILD_EXAMPLES "Build examples" ON)
-option(BUILD_TESTS "Build tests" ON)
+option(BUILD_TESTING "Build tests" ON)
 
 # Additional compile options for the Debug build
 if (NOT MSVC AND CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
@@ -153,7 +153,7 @@ if (BUILD_EXAMPLES)
 endif ()
 
 # Testing
-if (BUILD_TESTS)
+if (BUILD_TESTING)
     include(FetchContent)
     FetchContent_Declare(
             googletest

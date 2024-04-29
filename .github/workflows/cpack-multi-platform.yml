@@ -15,7 +15,6 @@ jobs:
 
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        build_type: [Release]
         c_compiler: [gcc-13, clang, cl]
         include:
           - os: windows-latest
@@ -76,12 +75,11 @@ jobs:
           cmake -B ${{ steps.strings.outputs.build-output-dir }} \
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
           -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-          -S ${{ github.workspace }} -G ${{ steps.set-generator.outputs.generator }} \
+          -DCMAKE_BUILD_TYPE=Release -S ${{ github.workspace }} -G ${{ steps.set-generator.outputs.generator }} \
           -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
-          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} -j 4
-          cmake -B ${{ steps.strings.outputs.build-output-dir }} -S ${{ github.workspace }} -DBUILD_SHARED_LIBS=ON \
-          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} -j 4
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release -j 4
+          cmake -B ${{ steps.strings.outputs.build-output-dir }} -S ${{ github.workspace }} -DBUILD_SHARED_LIBS=ON
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release -j 4
 
       - name: Configure CMake and Build Assets
         if: matrix.os == 'windows-latest'
@@ -90,10 +88,10 @@ jobs:
           cmake -B ${{ steps.strings.outputs.build-output-dir }} `
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} `
           -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} `
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} `
+          -DCMAKE_BUILD_TYPE=Release `
           -S ${{ github.workspace }} -G ${{ steps.set-generator.outputs.generator }} `
           -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
-          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} -j 4
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release -j 4
 
       - name: Package
         working-directory: ${{ steps.strings.outputs.build-output-dir }}

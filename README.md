@@ -101,11 +101,11 @@ cmake --build build --config Release -j 4
 Replace `Ninja` with `"Unix Makefiles"` or another generator if Ninja is not available.
 The `-G` option can be omitted to use the default generator.
 
-To skip building tests and examples, add `-DBUILD_TESTS=OFF` and `-DBUILD_EXAMPLES=OFF`
+To skip building tests and examples, add `-DBUILD_TESTING=OFF` and `-DBUILD_EXAMPLES=OFF`
 to the Configuration step:
 
 ```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -G Ninja
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -G Ninja
 ```
 
 The library will be built in the `build` directory.
