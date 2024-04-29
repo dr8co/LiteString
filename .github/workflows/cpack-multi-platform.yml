@@ -95,7 +95,7 @@ jobs:
 
       - name: Package
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
-        run: cpack
+        run: ls -la && cpack
 
       - name: Upload Release Artifacts
         uses: actions/upload-artifact@v4
