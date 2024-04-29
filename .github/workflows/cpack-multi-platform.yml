@@ -69,33 +69,22 @@ jobs:
             echo "generator='Ninja'" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Configure CMake and Build Assets
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
-        run: |
-          cmake -B ${{ steps.strings.outputs.build-output-dir }} \
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
-          -DCMAKE_BUILD_TYPE=Release -S ${{ github.workspace }} -G ${{ steps.set-generator.outputs.generator }} \
-          -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
-          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release -j 4
-          cmake -B ${{ steps.strings.outputs.build-output-dir }} -S ${{ github.workspace }} -DBUILD_SHARED_LIBS=ON
-          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release -j 4
+      - name: Configure CMake
+        run: >
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+          -DCMAKE_BUILD_TYPE=Release -S ${{ github.workspace }}
+          -G ${{ steps.set-generator.outputs.generator }}
+          -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
 
-      - name: Configure CMake and Build Assets
-        if: matrix.os == 'windows-latest'
-        shell: powershell
+      - name: Build Shared Libraries
         run: |
-          cmake -B ${{ steps.strings.outputs.build-output-dir }} `
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} `
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} `
-          -DCMAKE_BUILD_TYPE=Release `
-          -S ${{ github.workspace }} -G ${{ steps.set-generator.outputs.generator }} `
-          -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
           cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release -j 4
 
       - name: Package
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
-        run: ls -la && cpack
+        run: cpack
 
       - name: Upload Release Artifacts
         uses: actions/upload-artifact@v4
