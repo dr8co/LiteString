@@ -12,8 +12,8 @@ jobs:
       fail-fast: false
 
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        c_compiler: [gcc-13, clang, cl]
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        c_compiler: [ gcc-13, clang, cl ]
         include:
           - os: windows-latest
             c_compiler: cl
@@ -62,12 +62,13 @@ jobs:
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             echo "generator='Visual Studio 17 2022'" >> "$GITHUB_OUTPUT"
           elif [[ "${{ runner.os }}" == "macOS" ]]; then
-            echo "generator='Xcode'" >> "$GITHUB_OUTPUT"
+            echo "generator=Xcode" >> "$GITHUB_OUTPUT"
           else
-            echo "generator='Ninja'" >> "$GITHUB_OUTPUT"
+            echo "generator=Ninja" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Configure CMake
+        if: matrix.os != 'windows-latest'
         run: >
           cmake -B ${{ steps.strings.outputs.build-output-dir }}
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
@@ -75,6 +76,17 @@ jobs:
           -DCMAKE_BUILD_TYPE=Release -S ${{ github.workspace }}
           -G ${{ steps.set-generator.outputs.generator }}
           -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
+
+      # Build static libraries on Windows
+      - name: Configure CMake
+        if: matrix.os == 'windows-latest'
+        run: >
+          cmake -B ${{ steps.strings.outputs.build-output-dir }}
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+          -DCMAKE_BUILD_TYPE=Release -S ${{ github.workspace }}
+          -G ${{ steps.set-generator.outputs.generator }}
+          -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
 
       - name: Build Shared Libraries
         run: |
@@ -87,7 +99,7 @@ jobs:
       - name: Upload Release Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: "${{ matrix.os }}-${{ matrix.c_compiler }}-release"
+          name: "${{ runner.os }}-${{ matrix.c_compiler }}-release"
           path: "${{ steps.strings.outputs.build-output-dir }}/Packages"
           overwrite: true
           if-no-files-found: 'error'
