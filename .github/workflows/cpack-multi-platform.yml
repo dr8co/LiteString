@@ -71,7 +71,7 @@ jobs:
           fi
 
       - name: Configure CMake and Build Assets
-        shell: bash
+        if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: |
           cmake -B ${{ steps.strings.outputs.build-output-dir }} \
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
@@ -80,15 +80,20 @@ jobs:
           -S ${{ github.workspace }} -G ${{ steps.set-generator.outputs.generator }} \
           -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
           cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} -j 4
-          if [[ "${{ runner.os }}" != "Windows0" ]]; then
-            cmake -B ${{ steps.strings.outputs.build-output-dir }} \
-            -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
-            -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
-            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-            -S ${{ github.workspace }} -G ${{ steps.set-generator.outputs.generator }} \
-            -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
-            cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} -j 4
-          fi
+          cmake -B ${{ steps.strings.outputs.build-output-dir }} -S ${{ github.workspace }} -DBUILD_SHARED_LIBS=ON \
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} -j 4
+
+      - name: Configure CMake and Build Assets
+        if: matrix.os == 'windows-latest'
+        shell: powershell
+        run: |
+          cmake -B ${{ steps.strings.outputs.build-output-dir }} `
+          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} `
+          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} `
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} `
+          -S ${{ github.workspace }} -G ${{ steps.set-generator.outputs.generator }} `
+          -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} -j 4
 
       - name: Package
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
