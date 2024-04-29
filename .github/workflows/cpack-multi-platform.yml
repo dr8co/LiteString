@@ -1,8 +1,6 @@
 name: CPack Multi-Platform
 
 on:
-  push:
-    branches: [ "main", "dev" ]
   pull_request:
     branches: [ "main" ]
 
