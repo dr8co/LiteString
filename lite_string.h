@@ -21,8 +21,8 @@
 #pragma once
 
 // Library version
-#define _lite_string_major 0L ///< LiteString major version.
-#define _lite_string_minor 1L ///< LiteString minor version.
+#define _lite_string_major 1L ///< LiteString major version.
+#define _lite_string_minor 0L ///< LiteString minor version.
 #define _lite_string_patch 0L ///< LiteString patch version.
 
 /// The LiteString version as a single integer.

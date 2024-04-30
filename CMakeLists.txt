@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 project(LiteString
-        VERSION 0.1.0
+        VERSION 1.0.0
         DESCRIPTION "A lightweight byte string library for C"
         HOMEPAGE_URL "https://github.com/dr8co/LiteString"
         LANGUAGES C CXX)
