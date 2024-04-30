@@ -54,7 +54,7 @@ set(CPACK_COMPONENT_HEADERS_DISPLAY_NAME "Headers")
 set(CPACK_COMPONENT_HEADERS_DESCRIPTION "Header files for LiteString.")
 set(CPACK_COMPONENT_HEADERS_REQUIRED ON)
 
-set(CPACK_COMPONENT_DATA_DISPLAY_NAME "Data")
+set(CPACK_COMPONENT_DATA_DISPLAY_NAME "Version Info")
 set(CPACK_COMPONENT_DATA_DESCRIPTION "Information about this build of LiteString.")
 
 # Resource files
@@ -129,5 +129,6 @@ set(CPACK_INNOSETUP_SETUP_DisableWelcomePage OFF)
 set(CPACK_INNOSETUP_SETUP_AppCopyright "Copyright (C) 2024 Ian Duncan")
 set(CPACK_INNOSETUP_SETUP_AppComments "For more information, visit https://github.com/dr8co/LiteString")
 set(CPACK_INNOSETUP_SETUP_VersionInfoVersion "${CPACK_PACKAGE_VERSION}")
+set(CPACK_INNOSETUP_CODE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/ConfigurePkgConfig.pas")
 
 include(CPack)

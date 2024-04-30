@@ -101,14 +101,15 @@ cmake --build build --config Release -j 4
 Replace `Ninja` with `"Unix Makefiles"` or another generator if Ninja is not available.
 The `-G` option can be omitted to use the default generator.
 
-To skip building tests and examples, add `-DBUILD_TESTS=OFF` and `-DBUILD_EXAMPLES=OFF`
+To skip building tests and examples, add `-DBUILD_TESTING=OFF` and `-DBUILD_EXAMPLES=OFF`
 to the Configuration step:
 
 ```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc -DBUILD_TESTS=OFF -DBUILD_EXAMPLES=OFF -G Ninja
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -G Ninja
 ```
 
-The library will be built in the `build` directory.
+The library will be built in the `build` directory
+(or `Release` subdirectory of the `build` directory, if using a multi-configuration generator).
 
 ### Building Manually
 
@@ -136,8 +137,8 @@ or use the full path to the MinGW `gcc` and `ar` executables.
 For Visual Studio, use the Developer Command Prompt or Powershell:
 
 ```cmd
-cl /c /O2 /std:clatest lite_string.c
-lib /OUT:liblite-string.lib lite_string.obj
+cl /c /O2 lite_string.c
+lib /OUT:lite-string.lib lite_string.obj
 ```
 
 `clang-cl` can be used instead of `cl` if available.
@@ -163,7 +164,7 @@ or [MSYS2](https://www.msys2.org/ "MSYS2"), follow the [UNIX instructions](#unix
 For Visual Studio, use the Developer Command Prompt or Powershell:
 
 ```cmd
-cl /c /O2 /std:clatest /LD lite_string.c
+cl /c /O2 /LD lite_string.c
 link /DLL /OUT:lite-string.dll lite_string.obj
 ```
 
@@ -171,7 +172,7 @@ link /DLL /OUT:lite-string.dll lite_string.obj
 
 ### Installation
 
-Pre-built binaries are available for Windows, Linux, and macOS are available on the
+Pre-built binaries for Windows, Linux, and macOS are available on the
 [Releases](https://github.com/dr8co/LiteString/releases "LiteString Releases") page.
 
 The following packages are available:
@@ -180,10 +181,12 @@ The following packages are available:
 |:--------------:|:-----------------------:|---------------------------------------|
 |   win64.exe    |     Windows 64-bit      | Self installing executable            |
 |   win64.zip    |     Windows 64-bit      | Extraction to appropriate directories |
-|   x86_64.rpm   | RPM-based Linux 64-bit  | rpm installers, such as apt and dpkg  |
-|   amd64.deb    | DEB-based Linux 64-bit  | deb installers, such as yum and dnf   |
+|  minGW64.exe   |    MinGW-w64 Windows    | Self installing executable            |
+|  minGW64.zip   |    MinGW-w64 Windows    | Extraction to appropriate directories |
+|   x86_64.rpm   | RPM-based Linux, 64-bit | rpm installers, such as apt and dpkg  |
+|   amd64.deb    | DEB-based Linux, 64-bit | deb installers, such as yum and dnf   |
 |  Linux.tar.gz  |      Linux 64-bit       | Extraction to appropriate directories |
-|   Darwin.dmg   |      macOS 64-bit       | Drag and Drop                         |
+|   Darwin.dmg   |      macOS 64-bit       | Drag and Drop to Applications         |
 | Darwin.tar.gz  |      macOS 64-bit       | Extraction to appropriate directories |
 
 SHA-256 checksums are provided for each package to verify the integrity of the files.
@@ -192,12 +195,12 @@ Alternatively, you can install the library directly after
 [building with CMake](#building-with-cmake-recommended):
 
 ```bash
-# Install from the build directory.
+# Install from the build directory. Run this from the project root directory.
 cmake --install build --config Release
 ```
 
 Escalation of privileges may be required to install the library system-wide.
-Use `sudo` on UNIX or run the command prompt (or powershell) as an administrator on Windows.
+Use `sudo` on UNIX or run the command prompt/PowerShell/Windows Terminal as an administrator on Windows.
 
 ### Uninstallation
 
@@ -210,7 +213,7 @@ For UNIX, use the following command:
 
 ```bash
 # In the build directory, run:
-xargs rm -f < install_manifest.txt # May require sudo
+xargs rm -f < install_manifest.txt # May require sudo/escalation of privileges
 ```
 
 For Windows, use the following command in the build directory:
@@ -235,7 +238,7 @@ To use the library, include the header file in your source code:
 #include <lite_string.h>
 // or:
 #include "lite_string.h"
-// Depending on whether the library was installed or not.
+// Depending on the location of the header file.
 ...
 ```
 
@@ -247,6 +250,12 @@ To link the library with a CMake project, include the following lines in the `CM
 
 ```cmake
 ########### If the library was installed: ###########
+# For Windows only: Update CMake module path.
+list(APPEND CMAKE_MODULE_PATH "C:/path/to/LiteString/cmake")
+# The path should point to the directory containing the LiteStringConfig.cmake file, depending on the installation.
+
+# In UNIX, the library installation path is usually scanned automatically.
+
 # Locate the required files.
 find_package(LiteString REQUIRED)
 
@@ -256,6 +265,7 @@ target_link_libraries(yourTarget LiteString::lite-string)
 ######## If the library was built manually, or is not installed: ########
 # Add the library to the project.
 add_library(LiteString STATIC IMPORTED)
+# Set the path to the library. For Windows, use the .lib file.
 set_target_properties(LiteString PROPERTIES IMPORTED_LOCATION /path/to/libLiteString.a)
 
 # Link the library to the target.
@@ -288,10 +298,10 @@ On Windows:
 
 ```powershell
 # C
-cl /O2 /std:clatest example.c /OUT:example.exe /link /LIBPATH:"C:\path\to\built\library" liblite-string.lib
+cl /O2 example.c /OUT:example.exe /link /LIBPATH:"C:\path\to\built\library" lite-string.lib
 
 # C++
-cl /O2 /std:c++20 example.cpp /OUT:example.exe /link /LIBPATH:"C:\path\to\built\library" liblite-string.lib
+cl /O2 /std:c++20 /EHsc example.cpp /OUT:example.exe /link /LIBPATH:"C:\path\to\built\library" lite-string.lib
 ```
 
 ## API

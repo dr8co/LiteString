@@ -5,16 +5,15 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  package:
     runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
 
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        build_type: [Release]
-        c_compiler: [gcc-13, clang, cl]
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        c_compiler: [ gcc-13, clang, cl ]
         include:
           - os: windows-latest
             c_compiler: cl
@@ -63,46 +62,32 @@ jobs:
           if [[ "${{ runner.os }}" == "Windows" ]]; then
             echo "generator='Visual Studio 17 2022'" >> "$GITHUB_OUTPUT"
           elif [[ "${{ runner.os }}" == "macOS" ]]; then
-            echo "generator='Xcode'" >> "$GITHUB_OUTPUT"
+            echo "generator=Xcode" >> "$GITHUB_OUTPUT"
           else
-            echo "generator='Ninja'" >> "$GITHUB_OUTPUT"
+            echo "generator=Ninja" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Configure CMake for Static Build
+      - name: Configure CMake
         run: >
           cmake -B ${{ steps.strings.outputs.build-output-dir }}
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
           -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -S ${{ github.workspace }} -G ${{ steps.set-generator.outputs.generator }}
-          -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
-
-      - name: Build Static Library
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} -j 4
-
-      - name: Configure CMake for Shared Build
-        if: matrix.os != 'windows-latest'
-        run: >
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-          -S ${{ github.workspace }} -G ${{ steps.set-generator.outputs.generator }}
+          -DCMAKE_BUILD_TYPE=Release -S ${{ github.workspace }}
+          -G ${{ steps.set-generator.outputs.generator }}
           -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
 
-      - name: Build Shared Library
-        if: matrix.os != 'windows-latest'
-        run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} -j 4
+      - name: Build Shared Libraries
+        run: |
+          cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release -j 4
 
       - name: Package
         working-directory: ${{ steps.strings.outputs.build-output-dir }}
         run: cpack
 
       - name: Upload Release Artifacts
-        if: matrix.build_type == 'Release'
         uses: actions/upload-artifact@v4
         with:
-          name: "${{ matrix.os }}-${{ matrix.c_compiler }}-release"
+          name: "${{ runner.os }}-${{ matrix.c_compiler }}-release"
           path: "${{ steps.strings.outputs.build-output-dir }}/Packages"
           overwrite: true
-          if-no-files-found: 'warn'
+          if-no-files-found: 'error'

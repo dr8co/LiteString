@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 
 project(LiteString
-        VERSION 0.1.0
+        VERSION 1.0.0
         DESCRIPTION "A lightweight byte string library for C"
         HOMEPAGE_URL "https://github.com/dr8co/LiteString"
         LANGUAGES C CXX)
@@ -20,7 +20,17 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Options
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(BUILD_EXAMPLES "Build examples" ON)
-option(BUILD_TESTS "Build tests" ON)
+option(BUILD_TESTING "Build tests" OFF)
+
+# MSVC Runtime Library and other settings
+if (MSVC)
+    if (BUILD_SHARED_LIBS)
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+        set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    else ()
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    endif ()
+endif ()
 
 # Additional compile options for the Debug build
 if (NOT MSVC AND CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
@@ -60,7 +70,8 @@ if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
     endif ()
 endif ()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+# Add the CMake module path
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 add_library(lite-string)
 target_sources(lite-string PRIVATE lite_string.c)
@@ -102,7 +113,7 @@ install(EXPORT LiteStringTargets
 
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file(LiteStringConfig.cmake.in
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/input_files/LiteStringConfig.cmake.in"
         "${CMAKE_CURRENT_BINARY_DIR}/LiteStringConfig.cmake"
         INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/LiteString")
 
@@ -118,7 +129,8 @@ install(FILES
         COMPONENT CMakeConfig
 )
 
-configure_file(liblite-string.pc.in liblite-string.pc @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/input_files/liblite-string.pc.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/liblite-string.pc" @ONLY)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblite-string.pc"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
@@ -139,7 +151,8 @@ string(TOUPPER "${FLAGS_VAR}" FLAGS_VAR)
 string(CONFIGURE "@${FLAGS_VAR}@" BUILD_FLAGS)
 
 # Configure the version_info.txt file
-configure_file(version_info.txt.in "${CMAKE_CURRENT_BINARY_DIR}/version_info.txt" @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/input_files/version_info.txt.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/version_info.txt" @ONLY)
 
 # Install the version_info.txt file
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/version_info.txt"
@@ -153,7 +166,7 @@ if (BUILD_EXAMPLES)
 endif ()
 
 # Testing
-if (BUILD_TESTS)
+if (BUILD_TESTING)
     include(FetchContent)
     FetchContent_Declare(
             googletest

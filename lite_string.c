@@ -281,9 +281,10 @@ bool string_push_back(lite_string *const restrict s, const char c) {
  *
  * @param s A pointer to the string.
  * @param index The index of the character to be retrieved.
- * @return The character at the given index, or the null character if the index is out of bounds or the string is invalid.
+ * @return The character at the given index, or the null character
+ * if the index is out of bounds or the string is invalid.
  */
-char string_at(const lite_string *const restrict s, const size_t index) {
+LITE_ATTR_REPRODUCIBLE char string_at(const lite_string *const restrict s, const size_t index) {
     if (s && index < s->size)
         return s->data[index];
 
@@ -308,7 +309,7 @@ void string_pop_back(lite_string *const restrict s) {
  * @param s A pointer to the string.
  * @return true if the string is empty or invalid, false otherwise.
  */
-bool string_empty(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE bool string_empty(const lite_string *const restrict s) {
     return s == nullptr || s->size == 0;
 }
 
@@ -318,7 +319,7 @@ bool string_empty(const lite_string *const restrict s) {
  * @param s A pointer to the string.
  * @return The last character of the string if the string is valid and not empty, or the null character otherwise.
  */
-char string_back(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE char string_back(const lite_string *const restrict s) {
     return s && s->size ? s->data[s->size - 1] : '\0';
 }
 
@@ -328,7 +329,7 @@ char string_back(const lite_string *const restrict s) {
  * @param s A pointer to the string.
  * @return The first character of the string if the string is valid and not empty, or the null character otherwise.
  */
-char string_front(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE char string_front(const lite_string *const restrict s) {
     return s && s->size ? s->data[0] : '\0';
 }
 
@@ -390,7 +391,7 @@ bool string_erase(lite_string *const restrict s, const size_t index) {
  * @param s2 A pointer to the second string.
  * @return true if the strings are equal, false otherwise.
  */
-bool string_compare(const lite_string *const restrict s1, const lite_string *const restrict s2) {
+LITE_ATTR_REPRODUCIBLE bool string_compare(const lite_string *const restrict s1, const lite_string *const restrict s2) {
     if (s1 == nullptr || s2 == nullptr || s1->size != s2->size)
         return false;
 
@@ -404,7 +405,8 @@ bool string_compare(const lite_string *const restrict s1, const lite_string *con
  * @param s2 A pointer to the second string.
  * @return true if the strings are equal (ignoring case), false otherwise.
  */
-bool string_case_compare(const lite_string *const restrict s1, const lite_string *const restrict s2) {
+LITE_ATTR_REPRODUCIBLE bool string_case_compare(const lite_string *const restrict s1,
+                                                const lite_string *const restrict s2) {
     if (s1 == nullptr || s2 == nullptr || s1->size != s2->size)
         return false;
 
@@ -417,7 +419,7 @@ bool string_case_compare(const lite_string *const restrict s1, const lite_string
  * @param s A pointer to the string.
  * @return The length of the string, or 0 if the string is invalid.
  */
-LITE_ATTR_HOT size_t string_length(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE LITE_ATTR_HOT size_t string_length(const lite_string *const restrict s) {
     return s ? s->size : 0;
 }
 
@@ -427,7 +429,7 @@ LITE_ATTR_HOT size_t string_length(const lite_string *const restrict s) {
  * @param s A pointer to the string.
  * @return The length of the string, or 0 if the string is invalid.
  */
-LITE_ATTR_HOT size_t string_size(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE LITE_ATTR_HOT size_t string_size(const lite_string *const restrict s) {
     return string_length(s);
 }
 
@@ -437,7 +439,7 @@ LITE_ATTR_HOT size_t string_size(const lite_string *const restrict s) {
  * @param s A pointer to the string.
  * @return The capacity of the string, or 0 if the string is invalid.
  */
-size_t string_capacity(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE size_t string_capacity(const lite_string *const restrict s) {
     return s ? s->capacity : 0;
 }
 
@@ -531,6 +533,14 @@ void string_set(const lite_string *const restrict s, const size_t index, const c
         s->data[index] = c;
 }
 
+/**
+ * @brief Inserts a string into another string at a specified index.
+ *
+ * @param s A pointer to the string where the new string will be inserted.
+ * @param sub A pointer to the string that will be inserted into the first string.
+ * @param index The position in the first string where the second string will be inserted.
+ * @return true if the string was successfully inserted, false otherwise.
+ */
 bool
 string_insert_string(lite_string *const restrict s, const lite_string *const restrict sub, const size_t index) {
     return sub && string_insert_range(s, sub, index, sub->size);
@@ -546,8 +556,8 @@ string_insert_string(lite_string *const restrict s, const lite_string *const res
  *
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
-LITE_ATTR_NODISCARD lite_string *string_substr(const lite_string *const restrict s, const size_t start,
-                                               const size_t len) {
+LITE_ATTR_NODISCARD lite_string *
+string_substr(const lite_string *const restrict s, const size_t start, const size_t len) {
     if (s) {
         // The requested substring must be within the bounds of the string
         if (len == 0 || start >= s->size || len > s->size || start + len - 1 > s->size) return nullptr;
@@ -578,8 +588,8 @@ LITE_ATTR_NODISCARD lite_string *string_substr(const lite_string *const restrict
  * or nullptr if the strings could not be concatenated.
  * @note The returned pointer must be freed by the caller, using \p string_free
  */
-LITE_ATTR_NODISCARD lite_string *string_concat(const lite_string *const restrict s1,
-                                               const lite_string *const restrict s2) {
+LITE_ATTR_NODISCARD lite_string *
+string_concat(const lite_string *const restrict s1, const lite_string *const restrict s2) {
     if (s1 && s2) {
         lite_string *s = string_new();
         if (s) {
@@ -704,7 +714,7 @@ LITE_ATTR_HOT char *string_cstr(const lite_string *const restrict s) {
  * @note The returned pointer is not guaranteed to be null-terminated.
  * Use \p string_cstr() to get a null-terminated C-string.
  */
-LITE_ATTR_HOT char *string_data(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE LITE_ATTR_HOT char *string_data(const lite_string *const restrict s) {
     return s ? s->data : nullptr;
 }
 
@@ -715,7 +725,7 @@ LITE_ATTR_HOT char *string_data(const lite_string *const restrict s) {
  * @param cstr The C-string to be compared with the string.
  * @return true if the string and the C-string are equal, false otherwise.
  */
-bool string_compare_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+LITE_ATTR_REPRODUCIBLE bool string_compare_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     if (s && cstr) {
         if (s->size == strlen(cstr))
             return memcmp(s->data, cstr, s->size) == 0;
@@ -730,7 +740,8 @@ bool string_compare_cstr(const lite_string *const restrict s, const char *const 
  * @param cstr The C-string to be compared with the string.
  * @return true if the string and the C-string are equal (ignoring case), false otherwise.
  */
-bool string_case_compare_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+LITE_ATTR_REPRODUCIBLE bool
+string_case_compare_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     if (s && cstr) {
         if (s->size == strlen(cstr)) {
 #if HAS_STRNCASECMP
@@ -812,7 +823,7 @@ bool string_swap(lite_string *const restrict s1, lite_string *const restrict s2)
  * @return The index of the last occurrence of the character in the string,
  * or \p lite_string_npos if the character was not found.
  */
-size_t string_find_last_of(const lite_string *const restrict s, const char c) {
+LITE_ATTR_REPRODUCIBLE size_t string_find_last_of(const lite_string *const restrict s, const char c) {
     if (s && s->size && c != '\0') {
 #if defined(_GNU_SOURCE) && !(defined(_WIN32) || defined(WIN32) || _MSC_VER)
         const char *found = (const char *) memrchr(s->data, c, s->size);
@@ -835,7 +846,7 @@ size_t string_find_last_of(const lite_string *const restrict s, const char c) {
  * @return The index of the last occurrence of a character that does not match the specified character in the string,
  * or \p lite_string_npos if all characters match or the string is invalid.
  */
-size_t string_find_last_not_of(const lite_string *const restrict s, const char c) {
+LITE_ATTR_REPRODUCIBLE size_t string_find_last_not_of(const lite_string *const restrict s, const char c) {
     if (s && s->size && c != '\0') {
         for (size_t i = s->size; i > 0; --i) {
             if (s->data[i - 1] != c)
@@ -854,7 +865,8 @@ size_t string_find_last_not_of(const lite_string *const restrict s, const char c
  * @return The index of the first occurrence of the character in the string,
  * or \p lite_string_npos if the character was not found.
  */
-size_t string_find_first_from(const lite_string *const restrict s, const char c, const size_t start) {
+LITE_ATTR_REPRODUCIBLE size_t
+string_find_first_from(const lite_string *const restrict s, const char c, const size_t start) {
     if (s && s->size && c != '\0' && start < s->size) {
         const char *found = (const char *) memchr(s->data + start, c, s->size - start);
         if (found) return found - s->data;
@@ -870,7 +882,7 @@ size_t string_find_first_from(const lite_string *const restrict s, const char c,
  * @return The index of the first occurrence of the character in the string,
  * or \p lite_string_npos if the character was not found.
  */
-size_t string_find_first_of(const lite_string *const restrict s, const char c) {
+LITE_ATTR_REPRODUCIBLE size_t string_find_first_of(const lite_string *const restrict s, const char c) {
     return string_find_first_from(s, c, 0);
 }
 
@@ -882,7 +894,7 @@ size_t string_find_first_of(const lite_string *const restrict s, const char c) {
  * @return The index of the first occurrence of a character that does not match the specified character in the string,
  * or \p lite_string_npos if all characters match or the string is invalid.
  */
-size_t string_find_first_not_of(const lite_string *const restrict s, const char c) {
+LITE_ATTR_REPRODUCIBLE size_t string_find_first_not_of(const lite_string *const restrict s, const char c) {
     if (s && s->size && c != '\0') {
         for (size_t i = 0; i < s->size; ++i) {
             if (s->data[i] != c)
@@ -900,7 +912,8 @@ size_t string_find_first_not_of(const lite_string *const restrict s, const char 
  * @return The index of the first occurrence of any character from the C-string in the string,
  * or \p lite_string_npos if no character was found.
  */
-size_t string_find_first_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
+LITE_ATTR_REPRODUCIBLE size_t
+string_find_first_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
     if (s && s->size && cstr) {
         const size_t len = strlen(cstr);
         if (len) {
@@ -929,7 +942,8 @@ size_t string_find_first_of_chars(const lite_string *const restrict s, const cha
  * @return The index of the first occurrence of any character not present in the C-string in the string,
  * or \p lite_string_npos if all characters match or the string is invalid.
  */
-size_t string_find_first_not_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
+LITE_ATTR_REPRODUCIBLE size_t
+string_find_first_not_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
     if (s && s->size && cstr) {
         const size_t len = strlen(cstr);
         if (len) {
@@ -958,7 +972,8 @@ size_t string_find_first_not_of_chars(const lite_string *const restrict s, const
  * @return The index of the last occurrence of any character from the C-string in the string,
  * or \p lite_string_npos if no character was found.
  */
-size_t string_find_last_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
+LITE_ATTR_REPRODUCIBLE size_t
+string_find_last_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
     if (s && s->size && cstr) {
         const size_t len = strlen(cstr);
         if (len) {
@@ -987,7 +1002,8 @@ size_t string_find_last_of_chars(const lite_string *const restrict s, const char
  * @return The index of the last occurrence of any character not present in the C-string in the string,
  * or \p lite_string_npos if all characters match or the string is invalid.
  */
-size_t string_find_last_not_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
+LITE_ATTR_REPRODUCIBLE size_t
+string_find_last_not_of_chars(const lite_string *const restrict s, const char *const restrict cstr) {
     if (s && s->size && cstr) {
         const size_t len = strlen(cstr);
         if (len) {
@@ -1015,7 +1031,7 @@ size_t string_find_last_not_of_chars(const lite_string *const restrict s, const 
  * @param c The character to be found.
  * @return True if the string contains the character, false otherwise.
  */
-bool string_contains_char(const lite_string *const restrict s, const char c) {
+LITE_ATTR_REPRODUCIBLE bool string_contains_char(const lite_string *const restrict s, const char c) {
     return string_find_first_of(s, c) != lite_string_npos;
 }
 
@@ -1029,8 +1045,8 @@ bool string_contains_char(const lite_string *const restrict s, const char c) {
  * @param len The length of the pattern string.
  * @param lps The LPS array which is to be filled.
  */
-LITE_ATTR_MAYBE_UNUSED static void compute_lps(const char *const restrict pattern,
-                        const size_t len, size_t *const restrict lps) {
+LITE_ATTR_MAYBE_UNUSED static void
+compute_lps(const char *const restrict pattern, const size_t len, size_t *const restrict lps) {
     size_t len_lps = 0; // Length of the previous longest prefix suffix
     lps[0] = 0; // lps[0] is always 0
     size_t i = 1;
@@ -1066,8 +1082,8 @@ LITE_ATTR_MAYBE_UNUSED static void compute_lps(const char *const restrict patter
  * @return The index of the first occurrence of the pattern string in the main text string,
  * or \p lite_string_npos if the pattern string is not found.
  */
-LITE_ATTR_MAYBE_UNUSED static size_t kmp_search(const char *const restrict s, const size_t s_size,
-                         const char *const restrict sub, const size_t sub_size) {
+LITE_ATTR_REPRODUCIBLE LITE_ATTR_MAYBE_UNUSED static size_t
+kmp_search(const char *const restrict s, const size_t s_size, const char *const restrict sub, const size_t sub_size) {
     size_t i = 0; // Index for the string
     size_t j = 0; // Index for the substring
 
@@ -1117,8 +1133,8 @@ LITE_ATTR_MAYBE_UNUSED static size_t kmp_search(const char *const restrict s, co
  * @return The index of the first occurrence of the substring in the string,
  * or \p lite_string_npos if the substring was not found.
  */
-size_t string_find_from(const lite_string *const restrict s, const lite_string *const restrict sub,
-                        const size_t start) {
+LITE_ATTR_REPRODUCIBLE size_t
+string_find_from(const lite_string *const restrict s, const lite_string *const restrict sub, const size_t start) {
     if (s && sub && start < s->size) {
         if (sub->size == 0) return start;
         if (sub->size > s->size) return lite_string_npos;
@@ -1142,7 +1158,7 @@ size_t string_find_from(const lite_string *const restrict s, const lite_string *
  * @return The index of the first occurrence of the substring in the string,
  * or \p lite_string_npos if the substring was not found.
  */
-size_t string_find(const lite_string *const restrict s, const lite_string *const restrict sub) {
+LITE_ATTR_REPRODUCIBLE size_t string_find(const lite_string *const restrict s, const lite_string *const restrict sub) {
     return string_find_from(s, sub, 0);
 }
 
@@ -1154,7 +1170,7 @@ size_t string_find(const lite_string *const restrict s, const lite_string *const
  * @return The index of the last occurrence of the substring in the string,
  * or \p lite_string_npos if the substring was not found.
  */
-size_t string_rfind(const lite_string *const restrict s, const lite_string *const restrict sub) {
+LITE_ATTR_REPRODUCIBLE size_t string_rfind(const lite_string *const restrict s, const lite_string *const restrict sub) {
     if (s && sub) {
         if (sub->size == 0) return s->size;
         if (sub->size > s->size) return lite_string_npos;
@@ -1207,8 +1223,8 @@ size_t string_rfind(const lite_string *const restrict s, const lite_string *cons
  * @return The index of the first occurrence of the C-string in the string,
  * or \p lite_string_npos if the C-string was not found.
  */
-size_t string_find_cstr_from(const lite_string *const restrict s, const char *const restrict cstr,
-                             const size_t start) {
+LITE_ATTR_REPRODUCIBLE size_t
+string_find_cstr_from(const lite_string *const restrict s, const char *const restrict cstr, const size_t start) {
     // The string and the C-string must be valid
     if (s && cstr) {
         const size_t len = strlen(cstr);
@@ -1242,7 +1258,7 @@ size_t string_find_cstr_from(const lite_string *const restrict s, const char *co
  * @return The index of the last occurrence of the C-string in the string,
  * or \p lite_string_npos if the C-string was not found.
  */
-size_t string_rfind_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+LITE_ATTR_REPRODUCIBLE size_t string_rfind_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     if (s && cstr) {
         const size_t len = strlen(cstr);
         if (len == 0) return s->size;
@@ -1294,7 +1310,7 @@ size_t string_rfind_cstr(const lite_string *const restrict s, const char *const 
  * @return The index of the first occurrence of the C-string in the string,
  * or \p lite_string_npos if the C-string was not found.
  */
-size_t string_find_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+LITE_ATTR_REPRODUCIBLE size_t string_find_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     return string_find_cstr_from(s, cstr, 0);
 }
 
@@ -1305,7 +1321,8 @@ size_t string_find_cstr(const lite_string *const restrict s, const char *const r
  * @param sub A pointer to the substring to be found.
  * @return True if the string contains the substring, false otherwise.
  */
-bool string_contains(const lite_string *const restrict s, const lite_string *const restrict sub) {
+LITE_ATTR_REPRODUCIBLE bool
+string_contains(const lite_string *const restrict s, const lite_string *const restrict sub) {
     return string_find(s, sub) != lite_string_npos;
 }
 
@@ -1316,7 +1333,7 @@ bool string_contains(const lite_string *const restrict s, const lite_string *con
  * @param cstr The C-string to be found.
  * @return True if the string contains the C-string, false otherwise.
  */
-bool string_contains_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+LITE_ATTR_REPRODUCIBLE bool string_contains_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     return string_find_cstr(s, cstr) != lite_string_npos;
 }
 
@@ -1327,7 +1344,8 @@ bool string_contains_cstr(const lite_string *const restrict s, const char *const
  * @param sub A pointer to the substring to be checked.
  * @return True if the string starts with the substring, false otherwise.
  */
-bool string_starts_with(const lite_string *const restrict s, const lite_string *const restrict sub) {
+LITE_ATTR_REPRODUCIBLE bool
+string_starts_with(const lite_string *const restrict s, const lite_string *const restrict sub) {
     return string_find(s, sub) == 0;
 }
 
@@ -1338,7 +1356,8 @@ bool string_starts_with(const lite_string *const restrict s, const lite_string *
  * @param cstr The C-string to be checked.
  * @return True if the string starts with the C-string, false otherwise.
  */
-bool string_starts_with_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+LITE_ATTR_REPRODUCIBLE bool
+string_starts_with_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     return string_find_cstr(s, cstr) == 0;
 }
 
@@ -1349,7 +1368,8 @@ bool string_starts_with_cstr(const lite_string *const restrict s, const char *co
  * @param sub A pointer to the substring to be checked.
  * @return True if the string ends with the substring, false otherwise.
  */
-bool string_ends_with(const lite_string *const restrict s, const lite_string *const restrict sub) {
+LITE_ATTR_REPRODUCIBLE bool
+string_ends_with(const lite_string *const restrict s, const lite_string *const restrict sub) {
     return s && sub && string_rfind(s, sub) == s->size - sub->size;
 }
 
@@ -1360,7 +1380,8 @@ bool string_ends_with(const lite_string *const restrict s, const lite_string *co
  * @param cstr The C-string to be checked.
  * @return True if the string ends with the C-string, false otherwise.
  */
-bool string_ends_with_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
+LITE_ATTR_REPRODUCIBLE bool
+string_ends_with_cstr(const lite_string *const restrict s, const char *const restrict cstr) {
     return s && cstr && string_rfind_cstr(s, cstr) == s->size - strlen(cstr);
 }
 
@@ -1569,7 +1590,7 @@ void string_reverse(const lite_string *const restrict s) {
  * @param s A pointer to the string to be converted.
  * @return The long long integer representation of the string, or 0 if the string is nullptr.
  */
-long long string_to_ll(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE long long string_to_ll(const lite_string *const restrict s) {
     long long result = 0;
     if (s) result = strtoll(string_cstr(s), nullptr, 10);
     return result;
@@ -1581,7 +1602,7 @@ long long string_to_ll(const lite_string *const restrict s) {
  * @param s A pointer to the string to be converted.
  * @return The unsigned long long integer representation of the string, or 0 if the string is nullptr.
  */
-unsigned long long string_to_ull(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE unsigned long long string_to_ull(const lite_string *const restrict s) {
     unsigned long long result = 0;
     if (s) result = strtoull(string_cstr(s), nullptr, 10);
     return result;
@@ -1593,7 +1614,7 @@ unsigned long long string_to_ull(const lite_string *const restrict s) {
  * @param s A pointer to the string to be converted.
  * @return The long integer representation of the string, or 0 if the string is nullptr.
  */
-long string_to_l(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE long string_to_l(const lite_string *const restrict s) {
     long result = 0;
     if (s) result = strtol(string_cstr(s), nullptr, 10);
     return result;
@@ -1605,7 +1626,7 @@ long string_to_l(const lite_string *const restrict s) {
  * @param s A pointer to the string to be converted.
  * @return The unsigned long integer representation of the string, or 0 if the string is nullptr.
  */
-unsigned long string_to_ul(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE unsigned long string_to_ul(const lite_string *const restrict s) {
     unsigned long result = 0;
     if (s) result = strtoul(string_cstr(s), nullptr, 10);
     return result;
@@ -1617,7 +1638,7 @@ unsigned long string_to_ul(const lite_string *const restrict s) {
  * @param s A pointer to the string to be converted.
  * @return The integer representation of the string, or 0 if the string is nullptr.
  */
-int string_to_int(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE int string_to_int(const lite_string *const restrict s) {
     return (int) string_to_l(s);
 }
 
@@ -1627,7 +1648,7 @@ int string_to_int(const lite_string *const restrict s) {
  * @param s A pointer to the string to be converted.
  * @return The unsigned integer representation of the string, or 0 if the string is nullptr.
  */
-unsigned int string_to_uint(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE unsigned int string_to_uint(const lite_string *const restrict s) {
     return (unsigned int) string_to_ul(s);
 }
 
@@ -1637,7 +1658,7 @@ unsigned int string_to_uint(const lite_string *const restrict s) {
  * @param s A pointer to the string to be converted.
  * @return The double representation of the string, or 0.0 if the string is nullptr.
  */
-double string_to_double(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE double string_to_double(const lite_string *const restrict s) {
     double result = 0.0;
     if (s) result = strtod(string_cstr(s), nullptr);
     return result;
@@ -1649,7 +1670,7 @@ double string_to_double(const lite_string *const restrict s) {
  * @param s A pointer to the string to be converted.
  * @return The float representation of the string, or 0.0f if the string is nullptr.
  */
-float string_to_float(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE float string_to_float(const lite_string *const restrict s) {
     float result = 0.0f;
     if (s) result = strtof(string_cstr(s), nullptr);
     return result;
@@ -1661,7 +1682,7 @@ float string_to_float(const lite_string *const restrict s) {
  * @param s A pointer to the string to be converted.
  * @return The long double representation of the string, or 0.0 if the string is nullptr.
  */
-long double string_to_ldouble(const lite_string *const restrict s) {
+LITE_ATTR_REPRODUCIBLE long double string_to_ldouble(const lite_string *const restrict s) {
     long double result = 0.0;
     if (s) result = strtold(string_cstr(s), nullptr);
     return result;
@@ -1688,7 +1709,8 @@ LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ll(const long
  * @brief Converts an unsigned long long integer to a string.
  *
  * @param value The unsigned long long integer to be converted.
- * @return A pointer to the new string containing the unsigned long long integer, or nullptr if the string creation failed.
+ * @return A pointer to the new string containing the unsigned long long integer,
+ * or nullptr if the string creation failed.
  * @note The returned pointer must be freed by the caller, using \p string_free()
  */
 LITE_ATTR_NODISCARD LITE_ATTR_UNSEQUENCED lite_string *string_from_ull(const unsigned long long value) {
