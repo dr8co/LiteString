@@ -1,11 +1,13 @@
 name: CPack Multi-Platform
 
 on:
+  push:
+    branches: [ "dev" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
-  build:
+  package:
     runs-on: ${{ matrix.os }}
 
     strategy:
