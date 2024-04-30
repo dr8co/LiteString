@@ -113,7 +113,7 @@ install(EXPORT LiteStringTargets
 
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file(LiteStringConfig.cmake.in
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/input_files/LiteStringConfig.cmake.in"
         "${CMAKE_CURRENT_BINARY_DIR}/LiteStringConfig.cmake"
         INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/LiteString")
 
@@ -129,7 +129,8 @@ install(FILES
         COMPONENT CMakeConfig
 )
 
-configure_file(liblite-string.pc.in liblite-string.pc @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/input_files/liblite-string.pc.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/liblite-string.pc" @ONLY)
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/liblite-string.pc"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
@@ -150,7 +151,8 @@ string(TOUPPER "${FLAGS_VAR}" FLAGS_VAR)
 string(CONFIGURE "@${FLAGS_VAR}@" BUILD_FLAGS)
 
 # Configure the version_info.txt file
-configure_file(version_info.txt.in "${CMAKE_CURRENT_BINARY_DIR}/version_info.txt" @ONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/input_files/version_info.txt.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/version_info.txt" @ONLY)
 
 # Install the version_info.txt file
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/version_info.txt"
