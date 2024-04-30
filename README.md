@@ -108,7 +108,8 @@ to the Configuration step:
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=gcc -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF -G Ninja
 ```
 
-The library will be built in the `build` directory.
+The library will be built in the `build` directory
+(or `Release` subdirectory of the `build` directory, if using a multi-configuration generator).
 
 ### Building Manually
 
@@ -180,10 +181,12 @@ The following packages are available:
 |:--------------:|:-----------------------:|---------------------------------------|
 |   win64.exe    |     Windows 64-bit      | Self installing executable            |
 |   win64.zip    |     Windows 64-bit      | Extraction to appropriate directories |
-|   x86_64.rpm   | RPM-based Linux 64-bit  | rpm installers, such as apt and dpkg  |
-|   amd64.deb    | DEB-based Linux 64-bit  | deb installers, such as yum and dnf   |
+|  minGW64.exe   |    MinGW-w64 Windows    | Self installing executable            |
+|  minGW64.zip   |    MinGW-w64 Windows    | Extraction to appropriate directories |
+|   x86_64.rpm   | RPM-based Linux, 64-bit | rpm installers, such as apt and dpkg  |
+|   amd64.deb    | DEB-based Linux, 64-bit | deb installers, such as yum and dnf   |
 |  Linux.tar.gz  |      Linux 64-bit       | Extraction to appropriate directories |
-|   Darwin.dmg   |      macOS 64-bit       | Drag and Drop                         |
+|   Darwin.dmg   |      macOS 64-bit       | Drag and Drop to Applications         |
 | Darwin.tar.gz  |      macOS 64-bit       | Extraction to appropriate directories |
 
 SHA-256 checksums are provided for each package to verify the integrity of the files.
@@ -192,12 +195,12 @@ Alternatively, you can install the library directly after
 [building with CMake](#building-with-cmake-recommended):
 
 ```bash
-# Install from the build directory.
+# Install from the build directory. Run this from the project root directory.
 cmake --install build --config Release
 ```
 
 Escalation of privileges may be required to install the library system-wide.
-Use `sudo` on UNIX or run the command prompt (or powershell) as an administrator on Windows.
+Use `sudo` on UNIX or run the command prompt/PowerShell/Windows Terminal as an administrator on Windows.
 
 ### Uninstallation
 
@@ -210,7 +213,7 @@ For UNIX, use the following command:
 
 ```bash
 # In the build directory, run:
-xargs rm -f < install_manifest.txt # May require sudo
+xargs rm -f < install_manifest.txt # May require sudo/escalation of privileges
 ```
 
 For Windows, use the following command in the build directory:
@@ -235,7 +238,7 @@ To use the library, include the header file in your source code:
 #include <lite_string.h>
 // or:
 #include "lite_string.h"
-// Depending on whether the library was installed or not.
+// Depending on the location of the header file.
 ...
 ```
 
@@ -247,6 +250,12 @@ To link the library with a CMake project, include the following lines in the `CM
 
 ```cmake
 ########### If the library was installed: ###########
+# For Windows only: Update CMake module path.
+list(APPEND CMAKE_MODULE_PATH "C:/path/to/LiteString/cmake")
+# The path should point to the directory containing the LiteStringConfig.cmake file, depending on the installation.
+
+# In UNIX, the library installation path is usually scanned automatically.
+
 # Locate the required files.
 find_package(LiteString REQUIRED)
 
@@ -256,6 +265,7 @@ target_link_libraries(yourTarget LiteString::lite-string)
 ######## If the library was built manually, or is not installed: ########
 # Add the library to the project.
 add_library(LiteString STATIC IMPORTED)
+# Set the path to the library. For Windows, use the .lib file.
 set_target_properties(LiteString PROPERTIES IMPORTED_LOCATION /path/to/libLiteString.a)
 
 # Link the library to the target.
