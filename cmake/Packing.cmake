@@ -129,5 +129,6 @@ set(CPACK_INNOSETUP_SETUP_DisableWelcomePage OFF)
 set(CPACK_INNOSETUP_SETUP_AppCopyright "Copyright (C) 2024 Ian Duncan")
 set(CPACK_INNOSETUP_SETUP_AppComments "For more information, visit https://github.com/dr8co/LiteString")
 set(CPACK_INNOSETUP_SETUP_VersionInfoVersion "${CPACK_PACKAGE_VERSION}")
+set(CPACK_INNOSETUP_CODE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/ConfigurePkgConfig.pas")
 
 include(CPack)
