@@ -136,8 +136,8 @@ or use the full path to the MinGW `gcc` and `ar` executables.
 For Visual Studio, use the Developer Command Prompt or Powershell:
 
 ```cmd
-cl /c /O2 /std:clatest lite_string.c
-lib /OUT:liblite-string.lib lite_string.obj
+cl /c /O2 lite_string.c
+lib /OUT:lite-string.lib lite_string.obj
 ```
 
 `clang-cl` can be used instead of `cl` if available.
@@ -163,7 +163,7 @@ or [MSYS2](https://www.msys2.org/ "MSYS2"), follow the [UNIX instructions](#unix
 For Visual Studio, use the Developer Command Prompt or Powershell:
 
 ```cmd
-cl /c /O2 /std:clatest /LD lite_string.c
+cl /c /O2 /LD lite_string.c
 link /DLL /OUT:lite-string.dll lite_string.obj
 ```
 
@@ -288,10 +288,10 @@ On Windows:
 
 ```powershell
 # C
-cl /O2 /std:clatest example.c /OUT:example.exe /link /LIBPATH:"C:\path\to\built\library" liblite-string.lib
+cl /O2 example.c /OUT:example.exe /link /LIBPATH:"C:\path\to\built\library" lite-string.lib
 
 # C++
-cl /O2 /std:c++20 example.cpp /OUT:example.exe /link /LIBPATH:"C:\path\to\built\library" liblite-string.lib
+cl /O2 /std:c++20 /EHsc example.cpp /OUT:example.exe /link /LIBPATH:"C:\path\to\built\library" lite-string.lib
 ```
 
 ## API
