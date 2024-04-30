@@ -68,7 +68,6 @@ jobs:
           fi
 
       - name: Configure CMake
-        if: matrix.os != 'windows-latest'
         run: >
           cmake -B ${{ steps.strings.outputs.build-output-dir }}
           -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
@@ -76,17 +75,6 @@ jobs:
           -DCMAKE_BUILD_TYPE=Release -S ${{ github.workspace }}
           -G ${{ steps.set-generator.outputs.generator }}
           -DBUILD_SHARED_LIBS=ON -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
-
-      # Build static libraries on Windows
-      - name: Configure CMake
-        if: matrix.os == 'windows-latest'
-        run: >
-          cmake -B ${{ steps.strings.outputs.build-output-dir }}
-          -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-          -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-          -DCMAKE_BUILD_TYPE=Release -S ${{ github.workspace }}
-          -G ${{ steps.set-generator.outputs.generator }}
-          -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF
 
       - name: Build Shared Libraries
         run: |
