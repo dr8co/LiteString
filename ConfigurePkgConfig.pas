@@ -35,9 +35,14 @@ begin
   end;
 end;
 
-// Run after the installation has completed
-procedure DeinitializeSetup();
+procedure CurStepChanged(CurStep: TSetupStep);
 begin
-  AppPath := ExpandConstant('{app}');
-  ReplacePlaceholderInPkgConfig;
+  // Check if the installation is transitioning from ssPostInstall to ssDone
+  if (CurStep = ssDone) and (WizardForm.CurPageID = wpFinished) then
+  begin
+    // Save the installation path
+    AppPath := ExpandConstant('{app}');
+    // Perform actions after installation
+    ReplacePlaceholderInPkgConfig;
+  end;
 end;
