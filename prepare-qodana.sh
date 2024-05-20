@@ -4,7 +4,10 @@
 cd "$(dirname "$0")" || (echo "Running from $(pwd)" && exit 1)
 
 # Install dependencies
-sudo apt update && sudo apt install -y ninja-build clang wget tar build-essential
+apt update && apt install -y ninja-build clang wget tar build-essential
+
+# Create build directory
+mkdir -p "build"
 
 # Download and install CMake
 wget -qO- "https://github.com/Kitware/CMake/releases/download/v3.29.3/cmake-3.29.3-linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C /usr/local
