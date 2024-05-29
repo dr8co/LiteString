@@ -64,8 +64,8 @@ if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
     # Add flags for Release with Debug Info build
     if (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
         add_compile_options(
-                ${sanitizer_common_flags}
-                ${address_sanitizer_flags}
+                "SHELL:${sanitizer_common_flags}"
+                "SHELL:${address_sanitizer_flags}"
         )
     endif ()
 endif ()
@@ -76,6 +76,11 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 add_library(lite-string)
 target_sources(lite-string PRIVATE lite_string.c)
 add_library(LiteString::lite-string ALIAS lite-string)
+
+# Link the enabled sanitizers.
+if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang" AND CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    target_link_libraries(lite-string asan ubsan)
+endif ()
 
 # Set the include directory for the library
 target_include_directories(lite-string PUBLIC
