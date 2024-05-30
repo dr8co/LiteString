@@ -172,18 +172,36 @@ endif ()
 
 # Testing
 if (BUILD_TESTING)
-    include(FetchContent)
-    FetchContent_Declare(
-            googletest
-            URL https://github.com/google/googletest/archive/f10e11fb27301fba21caa71030bb5024e67aa135.zip)
+    # Google Test
+    find_package(GTest QUIET)
+    if (NOT GTest_FOUND)
+        message(STATUS "Google Test not found. Fetching...")
 
-    # For Windows: Prevent overriding the parent project's compiler/linker settings
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+        include(FetchContent)
 
-    FetchContent_GetProperties(googletest)
-    if (NOT googletest_POPULATED)
-        FetchContent_Populate(googletest)
-        add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
+        FetchContent_Declare(
+                googletest
+                URL https://github.com/google/googletest/archive/a7f443b80b105f940225332ed3c31f2790092f47.zip
+        )
+
+        # For Windows: Prevent overriding the parent project's compiler/linker settings
+        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+        FetchContent_GetProperties(googletest)
+        if (NOT googletest_POPULATED)
+            FetchContent_Populate(googletest)
+            add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
+        endif ()
+
+        set(GTest_ManualFetch ON)
+
+        # Alias the Google Test targets
+        if (NOT TARGET GTest::gtest)
+            add_library(GTest::gtest ALIAS gtest)
+            add_library(GTest::gtest_main ALIAS gtest_main)
+            add_library(GTest::gmock ALIAS gmock)
+        endif ()
+
     endif ()
 
     enable_testing()
