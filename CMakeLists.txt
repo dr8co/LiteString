@@ -21,6 +21,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(BUILD_EXAMPLES "Build examples" ON)
 option(BUILD_TESTING "Build tests" OFF)
+include(CMakeDependentOption)
+
+# Sanitize code if requested when Clang is used
+cmake_dependent_option(ENABLE_SANITIZERS
+        "Enable sanitizers (Ignored if not using Clang compiler)" OFF
+        "${CMAKE_C_COMPILER_ID} STREQUAL \"Clang\"" OFF)
 
 # MSVC Runtime Library and other settings
 if (MSVC)
@@ -45,10 +51,16 @@ if (NOT MSVC AND CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
     endif ()
 endif ()
 
+# Add the CMake module path
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+add_library(lite-string)
+target_sources(lite-string PRIVATE lite_string.c)
+add_library(LiteString::lite-string ALIAS lite-string)
+
 # Sanitizers for debugging and testing
-# GCC does not support all sanitizers, so Clang is recommended for this purpose. Requires llvm-symbolizer.
-# The build type should be RelWithDebInfo (or Debug, adjust the variables appropriately) for sanitizers to work properly.
-if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
+# Requires llvm-symbolizer and sanitizer libraries (asan, ubsan, msan, tsan)
+if (ENABLE_SANITIZERS)
     # Common flags for all sanitizers
     set(sanitizer_common_flags "-fno-omit-frame-pointer -g -O1")
 
@@ -61,25 +73,14 @@ if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
     # Memory sanitizer, cannot be used with address sanitizer.
     set(memory_sanitizer_flags "-fsanitize=memory -fPIE -fno-optimize-sibling-calls")
 
-    # Add flags for Release with Debug Info build
-    if (CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-        add_compile_options(
-                "SHELL:${sanitizer_common_flags}"
-                "SHELL:${address_sanitizer_flags}"
-        )
-    endif ()
-endif ()
+    # Add compile options
+    add_compile_options(
+            "SHELL:${sanitizer_common_flags}"
+            "SHELL:${address_sanitizer_flags}"
+    )
 
-# Add the CMake module path
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-add_library(lite-string)
-target_sources(lite-string PRIVATE lite_string.c)
-add_library(LiteString::lite-string ALIAS lite-string)
-
-# Link the enabled sanitizers.
-if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang" AND CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-    target_link_libraries(lite-string asan ubsan)
+    # Link the enabled sanitizers.
+    target_link_libraries(lite-string PRIVATE asan ubsan)
 endif ()
 
 # Set the include directory for the library
@@ -95,7 +96,7 @@ set_target_properties(lite-string PROPERTIES
 )
 
 # Additional definitions for the library
-if (${CMAKE_C_COMPILER_ID} STREQUAL "Clang" OR ${CMAKE_C_COMPILER_ID} STREQUAL "GNU")
+if (NOT MSVC AND CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
     target_compile_definitions(lite-string PRIVATE _GNU_SOURCE)
 endif ()
 
