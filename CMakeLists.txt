@@ -182,17 +182,15 @@ if (BUILD_TESTING)
 
         FetchContent_Declare(
                 googletest
-                URL https://github.com/google/googletest/archive/a7f443b80b105f940225332ed3c31f2790092f47.zip
+                GIT_REPOSITORY https://github.com/google/googletest.git
+                GIT_TAG a7f443b80b105f940225332ed3c31f2790092f47
+                EXCLUDE_FROM_ALL
         )
 
         # For Windows: Prevent overriding the parent project's compiler/linker settings
         set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-        FetchContent_GetProperties(googletest)
-        if (NOT googletest_POPULATED)
-            FetchContent_Populate(googletest)
-            add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
-        endif ()
+        FetchContent_MakeAvailable(googletest)
 
         set(GTest_ManualFetch ON)
 
