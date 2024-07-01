@@ -618,16 +618,64 @@ TEST(LiteStringModifiersTest, EraseRangeInEmptyString) {
     string_free(s);
 }
 
-TEST(LiteStringModifiersTest, EraseRangeWithNegativeCount) {
+#if __clang__
+#define DISABLE_ERASE_RANGE_OVERFLOW __attribute__((no_sanitize("implicit-integer-sign-change")))
+#else
+#define DISABLE_ERASE_RANGE_OVERFLOW
+#endif
+
+TEST(LiteStringModifiersTest, EraseRangeWithNegativeCount) DISABLE_ERASE_RANGE_OVERFLOW {
     lite_string *s = string_new_cstr("Hello, World!");
     EXPECT_FALSE(string_erase_range(s, 5, -1));
     EXPECT_STREQ("Hello, World!", string_cstr(s));
     string_free(s);
 }
 
-TEST(LiteStringModifiersTest, EraseRangeWithNegativeIndex) {
+TEST(LiteStringModifiersTest, EraseRangeWithNegativeIndex) DISABLE_ERASE_RANGE_OVERFLOW {
     lite_string *s = string_new_cstr("Hello, World!");
     EXPECT_FALSE(string_erase_range(s, -1, 5));
     EXPECT_STREQ("Hello, World!", string_cstr(s));
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, StripLeadingAndTrailingSpaces) {
+    lite_string* s = string_new_cstr("   Hello, World!   ");
+    string_strip(s);
+    ASSERT_STREQ(string_cstr(s), "Hello, World!");
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, StripLeadingSpacesOnly) {
+    lite_string* s = string_new_cstr("   Hello, World!");
+    string_strip(s);
+    ASSERT_STREQ(string_cstr(s), "Hello, World!");
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, StripTrailingSpacesOnly) {
+    lite_string* s = string_new_cstr("Hello, World!   ");
+    string_strip(s);
+    ASSERT_STREQ(string_cstr(s), "Hello, World!");
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, NoSpacesToStrip) {
+    lite_string* s = string_new_cstr("Hello, World!");
+    string_strip(s);
+    ASSERT_STREQ(string_cstr(s), "Hello, World!");
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, StripAllSpaces) {
+    lite_string* s = string_new_cstr("   ");
+    string_strip(s);
+    ASSERT_STREQ(string_cstr(s), "");
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, EmptyString) {
+    lite_string* s = string_new();
+    string_strip(s);
+    ASSERT_STREQ(string_cstr(s), "");
     string_free(s);
 }
