@@ -1035,6 +1035,28 @@ LITE_ATTR_REPRODUCIBLE bool string_contains_char(const lite_string *const restri
     return string_find_first_of(s, c) != lite_string_npos;
 }
 
+void string_strip(lite_string *const restrict s) {
+    if (s) {
+        static const char *const space = " \t\n\r\f\v";
+
+        // Strip leading characters
+        const size_t start = string_find_first_not_of_chars(s, space);
+        if (start != lite_string_npos) {
+            string_erase_range(s, 0, start);
+        } else {
+            // If the string is empty or contains only whitespace, clear the string
+            string_clear(s);
+            return;
+        }
+
+        // Strip trailing characters
+        const size_t end = string_find_last_not_of_chars(s, space);
+        if (end != lite_string_npos) {
+            string_erase_range(s, end + 1, s->size - end - 1);
+        }
+    }
+}
+
 /**
  * @brief Computes the Longest Proper Prefix which is also suffix (LPS) array for the pattern string.
  *
