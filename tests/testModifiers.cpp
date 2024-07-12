@@ -728,3 +728,32 @@ TEST(LiteStringModifiersTest, RightTrimPreservesLeadingSpaces) {
     ASSERT_STREQ(string_cstr(s), " \r\n\v  hello");
     string_free(s);
 }
+
+TEST(LiteStringModifiersTest, RepeatStringMultipleTimes) {
+    lite_string *s = string_new_cstr("abc");
+    ASSERT_TRUE(string_repeat(s, 3));
+    ASSERT_STREQ(string_cstr(s), "abcabcabc");
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, RepeatEmptyStringReturnsFalse) {
+    lite_string *s = string_new();
+    ASSERT_FALSE(string_repeat(s, 3));
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, RepeatOnceReturnsFalse) {
+    lite_string *s = string_new_cstr("abc");
+    ASSERT_FALSE(string_repeat(s, 1));
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, RepeatZeroTimesReturnsFalse) {
+    lite_string *s = string_new_cstr("abc");
+    ASSERT_FALSE(string_repeat(s, 0));
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, RepeatNullStringReturnsFalse) {
+    ASSERT_FALSE(string_repeat(nullptr, 3));
+}
