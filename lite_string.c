@@ -1035,26 +1035,54 @@ LITE_ATTR_REPRODUCIBLE bool string_contains_char(const lite_string *const restri
     return string_find_first_of(s, c) != lite_string_npos;
 }
 
-void string_strip(lite_string *const restrict s) {
+/**
+ * @brief Trims whitespace characters from the beginning of the string.
+ *
+ * Whitespace characters are defined as any of the following: space, tab (\t),
+ * newline (\n), carriage return (\r), form feed (\f), and vertical tab (\v).
+ *
+ * @param s A pointer to the lite_string instance to be trimmed on the left.
+ */
+void string_left_trim(lite_string *const restrict s) {
     if (s) {
-        static const char *const space = " \t\n\r\f\v";
-
-        // Strip leading characters
-        const size_t start = string_find_first_not_of_chars(s, space);
+        // Find the first character that is not a whitespace
+        const size_t start = string_find_first_not_of_chars(s, " \t\n\r\f\v");
         if (start != lite_string_npos) {
+            // Erase the characters before the first non-whitespace character
             string_erase_range(s, 0, start);
         } else {
             // If the string is empty or contains only whitespace, clear the string
             string_clear(s);
-            return;
-        }
-
-        // Strip trailing characters
-        const size_t end = string_find_last_not_of_chars(s, space);
-        if (end != lite_string_npos) {
-            string_erase_range(s, end + 1, s->size - end - 1);
         }
     }
+}
+
+/**
+ * @brief Trims whitespace characters from the end of the string.
+ *
+ * @param s A pointer to the lite_string instance to be trimmed on the right.
+ */
+void string_right_trim(lite_string *const restrict s) {
+    if (s) {
+        const size_t end = string_find_last_not_of_chars(s, " \t\n\r\f\v");
+        if (end != lite_string_npos) {
+            // Erase the characters after the last non-whitespace character
+            string_erase_range(s, end + 1, s->size - end - 1);
+        } else {
+            // If the string is empty or contains only whitespace, clear the string
+            string_clear(s);
+        }
+    }
+}
+
+/**
+ * @brief Trims whitespace characters from both ends of the string.
+ *
+ * @param s A pointer to the lite_string instance to be fully trimmed.
+ */
+void string_strip(lite_string *const restrict s) {
+    string_left_trim(s);
+    string_right_trim(s);
 }
 
 /**

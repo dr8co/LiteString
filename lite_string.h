@@ -302,6 +302,10 @@ LITE_ATTR_REPRODUCIBLE bool string_ends_with_cstr(const lite_string *restrict s,
 
 void string_strip(lite_string *restrict s);
 
+void string_left_trim(lite_string *restrict s);
+
+void string_right_trim(lite_string *restrict s);
+
 bool string_shrink(lite_string *restrict s, size_t size);
 
 bool string_shrink_to_fit(lite_string *restrict s);
