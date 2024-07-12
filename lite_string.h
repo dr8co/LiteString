@@ -274,13 +274,15 @@ LITE_ATTR_REPRODUCIBLE size_t string_find_last_of_chars(const lite_string *restr
 
 LITE_ATTR_REPRODUCIBLE size_t string_find_last_not_of_chars(const lite_string *restrict s, const char *restrict cstr);
 
-LITE_ATTR_REPRODUCIBLE size_t string_find_from(const lite_string *restrict s, const lite_string *restrict sub, size_t start);
+LITE_ATTR_REPRODUCIBLE size_t string_find_from(const lite_string *restrict s, const lite_string *restrict sub,
+                                               size_t start);
 
 LITE_ATTR_REPRODUCIBLE size_t string_find(const lite_string *restrict s, const lite_string *restrict sub);
 
 LITE_ATTR_REPRODUCIBLE size_t string_rfind(const lite_string *restrict s, const lite_string *restrict sub);
 
-LITE_ATTR_REPRODUCIBLE size_t string_find_cstr_from(const lite_string *restrict s, const char *restrict cstr, size_t start);
+LITE_ATTR_REPRODUCIBLE size_t string_find_cstr_from(const lite_string *restrict s, const char *restrict cstr,
+                                                    size_t start);
 
 LITE_ATTR_REPRODUCIBLE size_t string_rfind_cstr(const lite_string *restrict s, const char *restrict cstr);
 
@@ -315,6 +317,8 @@ void string_to_lower(const lite_string *restrict s);
 void string_to_upper(const lite_string *restrict s);
 
 void string_to_title(const lite_string *restrict s);
+
+bool string_repeat(lite_string *restrict s, size_t count);
 
 LITE_ATTR_NODISCARD LITE_ATTR_HOT lite_string *string_new_cstr(const char *restrict cstr);
 

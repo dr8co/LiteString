@@ -1038,10 +1038,11 @@ LITE_ATTR_REPRODUCIBLE bool string_contains_char(const lite_string *const restri
 /**
  * @brief Trims whitespace characters from the beginning of the string.
  *
- * Whitespace characters are defined as any of the following: space, tab (\t),
- * newline (\n), carriage return (\r), form feed (\f), and vertical tab (\v).
+ * Whitespace characters are defined as any of the following:\n
+ * space, tab (\\t), newline (\\n), carriage return (\\r),
+ * form feed (\\f), and vertical tab (\\v).
  *
- * @param s A pointer to the lite_string instance to be trimmed on the left.
+ * @param s A pointer to the \p lite_string instance to be trimmed on the left.
  */
 void string_left_trim(lite_string *const restrict s) {
     if (s) {
@@ -1060,7 +1061,7 @@ void string_left_trim(lite_string *const restrict s) {
 /**
  * @brief Trims whitespace characters from the end of the string.
  *
- * @param s A pointer to the lite_string instance to be trimmed on the right.
+ * @param s A pointer to the \p lite_string instance to be trimmed on the right.
  */
 void string_right_trim(lite_string *const restrict s) {
     if (s) {
@@ -1078,11 +1079,35 @@ void string_right_trim(lite_string *const restrict s) {
 /**
  * @brief Trims whitespace characters from both ends of the string.
  *
- * @param s A pointer to the lite_string instance to be fully trimmed.
+ * @param s A pointer to the \p lite_string instance to be fully trimmed.
  */
 void string_strip(lite_string *const restrict s) {
     string_left_trim(s);
     string_right_trim(s);
+}
+
+/**
+ * Repeats the content of a string a specified number of times.
+ *
+ * @param s A pointer to the \p lite_string instance whose content is to be repeated.
+ * @param count The number of times the string content should be repeated.
+ * @return true if the string content was successfully repeated; false otherwise.
+ */
+bool string_repeat(lite_string *const restrict s, const size_t count) {
+    if (s && count > 1 && !string_empty(s)) {
+        // Resize the string to accommodate the repeated string
+        if (string_reserve(s, s->size * count)) {
+            // Repeat the string
+            for (size_t i = 1; i < count; ++i)
+                memcpy(s->data + s->size * i, s->data, s->size);
+
+            // Update the size of the string
+            s->size *= count;
+
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
