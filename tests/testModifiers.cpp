@@ -639,43 +639,92 @@ TEST(LiteStringModifiersTest, EraseRangeWithNegativeIndex) DISABLE_ERASE_RANGE_O
 }
 
 TEST(LiteStringModifiersTest, StripLeadingAndTrailingSpaces) {
-    lite_string* s = string_new_cstr("   Hello, World!   ");
+    lite_string *s = string_new_cstr("   Hello, World!   ");
     string_strip(s);
     ASSERT_STREQ(string_cstr(s), "Hello, World!");
     string_free(s);
 }
 
-TEST(LiteStringModifiersTest, StripLeadingSpacesOnly) {
-    lite_string* s = string_new_cstr("   Hello, World!");
-    string_strip(s);
-    ASSERT_STREQ(string_cstr(s), "Hello, World!");
+TEST(LiteStringModifiersTest, LeftTrimRemovesLeadingSpaces) {
+    lite_string *s = string_new_cstr("   hello");
+    string_left_trim(s);
+    ASSERT_STREQ(string_cstr(s), "hello");
     string_free(s);
 }
 
-TEST(LiteStringModifiersTest, StripTrailingSpacesOnly) {
-    lite_string* s = string_new_cstr("Hello, World!   ");
-    string_strip(s);
-    ASSERT_STREQ(string_cstr(s), "Hello, World!");
-    string_free(s);
-}
-
-TEST(LiteStringModifiersTest, NoSpacesToStrip) {
-    lite_string* s = string_new_cstr("Hello, World!");
-    string_strip(s);
-    ASSERT_STREQ(string_cstr(s), "Hello, World!");
-    string_free(s);
-}
-
-TEST(LiteStringModifiersTest, StripAllSpaces) {
-    lite_string* s = string_new_cstr("   ");
-    string_strip(s);
+TEST(LiteStringModifiersTest, LeftTrimHandlesEmptyString) {
+    lite_string *s = string_new();
+    string_left_trim(s);
     ASSERT_STREQ(string_cstr(s), "");
     string_free(s);
 }
 
-TEST(LiteStringModifiersTest, EmptyString) {
-    lite_string* s = string_new();
-    string_strip(s);
+TEST(LiteStringModifiersTest, LeftTrimNoSpacesToStrip) {
+    lite_string *s = string_new_cstr("hello");
+    string_left_trim(s);
+    ASSERT_STREQ(string_cstr(s), "hello");
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, LeftTrimPreservesTrailingSpaces) {
+    lite_string *s = string_new_cstr(" \r\n\v  hello  \t");
+    string_left_trim(s);
+    ASSERT_STREQ(string_cstr(s), "hello  \t");
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, RightTrimRemovesTrailingSpaces) {
+    lite_string *s = string_new_cstr("hello   ");
+    string_right_trim(s);
+    ASSERT_STREQ(string_cstr(s), "hello");
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, RightTrimHandlesEmptyString) {
+    lite_string *s = string_new();
+    string_right_trim(s);
     ASSERT_STREQ(string_cstr(s), "");
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, RightTrimNoSpacesToStrip) {
+    lite_string *s = string_new_cstr("hello");
+    string_right_trim(s);
+    ASSERT_STREQ(string_cstr(s), "hello");
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, LeftTrimRemovesAllTypesOfLeadingWhitespace) {
+    lite_string *s = string_new_cstr("\t\n\r\f\v hello");
+    string_left_trim(s);
+    ASSERT_STREQ(string_cstr(s), "hello");
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, RightTrimRemovesAllTypesOfTrailingWhitespace) {
+    lite_string *s = string_new_cstr("hello\t\n\r \f\v");
+    string_right_trim(s);
+    ASSERT_STREQ(string_cstr(s), "hello");
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, LeftTrimStripAllSpaces) {
+    lite_string *s = string_new_cstr(" \t\n\r\f\v");
+    string_left_trim(s);
+    ASSERT_TRUE(string_empty(s));
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, RightTrimStripAllSpaces) {
+    lite_string *s = string_new_cstr(" \t\n\r\f\v");
+    string_right_trim(s);
+    ASSERT_TRUE(string_empty(s));
+    string_free(s);
+}
+
+TEST(LiteStringModifiersTest, RightTrimPreservesLeadingSpaces) {
+    lite_string *s = string_new_cstr(" \r\n\v  hello  \t");
+    string_right_trim(s);
+    ASSERT_STREQ(string_cstr(s), " \r\n\v  hello");
     string_free(s);
 }
