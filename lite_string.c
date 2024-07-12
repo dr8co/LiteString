@@ -825,7 +825,8 @@ bool string_swap(lite_string *const restrict s1, lite_string *const restrict s2)
  */
 LITE_ATTR_REPRODUCIBLE size_t string_find_last_of(const lite_string *const restrict s, const char c) {
     if (s && s->size && c != '\0') {
-#if defined(_GNU_SOURCE) && !(defined(_WIN32) || defined(WIN32) || _MSC_VER)
+#if defined(_GNU_SOURCE) && defined(__GLIBC__) && __GLIBC__ >= 2 && __GLIBC_MINOR__ >= 2 && !(defined(_WIN32) || defined(WIN32) || _MSC_VER)
+        // Use the GNU extension memrchr if available (GLIBC 2.2 or later)
         const char *found = (const char *) memrchr(s->data, c, s->size);
         if (found) return found - s->data;
 #else
